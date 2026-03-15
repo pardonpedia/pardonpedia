@@ -1,5 +1,5 @@
 export class RowChart {
-    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false) {
+    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null) {
         this.title = title;
         this.field = attribute;
         this.singleSelect = singleSelect;
@@ -22,9 +22,6 @@ export class RowChart {
             .attr('class', 'chart-title-text')
             .text(title);
 
-        titleRow.append('span')
-            .attr('class', 'chart-title-count')
-            .attr('id', 'chart-' + attribute + '-count');
 
         const contentId = 'chart-' + attribute + '-content';
 
@@ -166,14 +163,16 @@ export class RowChart {
         this.chart = dc.rowChart('#chart-' + attribute + '-content')
             .dimension(this.dim)
             .group(this.group)
-            .data(d => d.top(maxItems))
+            .data(ordering
+                ? g => g.top(Infinity).filter(d => d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
+                : g => g.top(maxItems))
             .width(width)
-            .height(Math.max(1, Math.min(maxItems, this.group.all().length)) * ROW_HEIGHT + MARGINS.top + MARGINS.bottom)
+            .height(Math.max(1, Math.min(maxItems, this.group.all().length)) * (ROW_HEIGHT + 2) + MARGINS.top + MARGINS.bottom + 8)
             .fixedBarHeight(ROW_HEIGHT)
             .margins(MARGINS)
             .elasticX(true)
             .colors(['#aecde8'])
-            .label(d => `${d.key}  (${d.value.toLocaleString()})`)
+            .label(d => d.key)
             .labelOffsetX(5)
             .on('filtered', () => updateFunction())
             .on('pretransition', chart => {
@@ -182,9 +181,11 @@ export class RowChart {
                 chart.selectAll('.grid-line').remove();
 
                 const filters = chart.filters();
+                const innerWidth = chart.width() - chart.margins().left - chart.margins().right;
 
-                chart.selectAll('g.row rect').each(function(d) {
-                    const rect = d3.select(this);
+                chart.selectAll('g.row').each(function(d) {
+                    const row = d3.select(this);
+                    const rect = row.select('rect');
                     const isSelected = filters.includes(d.key);
 
                     if (isSelected) {
@@ -194,10 +195,20 @@ export class RowChart {
                         rect.attr('stroke', null)
                             .attr('stroke-width', null);
                     }
+
+                    row.selectAll('text.count-label').remove();
+                    row.append('text')
+                        .attr('class', 'count-label')
+                        .attr('x', innerWidth - 2)
+                        .attr('y', ROW_HEIGHT / 2)
+                        .attr('dy', '0.35em')
+                        .attr('text-anchor', 'end')
+                        .text(d.value.toLocaleString());
                 });
             });
 
         this.chart.xAxis().ticks(0).tickSize(0).tickFormat(() => '');
+
 
         if (singleSelect) {
             this.chart.filterHandler((dimension, filters) => {
@@ -210,27 +221,18 @@ export class RowChart {
             });
         }
 
+        const getVisibleData = ordering
+            ? () => this.group.top(Infinity).filter(d => d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
+            : () => this.group.top(maxItems);
+
         const adjustHeight = () => {
-            const visibleData = this.group.top(maxItems);
+            const visibleData = getVisibleData();
             const visible = visibleData.length;
-            this.chart.height(Math.max(1, visible) * (ROW_HEIGHT + 2) + MARGINS.top + MARGINS.bottom);
+            this.chart.height(Math.max(1, visible) * (ROW_HEIGHT + 2) + MARGINS.top + MARGINS.bottom + 8);
         };
         this.chart.on('preRender', adjustHeight);
         this.chart.on('preRedraw', adjustHeight);
 
-        const countEl = d3.select('#chart-' + attribute + '-count');
-        const updateCount = () => {
-            const filters = this.chart.filters();
-            if (filters && filters.length > 0) {
-                countEl.text(filters.length.toLocaleString());
-            } else {
-                const visibleData = this.group.top(maxItems);
-                const count = visibleData.length;
-                countEl.text(count.toLocaleString());
-            }
-        };
-        this.chart.on('postRender', updateCount);
-        this.chart.on('postRedraw', updateCount);
 
         if (this.setChartRef) {
             this.setChartRef(this.chart);

@@ -8,7 +8,7 @@ import { formatDate, scrollToTop, addCommas } from './shared.js';
 export class Site {
     constructor() {
         if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-            document.title = 'PardonPedia DEV';
+            document.title = 'Pardonpedia DEV';
 
         this.records = this.getData();
         window.site = this;
@@ -18,8 +18,19 @@ export class Site {
         const overlay = document.getElementById('loading-overlay');
         overlay.classList.replace('loading-hidden', 'loading-visible');
 
-        const resp = await fetch('data/pardons.csv.gz');
-        const buf = await resp.arrayBuffer();
+        const [pardonsResp, adminResp] = await Promise.all([
+            fetch('data/pardons.csv.gz'),
+            fetch('data/administrations.csv'),
+        ]);
+
+        const [buf, adminText] = await Promise.all([
+            pardonsResp.arrayBuffer(),
+            adminResp.text(),
+        ]);
+
+        const adminData = d3.csvParse(adminText);
+        this.termOrder = new Map(adminData.map(d => [d.presidentTerm, +d.startYear]));
+
         const text = pako.inflate(new Uint8Array(buf), { to: 'string' });
         const allRecords = d3.csvParse(text);
 
@@ -54,8 +65,10 @@ export class Site {
         const boundRefresh = () => this.refresh();
         dc.refresh = boundRefresh;
 
+        const termOrdering = d => -(this.termOrder.get(d.key) ?? 0);
+
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', 185, 50,  boundRefresh, 'President / Term', null, '#chart-president_term'),
+            new RowChart(this.facts, 'presidentTerm', 185, 50,  boundRefresh, 'President / Term', null, '#chart-president_term', false, false, termOrdering),
             new RowChart(this.facts, 'clemencyType',  185, 20,  boundRefresh, 'Clemency Type',    null, '#chart-clemency_type'),
             new RowChart(this.facts, 'district',       185, 500, boundRefresh, 'District',         null, '#chart-district', true),
         ];
@@ -231,8 +244,14 @@ export class Site {
 
         const sorted = [...records]
             .sort((a, b) => {
-                if (a.date && b.date) return b.date - a.date;
-                return 0;
+                const aHasDate = a.date && !isNaN(a.date);
+                const bHasDate = b.date && !isNaN(b.date);
+                if (aHasDate !== bHasDate) return aHasDate ? -1 : 1;
+                if (aHasDate && bHasDate) {
+                    const dateDiff = b.date - a.date;
+                    if (dateDiff !== 0) return dateDiff;
+                }
+                return (+b.administrationId || 0) - (+a.administrationId || 0);
             })
             .slice(0, 200);
 
@@ -253,6 +272,7 @@ export class Site {
 
         const name = record.personName || 'Unknown';
         const offense = record.offense || '';
+        const sentenced = record.sentenced || '';
 
         const clemencyTag = record.clemencyType
             ? `<span class="record-tag record-tag-clemency">${record.clemencyType}</span>`
@@ -270,6 +290,10 @@ export class Site {
             ? `<div class="record-offense">${offense}</div>`
             : '';
 
+        const sentencedLine = sentenced
+            ? `<div class="record-sentenced">${sentenced}</div>`
+            : '';
+
         return `
             <div class="record">
                 <div class="record-header">
@@ -280,12 +304,13 @@ export class Site {
                     ${clemencyTag}${presidentTag}${districtTag}
                 </div>
                 ${offenseLine}
+                ${sentencedLine}
             </div>
         `;
     }
 
     downloadCsv(records) {
-        const columns = ['name', 'grantDate', 'clemencyType', 'presidentTerm', 'district', 'offense'];
+        const columns = ['name', 'grantDate', 'clemencyType', 'presidentTerm', 'district', 'offense', 'sentenced'];
 
         const escapeField = (field) => {
             if (field === null || field === undefined) return '';
