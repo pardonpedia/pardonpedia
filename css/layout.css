@@ -167,7 +167,8 @@ a:active {
 #main-content {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: var(--gap-lg);
+    grid-template-rows: auto 1fr;
+    gap: var(--gap-sm) var(--gap-lg);
     height: 100%;
     overflow: hidden;
     padding: var(--gap-md);
@@ -175,63 +176,69 @@ a:active {
     background-color: #fff;
 }
 
+/* Full-width time chart spanning both columns */
+#time-chart-row {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    padding-bottom: var(--gap-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
 /* ========================================
-   FILTER ZONE (Left side - 3 columns)
+   FILTER ZONE (Left side - 2 columns)
    ======================================== */
 
 #filter-zone {
     display: grid;
-    grid-template-columns: var(--filter-col-width) var(--filter-col-width) var(--filter-col-width);
-    grid-template-rows: auto auto 1fr;
+    grid-template-columns: var(--filter-col-width) var(--filter-col-width);
+    grid-template-rows: 1fr;
     gap: var(--gap-sm);
     padding: var(--gap-sm);
+    grid-row: 2;
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
     background-color: #fff;
 }
 
-/* Chart title spanning all 3 columns */
-#filter-zone > .chart-title {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    margin-bottom: 0;
-}
-
-/* Grant date bar chart spanning all 3 columns */
-#chart-grant-date {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    margin-bottom: var(--gap-sm);
+/* Left column: presidency + clemency stacked, scrolls as a unit if needed */
+#filter-col-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    overflow-y: auto;
+    min-height: 0;
 }
 
 /* Filter columns */
 .filter-column {
-    grid-row: 3;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+/* District fills the full column height and scrolls internally */
+#filter-col-district {
+    flex: 1;
     min-height: 0;
     overflow: hidden;
 }
 
-/* Full-height scrollable charts */
-#filter-col-president,
-#filter-col-clemency,
-#filter-col-district {
-    overflow: hidden;
-}
-
-#filter-col-president > div,
-#filter-col-clemency > div,
 #filter-col-district > div {
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-/* Chart containers within filter columns */
+/* Chart containers */
 #chart-president_term,
-#chart-clemency_type,
+#chart-clemency_type {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
 #chart-district {
     display: flex;
     flex-direction: column;
@@ -423,13 +430,13 @@ a:active {
     display: flex;
     align-items: center;
     gap: var(--gap-sm);
-    margin-bottom: 4px;
+    white-space: nowrap;
 }
 
 #menu-info .record-count {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-dark);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
 }
 
 #menu-info .record-filters {

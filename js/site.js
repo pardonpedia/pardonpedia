@@ -3,6 +3,7 @@
  */
 
 import { RowChart } from './rowChart.js';
+import { TimeChart } from './timeChart.js';
 import { formatDate, scrollToTop, addCommas } from './shared.js';
 
 export class Site {
@@ -29,7 +30,14 @@ export class Site {
         ]);
 
         const adminData = d3.csvParse(adminText);
-        this.termOrder = new Map(adminData.map(d => [d.presidentTerm, +d.startYear]));
+        this.termOrder  = new Map(adminData.map(d => [d.presidentTerm, +d.startYear]));
+        this.termParty  = new Map(adminData.map(d => [d.presidentTerm, d.partyAbbreviation]));
+        this.yearParty  = new Map();
+        adminData.forEach(d => {
+            const start = +d.startYear;
+            const end   = d.endYear ? +d.endYear : 2030;
+            for (let y = start; y < end; y++) this.yearParty.set(y, d.partyAbbreviation);
+        });
 
         const text = pako.inflate(new Uint8Array(buf), { to: 'string' });
         const allRecords = d3.csvParse(text);
@@ -55,76 +63,32 @@ export class Site {
         this.facts = crossfilter(this.records);
         dc.facts = this.facts;
 
-        this.setupCharts();
+        this.setupCharts(adminData);
+        this.setupNameSearch();
         dc.renderAll();
         this.refresh();
         overlay.classList.replace('loading-visible', 'loading-hidden');
+        document.getElementById('name-search-input').focus();
     }
 
-    setupCharts() {
+    setupCharts(adminData) {
         const boundRefresh = () => this.refresh();
         dc.refresh = boundRefresh;
 
-        const termOrdering = d => -(this.termOrder.get(d.key) ?? 0);
+        const termOrdering  = d => -(this.termOrder.get(d.key) ?? 0);
+        const termColorFn   = key => {
+            const p = this.termParty.get(key);
+            return p === 'D' ? '#6699cc' : p === 'R' ? '#cc6666' : '#aecde8';
+        };
 
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', 185, 50,  boundRefresh, 'President / Term', null, '#chart-president_term', false, false, termOrdering),
+            new RowChart(this.facts, 'presidentTerm', 185, 50,  boundRefresh, 'Presidency', null, '#chart-president_term', false, false, termOrdering, termColorFn),
             new RowChart(this.facts, 'clemencyType',  185, 20,  boundRefresh, 'Clemency Type',    null, '#chart-clemency_type'),
             new RowChart(this.facts, 'district',       185, 500, boundRefresh, 'District',         null, '#chart-district', true),
         ];
 
-        this.setupGrantDateChart();
+        dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
         this.listRecords();
-    }
-
-    setupGrantDateChart() {
-        const yearFloor = d => d.date ? new Date(d.date.getFullYear(), 0, 1) : null;
-
-        this.grantDateDimension = this.facts.dimension(d => {
-            if (!d.date || isNaN(d.date)) return null;
-            return new Date(d.date.getFullYear(), 0, 1);
-        });
-
-        const rawGroup = this.grantDateDimension.group().reduceCount();
-
-        // Filter out the null-date bucket
-        const filteredGroup = {
-            all: () => rawGroup.all().filter(d => d.key !== null),
-            top: n => rawGroup.top(Infinity).filter(d => d.key !== null).slice(0, n)
-        };
-
-        const dates = this.records.filter(d => d.date && !isNaN(d.date)).map(d => d.date);
-        const minYear = new Date(d3.min(dates).getFullYear(), 0, 1);
-        const maxYear = new Date(d3.max(dates).getFullYear() + 1, 0, 1);
-
-        // Width = 3 columns + 2 gaps
-        const width = 3 * 185 + 2 * 8;
-        const height = 100;
-
-        this.grantDateChart = new dc.BarChart('#chart-grant-date');
-        this.grantDateChart
-            .width(width)
-            .height(height)
-            .dimension(this.grantDateDimension)
-            .group(filteredGroup)
-            .x(d3.scaleTime().domain([minYear, maxYear]))
-            .xUnits(d3.timeYears)
-            .elasticY(true)
-            .centerBar(true)
-            .colors(['#aecde8'])
-            .barPadding(0.1)
-            .brushOn(true)
-            .margins({ top: 10, right: 10, bottom: 25, left: 35 })
-            .on('filtered', () => this.refresh());
-
-        this.grantDateChart.xAxis()
-            .ticks(d3.timeYear.every(10))
-            .tickFormat(d3.timeFormat('%Y'))
-            .tickSize(4);
-        this.grantDateChart.yAxis().ticks(3);
-
-        dc.grantDateChart = this.grantDateChart;
-        dc.grantDateDimension = this.grantDateDimension;
     }
 
     collectFilters() {
@@ -140,17 +104,6 @@ export class Site {
             }
         });
 
-        if (dc.grantDateDimension) {
-            const rng = dc.grantDateDimension.currentFilter();
-            if (rng && rng[0] && rng[1]) {
-                const fmt = d3.timeFormat('%Y');
-                filterTypes.push({
-                    name: 'Date',
-                    filters: [`${fmt(rng[0])} – ${fmt(rng[1])}`]
-                });
-            }
-        }
-
         return filterTypes;
     }
 
@@ -160,7 +113,7 @@ export class Site {
         const filteredRecords = dc.facts.allFiltered();
         const recordCount = filteredRecords.length;
 
-        let menuHtml = `<span class="record-count">${recordCount.toLocaleString()} records</span>`;
+        let menuHtml = `<span class="record-count">${recordCount.toLocaleString()} pardons</span>`;
         if (hasActiveFilters) {
             menuHtml += `<button class="clear-button">Show All</button>`;
         }
@@ -204,15 +157,11 @@ export class Site {
             const filterName = badge.attr('data-filter-name');
             const filterValue = badge.attr('data-filter-value');
 
-            if (filterName === 'Date' && dc.grantDateChart) {
-                dc.grantDateChart.filterAll();
-            } else {
-                const rowChart = dc.rowCharts.find(rc => rc.title === filterName);
-                if (rowChart) {
-                    rowChart.chart.filter(filterValue);
-                    if (filterName === 'District') {
-                        clearSearchInput('#chart-district');
-                    }
+            const rowChart = dc.rowCharts.find(rc => rc.title === filterName);
+            if (rowChart) {
+                rowChart.chart.filter(filterValue);
+                if (filterName === 'District') {
+                    clearSearchInput('#chart-district');
                 }
             }
 
@@ -222,7 +171,6 @@ export class Site {
 
         d3.select('.clear-button').on('click', () => {
             dc.filterAll();
-            if (dc.grantDateChart) dc.grantDateChart.filterAll();
             clearSearchInput('#chart-district');
             dc.redrawAll();
             this.refresh();
@@ -239,8 +187,117 @@ export class Site {
         this.listRecords();
     }
 
+    setupNameSearch() {
+        this.nameFilter = null;
+
+        const input = document.getElementById('name-search-input');
+        const dropdown = document.getElementById('name-search-dropdown');
+        const iconBtn = document.getElementById('name-search-icon');
+        const ICON_SEARCH = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+        const ICON_CLEAR  = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+        let selectedIndex = -1;
+        let matches = [];
+
+        const getMatches = (term) => {
+            if (!term || term.length < 1) return [];
+            const lower = term.toLowerCase();
+            const seen = new Set();
+            return this.records
+                .filter(r => r.personName && r.personName.toLowerCase().includes(lower))
+                .map(r => r.personName)
+                .filter(name => { if (seen.has(name)) return false; seen.add(name); return true; })
+                .slice(0, 12);
+        };
+
+        const highlight = (name, term) => {
+            const idx = name.toLowerCase().indexOf(term.toLowerCase());
+            if (idx === -1) return name;
+            return name.slice(0, idx)
+                + `<mark class="name-match">${name.slice(idx, idx + term.length)}</mark>`
+                + name.slice(idx + term.length);
+        };
+
+        const renderDropdown = () => {
+            const term = input.value;
+            matches = getMatches(term);
+            if (!matches.length) { dropdown.style.display = 'none'; return; }
+            dropdown.innerHTML = matches.map((name, i) =>
+                `<div class="name-search-item${i === selectedIndex ? ' active' : ''}" data-name="${name}">${highlight(name, term)}</div>`
+            ).join('');
+            dropdown.style.display = 'block';
+            dropdown.querySelectorAll('.name-search-item').forEach(item => {
+                item.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    selectName(item.dataset.name);
+                });
+            });
+        };
+
+        const selectName = (name) => {
+            input.value = name;
+            this.nameFilter = name;
+            dropdown.style.display = 'none';
+            selectedIndex = -1;
+            iconBtn.innerHTML = ICON_CLEAR;
+            this.listRecords();
+        };
+
+        const clearFilter = () => {
+            input.value = '';
+            this.nameFilter = null;
+            dropdown.style.display = 'none';
+            selectedIndex = -1;
+            iconBtn.innerHTML = ICON_SEARCH;
+            this.listRecords();
+        };
+
+        iconBtn.addEventListener('mousedown', e => {
+            e.preventDefault();
+            if (this.nameFilter) clearFilter();
+            else input.focus();
+        });
+
+        input.addEventListener('input', () => {
+            if (!input.value) { clearFilter(); return; }
+            this.nameFilter = null;
+            selectedIndex = -1;
+            renderDropdown();
+        });
+
+        input.addEventListener('keydown', e => {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, matches.length - 1);
+                renderDropdown();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                renderDropdown();
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (selectedIndex >= 0 && matches[selectedIndex]) {
+                    selectName(matches[selectedIndex]);
+                } else if (matches.length === 1) {
+                    selectName(matches[0]);
+                }
+            } else if (e.key === 'Escape') {
+                dropdown.style.display = 'none';
+                selectedIndex = -1;
+            }
+        });
+
+        input.addEventListener('blur', () => {
+            setTimeout(() => { dropdown.style.display = 'none'; }, 150);
+        });
+    }
+
     listRecords() {
-        const records = this.facts.allFiltered();
+        let records = this.facts.allFiltered();
+
+        if (this.nameFilter) {
+            const lower = this.nameFilter.toLowerCase();
+            records = records.filter(r => r.personName && r.personName.toLowerCase() === lower);
+        }
 
         const sorted = [...records]
             .sort((a, b) => {
@@ -297,11 +354,11 @@ export class Site {
         return `
             <div class="record">
                 <div class="record-header">
-                    <span class="record-name">${name}</span>
-                    ${dateStr}
+                    <span class="record-name">${name}</span>${dateStr}
+                    <div class="record-header-tags">${clemencyTag}${presidentTag}</div>
                 </div>
                 <div class="record-meta">
-                    ${clemencyTag}${presidentTag}${districtTag}
+                    ${districtTag}
                 </div>
                 ${offenseLine}
                 ${sentencedLine}

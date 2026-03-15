@@ -44,23 +44,26 @@
 
         <!-- Main Content: Filter Zone + Results Zone -->
         <main id='main-content'>
-            <!-- Filter Zone (3 columns) -->
-            <div id='filter-zone'>
-                <!-- Grant date bar chart spanning all columns -->
-                <div class='chart-title'>Grants per Year</div>
+
+            <!-- Full-width time chart row -->
+            <div id='time-chart-row'>
+                <div class='chart-title'>Pardons per Year</div>
                 <div id='chart-grant-date'></div>
+            </div>
 
-                <!-- Column 1: President / Term -->
-                <div id='filter-col-president' class='filter-column'>
-                    <div id='chart-president_term'></div>
+            <!-- Filter Zone (2 columns) -->
+            <div id='filter-zone'>
+                <!-- Column 1: Presidency + Clemency stacked -->
+                <div id='filter-col-left'>
+                    <div id='filter-col-president' class='filter-column'>
+                        <div id='chart-president_term'></div>
+                    </div>
+                    <div id='filter-col-clemency' class='filter-column'>
+                        <div id='chart-clemency_type'></div>
+                    </div>
                 </div>
 
-                <!-- Column 2: Clemency Type -->
-                <div id='filter-col-clemency' class='filter-column'>
-                    <div id='chart-clemency_type'></div>
-                </div>
-
-                <!-- Column 3: District -->
+                <!-- Column 2: District -->
                 <div id='filter-col-district' class='filter-column'>
                     <div id='chart-district'></div>
                 </div>
@@ -70,7 +73,16 @@
             <div id='results-zone'>
                 <div id='results-header'>
                     <div id='results-header-top'>
-                        <div id='menu-info'></div>
+                        <div id='name-search-group'>
+                            <div id='name-search-wrap'>
+                                <input id='name-search-input' type='text' placeholder='Search pardon recipients' autocomplete='off' spellcheck='false'>
+                                <button id='name-search-icon' type='button' tabindex='-1'>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                </button>
+                                <div id='name-search-dropdown'></div>
+                            </div>
+                            <div id='menu-info'></div>
+                        </div>
                         <button id='download-csv' class='download-button' title='Download filtered records as CSV'>CSV <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M12 15l-5-5M12 15l5-5M5 21h14"/></svg></button>
                     </div>
                     <div id='filters'></div>

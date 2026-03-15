@@ -1,5 +1,5 @@
 export class RowChart {
-    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null) {
+    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null, barColorFn = null) {
         this.title = title;
         this.field = attribute;
         this.singleSelect = singleSelect;
@@ -187,6 +187,10 @@ export class RowChart {
                     const row = d3.select(this);
                     const rect = row.select('rect');
                     const isSelected = filters.includes(d.key);
+
+                    if (barColorFn) {
+                        rect.attr('fill', barColorFn(d.key));
+                    }
 
                     if (isSelected) {
                         rect.attr('stroke', '#1a365d')
