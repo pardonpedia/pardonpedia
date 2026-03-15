@@ -1,0 +1,420 @@
+/* ========================================
+   SHARED STYLES - style.css
+   PardonPedia
+   ======================================== */
+
+/* ========================================
+   DC.JS CHART OVERRIDES
+   ======================================== */
+
+.dc-chart g.row text {
+    fill: #000;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.dc-chart svg {
+    overflow: visible;
+}
+
+/* ========================================
+   LOADING OVERLAY
+   ======================================== */
+
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 0.2s ease;
+}
+
+.loading-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.spinner {
+    width: 80px;
+    height: 80px;
+    border: 16px solid #edf2f7;
+    border-top: 16px solid var(--primary-blue, #1a365d);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========================================
+   CLEAR/RESET BUTTON
+   ======================================== */
+
+.clear-button {
+    background-color: transparent;
+    border: none;
+    padding: 4px 12px;
+    margin-right: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-blue, #2b6cb0);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.clear-button:hover {
+    text-decoration: underline;
+}
+
+/* ========================================
+   DOWNLOAD CSV BUTTON
+   ======================================== */
+
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: transparent;
+    border: 1px solid var(--accent-blue, #2b6cb0);
+    border-radius: 3px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent-blue, #2b6cb0);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.download-button svg {
+    vertical-align: middle;
+}
+
+.download-button:hover {
+    background-color: var(--accent-blue, #2b6cb0);
+    color: white;
+}
+
+/* ========================================
+   FILTER BOXES (Active Filters Display)
+   ======================================== */
+
+.filter-boxes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.filter-box {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
+    background-color: #fff;
+}
+
+.filter-box-title {
+    font-size: 13px;
+    margin-bottom: 4px;
+    color: var(--primary-blue, #1a365d);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.filter-box-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.filter-value-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.filter-value-badge:hover {
+    background-color: #ffe0e0;
+    border-color: #c88;
+}
+
+.filter-value-close {
+    color: #888;
+    font-size: 12px;
+    margin-left: 2px;
+}
+
+.filter-value-badge:hover .filter-value-close {
+    color: #c00;
+}
+
+/* ========================================
+   CHART UI COMPONENTS
+   ======================================== */
+
+.chart-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-blue, #1a365d);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.chart-title-text {
+    /* inherits from .chart-title */
+}
+
+.chart-title-count {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted, #718096);
+    text-transform: none;
+    letter-spacing: 0;
+    min-width: 30px;
+    text-align: right;
+}
+
+.chart-scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.chart-search-container {
+    position: relative;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.chart-search {
+    width: 100%;
+    padding: 6px 28px 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.chart-search:focus {
+    outline: none;
+    border-color: var(--accent-blue, #2b6cb0);
+}
+
+.chart-search::placeholder {
+    color: #999;
+}
+
+.chart-search-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 18px;
+    pointer-events: none;
+}
+
+.chart-search-clear {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    display: none;
+}
+
+.chart-search-clear:hover {
+    color: #333;
+}
+
+.chart-search:not(:placeholder-shown)~.chart-search-icon,
+.chart-search-container.has-selection .chart-search-icon {
+    display: none;
+}
+
+.chart-search:not(:placeholder-shown)~.chart-search-clear,
+.chart-search-container.has-selection .chart-search-clear {
+    display: block;
+}
+
+.chart-search.has-selection {
+    border: 2px solid var(--primary-blue, #1a365d);
+    background-color: #fff;
+}
+
+.chart-search-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chart-search-item {
+    padding: 8px 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    border-bottom: 1px solid #eee;
+}
+
+.chart-search-item:last-child {
+    border-bottom: none;
+}
+
+.chart-search-item:hover,
+.chart-search-item.selected {
+    background-color: rgba(43, 108, 176, 0.1);
+}
+
+.chart-search-item .item-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 10px;
+}
+
+.chart-search-item .item-count {
+    color: #666;
+    font-size: 12px;
+    flex-shrink: 0;
+}
+
+/* ========================================
+   PARDON RECORD CARD STYLES
+   ======================================== */
+
+.record {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-bottom: 1px solid #e2e8f0;
+    margin: 0;
+    padding: 12px 0;
+    transition: background-color 0.15s ease;
+    border-radius: 4px;
+}
+
+.record:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding-left: 6px;
+}
+
+.record-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 4px 4px 4px;
+}
+
+.record-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark, #1a202c);
+}
+
+.record-date {
+    font-size: 12px;
+    color: var(--text-muted, #718096);
+    font-weight: 400;
+}
+
+.record-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 2px 4px 6px 4px;
+}
+
+.record-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.record-tag-clemency {
+    background-color: #ebf4ff;
+    color: #2b6cb0;
+    border: 1px solid #bee3f8;
+}
+
+.record-tag-president {
+    background-color: #f0fff4;
+    color: #276749;
+    border: 1px solid #c6f6d5;
+}
+
+.record-tag-district {
+    background-color: #fffaf0;
+    color: #7b341e;
+    border: 1px solid #feebc8;
+}
+
+.record-offense {
+    margin: 2px 4px 2px 4px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-dark, #1a202c);
+    line-height: 1.4;
+}
+
+.record-count {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.record-filters {
+    font-size: 18px;
+    font-weight: 500;
+    opacity: 0.7;
+}

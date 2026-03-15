@@ -1,12 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PardonPedia</title>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+
+    <title>PardonPedia</title>
+    <meta name="description" content="Encyclopedia of presidential pardons and clemency">
+
+    <link rel='icon' type='image/x-icon' href='data:;base64,iVBORw0KGgo='>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src='https://unpkg.com/crossfilter2@1.4.8/crossfilter.js'></script>
+    <script src='https://d3js.org/d3.v7.min.js'></script>
+    <script src='https://unpkg.com/dc@4.2.7/dist/dc.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js'></script>
+
+    <script type="module" src='js/site.js'></script>
+
+    <link href='https://cdn.jsdelivr.net/npm/dc@4.2.7/dist/style/dc.min.css' rel='stylesheet' type='text/css'>
+
+    <link href='css/layout.css' rel='stylesheet' type='text/css'>
+    <link href='css/style.css' rel='stylesheet' type='text/css'>
 </head>
+
 <body>
-  <h1>PardonPedia</h1>
-  <p>Coming soon.</p>
+    <div id="page-transition" class="page-transition"></div>
+    <div id="loading-overlay" class="loading-hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <div id='app-container'>
+        <!-- Header Row -->
+        <header id='app-header'>
+            <div id='title'>
+                <div class='title-main'>
+                    <h1>Pardon<br>Pedia</h1>
+                </div>
+                <nav id='nav-links'>
+                    <a href='index.html' class='active'>Clemency Records</a>
+                </nav>
+            </div>
+            <div id='updated-date'></div>
+        </header>
+
+        <!-- Main Content: Filter Zone + Results Zone -->
+        <main id='main-content'>
+            <!-- Filter Zone (3 columns) -->
+            <div id='filter-zone'>
+                <!-- Grant date bar chart spanning all columns -->
+                <div class='chart-title'>Grants per Year</div>
+                <div id='chart-grant-date'></div>
+
+                <!-- Column 1: President / Term -->
+                <div id='filter-col-president' class='filter-column'>
+                    <div id='chart-president_term'></div>
+                </div>
+
+                <!-- Column 2: Clemency Type -->
+                <div id='filter-col-clemency' class='filter-column'>
+                    <div id='chart-clemency_type'></div>
+                </div>
+
+                <!-- Column 3: District -->
+                <div id='filter-col-district' class='filter-column'>
+                    <div id='chart-district'></div>
+                </div>
+            </div>
+
+            <!-- Results Zone -->
+            <div id='results-zone'>
+                <div id='results-header'>
+                    <div id='results-header-top'>
+                        <div id='menu-info'></div>
+                        <button id='download-csv' class='download-button' title='Download filtered records as CSV'>CSV <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M12 15l-5-5M12 15l5-5M5 21h14"/></svg></button>
+                    </div>
+                    <div id='filters'></div>
+                </div>
+                <div id='chart-list'></div>
+            </div>
+        </main>
+    </div>
+    <script>
+        const transition = document.getElementById('page-transition');
+        transition.classList.add('fade-in');
+
+        document.querySelectorAll('#nav-links a:not(.active)').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.href;
+                transition.classList.remove('fade-in');
+                transition.classList.add('fade-out');
+                setTimeout(() => { window.location.href = href; }, 150);
+            });
+        });
+    </script>
 </body>
 </html>
