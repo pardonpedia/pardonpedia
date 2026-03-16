@@ -8,7 +8,7 @@ export class RowChart {
 
         this.group = removeZeroes(this.group);
 
-        const ROW_HEIGHT = 22;
+        const ROW_HEIGHT = 20;
         const MARGINS = { top: 0, right: 10, bottom: 20, left: 10 };
 
         const container = d3.select(parentSelector)

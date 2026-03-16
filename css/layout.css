@@ -34,7 +34,7 @@
     --results-header-height: auto;
 
     /* Spacing */
-    --gap-sm: 8px;
+    --gap-sm: 6px;
     --gap-md: 16px;
     --gap-lg: 24px;
 
@@ -168,10 +168,11 @@ a:active {
     display: grid;
     grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
-    gap: var(--gap-sm) var(--gap-lg);
+    column-gap: var(--gap-lg);
+    row-gap: 4px;
     height: 100%;
     overflow: hidden;
-    padding: var(--gap-md);
+    padding: var(--gap-sm);
     box-sizing: border-box;
     background-color: #fff;
 }
@@ -180,7 +181,6 @@ a:active {
 #time-chart-row {
     grid-column: 1 / -1;
     grid-row: 1;
-    padding-bottom: var(--gap-sm);
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -253,7 +253,7 @@ a:active {
     font-size: 13px;
     font-weight: 600;
     color: var(--primary-blue);
-    margin-bottom: var(--gap-sm);
+    margin-bottom: 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }

@@ -75,16 +75,55 @@ export class Site {
         const boundRefresh = () => this.refresh();
         dc.refresh = boundRefresh;
 
-        const termOrdering  = d => -(this.termOrder.get(d.key) ?? 0);
-        const termColorFn   = key => {
-            const p = this.termParty.get(key);
+        // Build combined labels for consecutive two-term presidents.
+        // Non-consecutive terms (e.g. Trump 1 & 2 separated by Biden) stay separate.
+        const presidentTerms = new Map();
+        adminData.forEach(d => {
+            if (!presidentTerms.has(d.presidentId)) presidentTerms.set(d.presidentId, []);
+            presidentTerms.get(d.presidentId).push(d);
+        });
+
+        const termToFullLabel = new Map(); // presidentTerm  → display label
+        const fullLabelOrder  = new Map(); // display label  → start year (for sort)
+        const fullLabelParty  = new Map(); // display label  → party abbreviation
+
+        presidentTerms.forEach(terms => {
+            terms.sort((a, b) => +a.startYear - +b.startYear);
+
+            // Consecutive = every term's endDate matches the next term's startDate
+            const consecutive = terms.length > 1 &&
+                terms.every((t, i) => i === terms.length - 1 || t.endDate === terms[i + 1].startDate);
+
+            if (consecutive) {
+                const first  = terms[0];
+                const last   = terms[terms.length - 1];
+                const endStr = last.endYear || 'present';
+                const label  = `${first.displayName} (${first.startYear}-${endStr})`;
+                terms.forEach(t => termToFullLabel.set(t.presidentTerm, label));
+                fullLabelOrder.set(label, +first.startYear);
+                fullLabelParty.set(label, first.partyAbbreviation);
+            } else {
+                terms.forEach(t => {
+                    termToFullLabel.set(t.presidentTerm, t.presidentTerm);
+                    fullLabelOrder.set(t.presidentTerm, +t.startYear);
+                    fullLabelParty.set(t.presidentTerm, t.partyAbbreviation);
+                });
+            }
+        });
+
+        const presTermDim  = this.facts.dimension(d =>
+            termToFullLabel.get(d.presidentTerm) || d.presidentTerm || ''
+        );
+        const termOrdering = d => -(fullLabelOrder.get(d.key) ?? 0);
+        const termColorFn  = key => {
+            const p = fullLabelParty.get(key);
             return p === 'D' ? '#6699cc' : p === 'R' ? '#cc6666' : '#aecde8';
         };
 
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', 185, 50,  boundRefresh, 'Presidency', null, '#chart-president_term', false, false, termOrdering, termColorFn),
-            new RowChart(this.facts, 'clemencyType',  185, 20,  boundRefresh, 'Clemency Type',    null, '#chart-clemency_type'),
-            new RowChart(this.facts, 'district',       185, 500, boundRefresh, 'District',         null, '#chart-district', true),
+            new RowChart(this.facts, 'presidentTerm', 185, 50,  boundRefresh, 'Presidency', presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn),
+            new RowChart(this.facts, 'clemencyType',  185, 20,  boundRefresh, 'Clemency Type', null, '#chart-clemency_type'),
+            new RowChart(this.facts, 'district',      185, 500, boundRefresh, 'District',      null, '#chart-district', true),
         ];
 
         dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
@@ -281,8 +320,8 @@ export class Site {
                     selectName(matches[0]);
                 }
             } else if (e.key === 'Escape') {
-                dropdown.style.display = 'none';
-                selectedIndex = -1;
+                clearFilter();
+                input.focus();
             }
         });
 

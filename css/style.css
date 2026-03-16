@@ -271,7 +271,7 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--primary-blue, #1a365d);
-    margin-bottom: 8px;
+    margin-bottom: 0px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
