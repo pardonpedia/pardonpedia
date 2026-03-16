@@ -1,0 +1,156 @@
+/* ========================================
+   ABOUT PAGE - about.css
+   PardonPedia
+   ======================================== */
+
+/* Keep the site title link always black, never visited-purple */
+#title h1 a,
+#title h1 a:visited,
+#title h1 a:hover,
+#title h1 a:active {
+    color: inherit;
+}
+
+/* Override layout.css full-viewport lock — about page scrolls normally */
+html, body {
+    overflow: auto;
+    height: auto;
+}
+
+#app-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+    grid-template-rows: var(--header-height) auto;
+}
+
+/* ========================================
+   ABOUT MAIN
+   ======================================== */
+
+#about-main {
+    display: flex;
+    justify-content: center;
+    padding: var(--gap-lg) var(--gap-lg) 60px;
+    background-color: #fff;
+}
+
+/* ========================================
+   PROSE CONTENT
+   ======================================== */
+
+.about-content {
+    width: 100%;
+    max-width: 680px;
+    color: var(--text-dark);
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+.about-loading {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.about-content h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--primary-blue);
+    margin: 0 0 20px 0;
+    letter-spacing: -0.3px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.about-content h2 {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin: 36px 0 10px 0;
+    letter-spacing: -0.2px;
+}
+
+.about-content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 24px 0 8px 0;
+}
+
+.about-content p {
+    margin: 0 0 16px 0;
+}
+
+.about-content ul,
+.about-content ol {
+    margin: 0 0 16px 0;
+    padding-left: 24px;
+}
+
+.about-content li {
+    margin-bottom: 6px;
+}
+
+.about-content strong {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.about-content em {
+    font-style: italic;
+}
+
+.about-content a {
+    color: var(--accent-blue);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.about-content a:hover {
+    color: var(--primary-blue);
+}
+
+.about-content blockquote {
+    margin: 16px 0;
+    padding: 10px 16px;
+    border-left: 3px solid var(--primary-blue);
+    color: var(--text-muted);
+    background-color: var(--light-bg);
+    border-radius: 0 4px 4px 0;
+}
+
+.about-content blockquote p {
+    margin: 0;
+}
+
+.about-content code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 13px;
+    background-color: var(--light-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 1px 5px;
+}
+
+.about-content pre {
+    background-color: var(--light-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 0 0 16px 0;
+}
+
+.about-content pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+}
+
+.about-content hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 32px 0;
+}

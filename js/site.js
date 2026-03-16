@@ -19,14 +19,16 @@ export class Site {
         const overlay = document.getElementById('loading-overlay');
         overlay.classList.replace('loading-hidden', 'loading-visible');
 
-        const [pardonsResp, adminResp] = await Promise.all([
+        const [pardonsResp, adminResp, metaResp] = await Promise.all([
             fetch('data/pardons.csv.gz'),
             fetch('data/administrations.csv'),
+            fetch('data/pardons.meta.json'),
         ]);
 
-        const [buf, adminText] = await Promise.all([
+        const [buf, adminText, metaJson] = await Promise.all([
             pardonsResp.arrayBuffer(),
             adminResp.text(),
+            metaResp.json(),
         ]);
 
         const adminData = d3.csvParse(adminText);
@@ -51,10 +53,10 @@ export class Site {
 
         this.records = allRecords;
 
-        // Display the latest grant date
-        const maxDate = d3.max(allRecords.filter(d => d.date), d => d.date);
-        if (maxDate && !isNaN(maxDate)) {
-            const formatted = maxDate.toLocaleDateString('en-US', {
+        // Display the dataset generation date from meta file
+        const generatedAt = metaJson?.pardons?.generated_at;
+        if (generatedAt) {
+            const formatted = new Date(generatedAt).toLocaleDateString('en-US', {
                 month: 'short', day: 'numeric', year: 'numeric'
             });
             document.getElementById('updated-date').textContent = `Updated ${formatted}`;
