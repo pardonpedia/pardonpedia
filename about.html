@@ -56,10 +56,16 @@
             });
         });
 
+        const renderer = new marked.Renderer();
+        renderer.link = ({ href, title, text }) => {
+            const titleAttr = title ? ` title="${title}"` : '';
+            return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+        };
+
         fetch('about.md')
             .then(r => r.text())
             .then(text => {
-                document.getElementById('about-content').innerHTML = marked.parse(text);
+                document.getElementById('about-content').innerHTML = marked.parse(text, { renderer });
             });
     </script>
 </body>
