@@ -2,7 +2,7 @@
 
 Pardonpedia tracks presidential pardons and clemency grants issued by U.S. presidents from Nixon through the present day. It is a work in progress; we are adding new pardons as they occur and filling in details for historical pardons. For now, the primary source for this information is the Department of Justice [Office of the Pardon Attorney](https://www.justice.gov/pardon/clemency-recipients).
 
-<h1><a href="https://pardonpedia.github.io/pardonpedia/">LIVE SITE</a></h1>
+<h3><a href="https://pardonpedia.github.io/pardonpedia/">LIVE SITE</a></h3>
 
 ## License
 
