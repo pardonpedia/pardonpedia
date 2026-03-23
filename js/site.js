@@ -384,6 +384,10 @@ export class Site {
             ? `<span class="record-tag record-tag-district">${record.district}</span>`
             : '';
 
+        const warrantLink = record.warrantUrl
+            ? `<a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">Warrant Document</a>`
+            : '';
+
         const offenseLine = offense
             ? `<div class="record-offense">${offense}</div>`
             : '';
@@ -399,7 +403,7 @@ export class Site {
                     <div class="record-header-tags">${clemencyTag}${presidentTag}</div>
                 </div>
                 <div class="record-meta">
-                    ${districtTag}
+                    ${warrantLink}${districtTag}
                 </div>
                 ${offenseLine}
                 ${sentencedLine}
