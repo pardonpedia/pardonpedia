@@ -129,6 +129,7 @@ export class TimeChart {
             .x(d3.scaleTime().domain([domainStart, domainEnd]))
             .xUnits(termYearUnits)
             .elasticY(true)
+            .y(d3.scaleSqrt())
             .centerBar(false)
             .brushOn(false)
             .barPadding(0.2)

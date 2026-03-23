@@ -5,6 +5,9 @@
 import { RowChart } from './rowChart.js';
 import { TimeChart } from './timeChart.js';
 import { formatDate, scrollToTop, addCommas } from './shared.js';
+import { trackPageView } from './analytics.js';
+
+trackPageView();
 
 export class Site {
     constructor() {
@@ -247,7 +250,7 @@ export class Site {
                 .filter(r => r.personName && r.personName.toLowerCase().includes(lower))
                 .map(r => r.personName)
                 .filter(name => { if (seen.has(name)) return false; seen.add(name); return true; })
-                .slice(0, 12);
+                .slice(0, 50);
         };
 
         const highlight = (name, term) => {
