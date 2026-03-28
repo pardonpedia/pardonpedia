@@ -59,7 +59,7 @@
 
             <!-- Filter Zone (2 columns) -->
             <div id='filter-zone'>
-                <!-- Column 1: Presidency + Clemency stacked -->
+                <!-- Column 1: Presidency + Clemency + District stacked -->
                 <div id='filter-col-left'>
                     <div id='filter-col-president' class='filter-column'>
                         <div id='chart-president_term'></div>
@@ -67,33 +67,36 @@
                     <div id='filter-col-clemency' class='filter-column'>
                         <div id='chart-clemency_type'></div>
                     </div>
+                    <div id='filter-col-district' class='filter-column'>
+                        <div id='chart-district-wrap'></div>
+                    </div>
                 </div>
 
-                <!-- Column 2: District -->
-                <div id='filter-col-district' class='filter-column'>
-                    <div id='chart-district'></div>
+                <!-- Column 2: Names List -->
+                <div id='names-list-col'>
+                    <div class='chart-title'>
+                        <span class='chart-title-text'>Pardons</span>
+                        <span id='names-list-count' class='chart-title-count'></span>
+                    </div>
+                    <div class='chart-search-container' id='names-search-container'>
+                        <input type='text' id='names-search-input' class='chart-search' placeholder='Search names' spellcheck='false'>
+                        <span class='chart-search-icon'>⌕</span>
+                        <button class='chart-search-clear' type='button'>✕</button>
+                    </div>
+                    <div id='names-list'></div>
                 </div>
             </div>
 
-            <!-- Results Zone -->
+            <!-- Results Zone (Detail Panel) -->
             <div id='results-zone'>
                 <div id='results-header'>
                     <div id='results-header-top'>
-                        <div id='name-search-group'>
-                            <div id='name-search-wrap'>
-                                <input id='name-search-input' type='text' placeholder='Search pardon recipients' autocomplete='off' spellcheck='false'>
-                                <button id='name-search-icon' type='button' tabindex='-1'>
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                </button>
-                                <div id='name-search-dropdown'></div>
-                            </div>
-                            <div id='menu-info'></div>
-                        </div>
+                        <div id='menu-info'></div>
                         <button id='download-csv' class='download-button' title='Download filtered records as CSV'>CSV <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M12 15l-5-5M12 15l5-5M5 21h14"/></svg></button>
                     </div>
                     <div id='filters'></div>
                 </div>
-                <div id='chart-list'></div>
+                <div id='pardon-detail'></div>
             </div>
         </main>
     </div>

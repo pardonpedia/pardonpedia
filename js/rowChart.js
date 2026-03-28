@@ -8,7 +8,7 @@ export class RowChart {
 
         this.group = removeZeroes(this.group);
 
-        const ROW_HEIGHT = 20;
+        const ROW_HEIGHT = 16;
         const MARGINS = { top: 0, right: 10, bottom: 20, left: 10 };
 
         const container = d3.select(parentSelector)
@@ -160,6 +160,38 @@ export class RowChart {
             .attr('id', contentId)
             .attr('class', 'chart-scroll');
 
+        const applyRowStyles = (chart) => {
+            const filters = chart.filters();
+            const innerWidth = chart.width() - chart.margins().left - chart.margins().right;
+
+            chart.selectAll('g.row').each(function(d) {
+                const row = d3.select(this);
+                const rect = row.select('rect');
+                const isSelected = filters.includes(d.key);
+
+                if (barColorFn) {
+                    rect.attr('fill', barColorFn(d.key));
+                }
+
+                if (isSelected) {
+                    rect.attr('stroke', '#1a365d')
+                        .attr('stroke-width', 2);
+                } else {
+                    rect.attr('stroke', null)
+                        .attr('stroke-width', null);
+                }
+
+                row.selectAll('text.count-label').remove();
+                row.append('text')
+                    .attr('class', 'count-label')
+                    .attr('x', innerWidth - 2)
+                    .attr('y', ROW_HEIGHT / 2)
+                    .attr('dy', '0.35em')
+                    .attr('text-anchor', 'end')
+                    .text(d.value.toLocaleString());
+            });
+        };
+
         this.chart = dc.rowChart('#chart-' + attribute + '-content')
             .dimension(this.dim)
             .group(this.group)
@@ -179,36 +211,10 @@ export class RowChart {
                 chart.selectAll('g.axis').remove();
                 chart.selectAll('path.domain').remove();
                 chart.selectAll('.grid-line').remove();
-
-                const filters = chart.filters();
-                const innerWidth = chart.width() - chart.margins().left - chart.margins().right;
-
-                chart.selectAll('g.row').each(function(d) {
-                    const row = d3.select(this);
-                    const rect = row.select('rect');
-                    const isSelected = filters.includes(d.key);
-
-                    if (barColorFn) {
-                        rect.attr('fill', barColorFn(d.key));
-                    }
-
-                    if (isSelected) {
-                        rect.attr('stroke', '#1a365d')
-                            .attr('stroke-width', 2);
-                    } else {
-                        rect.attr('stroke', null)
-                            .attr('stroke-width', null);
-                    }
-
-                    row.selectAll('text.count-label').remove();
-                    row.append('text')
-                        .attr('class', 'count-label')
-                        .attr('x', innerWidth - 2)
-                        .attr('y', ROW_HEIGHT / 2)
-                        .attr('dy', '0.35em')
-                        .attr('text-anchor', 'end')
-                        .text(d.value.toLocaleString());
-                });
+                applyRowStyles(chart);
+            })
+            .on('renderlet', chart => {
+                applyRowStyles(chart);
             });
 
         this.chart.xAxis().ticks(0).tickSize(0).tickFormat(() => '');

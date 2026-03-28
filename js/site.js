@@ -69,11 +69,11 @@ export class Site {
         dc.facts = this.facts;
 
         this.setupCharts(adminData);
-        this.setupNameSearch();
+        this.setupNamesList();
         dc.renderAll();
         this.refresh();
         overlay.classList.replace('loading-visible', 'loading-hidden');
-        document.getElementById('name-search-input').focus();
+        document.getElementById('names-search-input').focus();
     }
 
     setupCharts(adminData) {
@@ -88,9 +88,9 @@ export class Site {
             presidentTerms.get(d.presidentId).push(d);
         });
 
-        const termToFullLabel = new Map(); // presidentTerm  → display label
-        const fullLabelOrder  = new Map(); // display label  → start year (for sort)
-        const fullLabelParty  = new Map(); // display label  → party abbreviation
+        const adminIdToLabel  = new Map(); // administrationId → display label
+        const fullLabelOrder  = new Map(); // display label    → start year (for sort)
+        const fullLabelParty  = new Map(); // display label    → party abbreviation
 
         presidentTerms.forEach(terms => {
             terms.sort((a, b) => +a.startYear - +b.startYear);
@@ -104,20 +104,21 @@ export class Site {
                 const last   = terms[terms.length - 1];
                 const endStr = last.endYear || 'present';
                 const label  = `${first.displayName} (${first.startYear}-${endStr})`;
-                terms.forEach(t => termToFullLabel.set(t.presidentTerm, label));
+                terms.forEach(t => adminIdToLabel.set(t.administrationId, label));
                 fullLabelOrder.set(label, +first.startYear);
                 fullLabelParty.set(label, first.partyAbbreviation);
             } else {
                 terms.forEach(t => {
-                    termToFullLabel.set(t.presidentTerm, t.presidentTerm);
-                    fullLabelOrder.set(t.presidentTerm, +t.startYear);
-                    fullLabelParty.set(t.presidentTerm, t.partyAbbreviation);
+                    const label = `${t.displayName} (${t.startYear}-${t.endYear || 'present'})`;
+                    adminIdToLabel.set(t.administrationId, label);
+                    fullLabelOrder.set(label, +t.startYear);
+                    fullLabelParty.set(label, t.partyAbbreviation);
                 });
             }
         });
 
         const presTermDim  = this.facts.dimension(d =>
-            termToFullLabel.get(d.presidentTerm) || d.presidentTerm || ''
+            adminIdToLabel.get(d.administrationId) || d.presidentTerm || ''
         );
         const termOrdering = d => -(fullLabelOrder.get(d.key) ?? 0);
         const termColorFn  = key => {
@@ -128,11 +129,10 @@ export class Site {
         dc.rowCharts = [
             new RowChart(this.facts, 'presidentTerm', 185, 50,  boundRefresh, 'Presidency', presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn),
             new RowChart(this.facts, 'clemencyType',  185, 20,  boundRefresh, 'Clemency Type', null, '#chart-clemency_type'),
-            new RowChart(this.facts, 'district',      185, 500, boundRefresh, 'District',      null, '#chart-district', true),
+            new RowChart(this.facts, 'district',      185, 500, boundRefresh, 'District',      null, '#chart-district-wrap', true),
         ];
 
         dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
-        this.listRecords();
     }
 
     collectFilters() {
@@ -226,121 +226,77 @@ export class Site {
         });
 
         dc.redrawAll();
-        scrollToTop('#chart-district-content');
-        scrollToTop('#chart-list');
-        this.listRecords();
+        scrollToTop('#names-list');
+        this.buildNamesList(this._namesSearchTerm || '');
     }
 
-    setupNameSearch() {
-        this.nameFilter = null;
+    setupNamesList() {
+        this._namesSearchTerm = '';
+        this.selectedRecord = null;
+        this._namesHighlightIdx = 0;
 
-        const input = document.getElementById('name-search-input');
-        const dropdown = document.getElementById('name-search-dropdown');
-        const iconBtn = document.getElementById('name-search-icon');
-        const ICON_SEARCH = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
-        const ICON_CLEAR  = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-        let selectedIndex = -1;
-        let matches = [];
-
-        const getMatches = (term) => {
-            if (!term || term.length < 1) return [];
-            const lower = term.toLowerCase();
-            const seen = new Set();
-            return this.records
-                .filter(r => r.personName && r.personName.toLowerCase().includes(lower))
-                .map(r => r.personName)
-                .filter(name => { if (seen.has(name)) return false; seen.add(name); return true; })
-                .slice(0, 50);
-        };
-
-        const highlight = (name, term) => {
-            const idx = name.toLowerCase().indexOf(term.toLowerCase());
-            if (idx === -1) return name;
-            return name.slice(0, idx)
-                + `<mark class="name-match">${name.slice(idx, idx + term.length)}</mark>`
-                + name.slice(idx + term.length);
-        };
-
-        const renderDropdown = () => {
-            const term = input.value;
-            matches = getMatches(term);
-            if (!matches.length) { dropdown.style.display = 'none'; return; }
-            dropdown.innerHTML = matches.map((name, i) =>
-                `<div class="name-search-item${i === selectedIndex ? ' active' : ''}" data-name="${name}">${highlight(name, term)}</div>`
-            ).join('');
-            dropdown.style.display = 'block';
-            dropdown.querySelectorAll('.name-search-item').forEach(item => {
-                item.addEventListener('mousedown', e => {
-                    e.preventDefault();
-                    selectName(item.dataset.name);
-                });
-            });
-        };
-
-        const selectName = (name) => {
-            input.value = name;
-            this.nameFilter = name;
-            dropdown.style.display = 'none';
-            selectedIndex = -1;
-            iconBtn.innerHTML = ICON_CLEAR;
-            this.listRecords();
-        };
-
-        const clearFilter = () => {
-            input.value = '';
-            this.nameFilter = null;
-            dropdown.style.display = 'none';
-            selectedIndex = -1;
-            iconBtn.innerHTML = ICON_SEARCH;
-            this.listRecords();
-        };
-
-        iconBtn.addEventListener('mousedown', e => {
-            e.preventDefault();
-            if (this.nameFilter) clearFilter();
-            else input.focus();
-        });
+        const input = document.getElementById('names-search-input');
+        const container = document.getElementById('names-search-container');
+        const clearBtn = container.querySelector('.chart-search-clear');
 
         input.addEventListener('input', () => {
-            if (!input.value) { clearFilter(); return; }
-            this.nameFilter = null;
-            selectedIndex = -1;
-            renderDropdown();
+            this._namesSearchTerm = input.value;
+            this._namesHighlightIdx = 0;
+            const hasTerm = !!input.value;
+            clearBtn.style.display = hasTerm ? 'block' : 'none';
+            container.querySelector('.chart-search-icon').style.display = hasTerm ? 'none' : '';
+            this.buildNamesList(this._namesSearchTerm);
         });
 
-        input.addEventListener('keydown', e => {
+        input.addEventListener('keydown', (e) => {
+            const items = document.querySelectorAll('.names-list-item');
+            const count = items.length;
+            if (count === 0) return;
+
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
-                selectedIndex = Math.min(selectedIndex + 1, matches.length - 1);
-                renderDropdown();
+                this._namesHighlightIdx = Math.min(this._namesHighlightIdx + 1, count - 1);
+                this._applyNamesHighlight(items);
             } else if (e.key === 'ArrowUp') {
                 e.preventDefault();
-                selectedIndex = Math.max(selectedIndex - 1, 0);
-                renderDropdown();
+                this._namesHighlightIdx = Math.max(this._namesHighlightIdx - 1, 0);
+                this._applyNamesHighlight(items);
             } else if (e.key === 'Enter') {
                 e.preventDefault();
-                if (selectedIndex >= 0 && matches[selectedIndex]) {
-                    selectName(matches[selectedIndex]);
-                } else if (matches.length === 1) {
-                    selectName(matches[0]);
+                const record = this._sortedRecords?.[this._namesHighlightIdx];
+                if (record) {
+                    input.value = record.personName || '';
+                    this._namesSearchTerm = input.value;
+                    const highlighted = items[this._namesHighlightIdx];
+                    if (highlighted) highlighted.click();
                 }
-            } else if (e.key === 'Escape') {
-                clearFilter();
-                input.focus();
             }
         });
 
-        input.addEventListener('blur', () => {
-            setTimeout(() => { dropdown.style.display = 'none'; }, 150);
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            this._namesSearchTerm = '';
+            this._namesHighlightIdx = 0;
+            clearBtn.style.display = 'none';
+            container.querySelector('.chart-search-icon').style.display = '';
+            this.buildNamesList('');
         });
     }
 
-    listRecords() {
+    _applyNamesHighlight(items) {
+        items.forEach((el, i) => {
+            el.classList.toggle('selected', i === this._namesHighlightIdx);
+        });
+        const target = items[this._namesHighlightIdx];
+        if (target) target.scrollIntoView({ block: 'nearest' });
+    }
+
+    buildNamesList(searchTerm = '') {
         let records = this.facts.allFiltered();
 
-        if (this.nameFilter) {
-            const lower = this.nameFilter.toLowerCase();
-            records = records.filter(r => r.personName && r.personName.toLowerCase() === lower);
+        if (searchTerm) {
+            const lower = searchTerm.toLowerCase();
+            records = records.filter(r => r.personName && r.personName.toLowerCase().includes(lower));
         }
 
         const sorted = [...records]
@@ -354,63 +310,85 @@ export class Site {
                 }
                 return (+b.administrationId || 0) - (+a.administrationId || 0);
             })
-            .slice(0, 200);
+;
 
-        let html;
+        const countEl = document.getElementById('names-list-count');
+        if (countEl) countEl.textContent = sorted.length.toLocaleString();
+
+        this._sortedRecords = sorted;
+
+        const container = document.getElementById('names-list');
         if (sorted.length === 0) {
-            html = `<div style="padding:20px;color:#666;">No records found for the selected filters.</div>`;
-        } else {
-            html = sorted.map(record => this.renderRecordCard(record)).join('');
+            container.innerHTML = `<div class="detail-empty">No records found.</div>`;
+            this.renderDetail(null);
+            return;
         }
 
-        d3.select('#chart-list').html(html);
+        container.innerHTML = sorted.map((r, i) => {
+            const dateStr = r.date && !isNaN(r.date)
+                ? `${r.date.getUTCMonth() + 1}/${r.date.getUTCDate()}/${r.date.getUTCFullYear()}`
+                : '';
+            const name = r.personName || 'Unknown';
+            return `<div class="names-list-item${i === 0 ? ' selected' : ''}" data-idx="${i}">`
+                + `<span class="nli-name">${name}</span>`
+                + (dateStr ? `<span class="nli-date">${dateStr}</span>` : '')
+                + `</div>`;
+        }).join('');
+
+        container.querySelectorAll('.names-list-item').forEach((el, i) => {
+            el.addEventListener('click', () => {
+                this._namesHighlightIdx = i;
+                this.selectRecord(sorted[i], el);
+            });
+        });
+
+        this._namesHighlightIdx = 0;
+        this.selectRecord(sorted[0], container.querySelector('.names-list-item'));
     }
 
-    renderRecordCard(record) {
-        const dateStr = record.date && !isNaN(record.date)
-            ? `<span class="record-date">${formatDate(record.date)}</span>`
-            : '';
+    selectRecord(record, el) {
+        this.selectedRecord = record;
+        document.querySelectorAll('.names-list-item').forEach(item => item.classList.remove('selected'));
+        if (el) el.classList.add('selected');
+        this.renderDetail(record);
+    }
+
+    renderDetail(record) {
+        const panel = document.getElementById('pardon-detail');
+        if (!record) {
+            panel.innerHTML = `<div class="detail-empty">No record selected.</div>`;
+            return;
+        }
 
         const name = record.personName || 'Unknown';
-        const offense = record.offense || '';
-        const sentenced = record.sentenced || '';
+        const dateStr = record.date && !isNaN(record.date) ? formatDate(record.date) : '';
 
         const clemencyTag = record.clemencyType
-            ? `<span class="record-tag record-tag-clemency">${record.clemencyType}</span>`
-            : '';
-
+            ? `<span class="record-tag record-tag-clemency">${record.clemencyType}</span>` : '';
         const presidentTag = record.presidentTerm
-            ? `<span class="record-tag record-tag-president">${record.presidentTerm}</span>`
-            : '';
-
+            ? `<span class="record-tag record-tag-president">${record.presidentTerm}</span>` : '';
         const districtTag = record.district
-            ? `<span class="record-tag record-tag-district">${record.district}</span>`
-            : '';
+            ? `<span class="record-tag record-tag-district">${record.district}</span>` : '';
 
         const warrantLink = record.warrantUrl
-            ? `<a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">Warrant Document</a>`
+            ? `<div class="detail-section"><a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">Warrant Document ↗</a></div>`
             : '';
 
-        const offenseLine = offense
-            ? `<div class="record-offense">${offense}</div>`
+        const offenseSection = record.offense
+            ? `<div class="detail-section"><div class="detail-label">Offense</div><div class="detail-value">${record.offense}</div></div>`
             : '';
 
-        const sentencedLine = sentenced
-            ? `<div class="record-sentenced">${sentenced}</div>`
+        const sentencedSection = record.sentenced
+            ? `<div class="detail-section"><div class="detail-label">Sentence</div><div class="detail-value">${record.sentenced}</div></div>`
             : '';
 
-        return `
-            <div class="record">
-                <div class="record-header">
-                    <span class="record-name">${name}</span>${dateStr}
-                    <div class="record-header-tags">${clemencyTag}${presidentTag}</div>
-                </div>
-                <div class="record-meta">
-                    ${warrantLink}${districtTag}
-                </div>
-                ${offenseLine}
-                ${sentencedLine}
-            </div>
+        panel.innerHTML = `
+            <div class="detail-name">${name}</div>
+            ${dateStr ? `<div class="detail-date">${dateStr}</div>` : ''}
+            <div class="detail-tags">${clemencyTag}${presidentTag}${districtTag}</div>
+            ${warrantLink}
+            ${offenseSection}
+            ${sentencedSection}
         `;
     }
 
