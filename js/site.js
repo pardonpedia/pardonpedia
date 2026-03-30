@@ -22,16 +22,18 @@ export class Site {
         const overlay = document.getElementById('loading-overlay');
         overlay.classList.replace('loading-hidden', 'loading-visible');
 
-        const [pardonsResp, adminResp, metaResp] = await Promise.all([
+        const [pardonsResp, adminResp, metaResp, storiesResp] = await Promise.all([
             fetch('data/pardons.csv.gz'),
             fetch('data/administrations.csv'),
             fetch('data/pardons.meta.json'),
+            fetch('data/stories.csv.gz'),
         ]);
 
-        const [buf, adminText, metaJson] = await Promise.all([
+        const [buf, adminText, metaJson, storiesBuf] = await Promise.all([
             pardonsResp.arrayBuffer(),
             adminResp.text(),
             metaResp.json(),
+            storiesResp.arrayBuffer(),
         ]);
 
         const adminData = d3.csvParse(adminText);
@@ -46,6 +48,15 @@ export class Site {
 
         const text = pako.inflate(new Uint8Array(buf), { to: 'string' });
         const allRecords = d3.csvParse(text);
+
+        const storiesText = pako.inflate(new Uint8Array(storiesBuf), { to: 'string' });
+        this.stories = d3.csvParse(storiesText);
+
+        this.storiesByPardonId = new Map();
+        this.stories.forEach(s => {
+            if (!this.storiesByPardonId.has(s.pardonId)) this.storiesByPardonId.set(s.pardonId, []);
+            this.storiesByPardonId.get(s.pardonId).push(s);
+        });
 
         allRecords.forEach(record => {
             record.count = 1;
@@ -103,13 +114,13 @@ export class Site {
                 const first  = terms[0];
                 const last   = terms[terms.length - 1];
                 const endStr = last.endYear || 'present';
-                const label  = `${first.displayName} (${first.startYear}-${endStr})`;
+                const label  = `${first.displayName}`;
                 terms.forEach(t => adminIdToLabel.set(t.administrationId, label));
                 fullLabelOrder.set(label, +first.startYear);
                 fullLabelParty.set(label, first.partyAbbreviation);
             } else {
                 terms.forEach(t => {
-                    const label = `${t.displayName} (${t.startYear}-${t.endYear || 'present'})`;
+                    const label = `${t.displayName}`;
                     adminIdToLabel.set(t.administrationId, label);
                     fullLabelOrder.set(label, +t.startYear);
                     fullLabelParty.set(label, t.partyAbbreviation);
@@ -127,9 +138,9 @@ export class Site {
         };
 
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', 185, 50,  boundRefresh, 'Presidency', presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn),
-            new RowChart(this.facts, 'clemencyType',  185, 20,  boundRefresh, 'Clemency Type', null, '#chart-clemency_type'),
-            new RowChart(this.facts, 'district',      185, 500, boundRefresh, 'District',      null, '#chart-district-wrap', true),
+            new RowChart(this.facts, 'presidentTerm', 133, 50,  boundRefresh, 'Presidency', presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn),
+            new RowChart(this.facts, 'clemencyType',  133, 20,  boundRefresh, 'Clemency Type', null, '#chart-clemency_type'),
+            new RowChart(this.facts, 'district',      133, 500, boundRefresh, 'District',      null, '#chart-district-wrap', true),
         ];
 
         dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
@@ -326,7 +337,7 @@ export class Site {
 
         container.innerHTML = sorted.map((r, i) => {
             const dateStr = r.date && !isNaN(r.date)
-                ? `${r.date.getUTCMonth() + 1}/${r.date.getUTCDate()}/${r.date.getUTCFullYear()}`
+                ? `${r.date.getUTCMonth() + 1}/${r.date.getUTCDate()}/${String(r.date.getUTCFullYear()).slice(-2)}`
                 : '';
             const name = r.personName || 'Unknown';
             return `<div class="names-list-item${i === 0 ? ' selected' : ''}" data-idx="${i}">`
@@ -382,6 +393,27 @@ export class Site {
             ? `<div class="detail-section"><div class="detail-label">Sentence</div><div class="detail-value">${record.sentenced}</div></div>`
             : '';
 
+        const matchingStories = (this.storiesByPardonId && this.storiesByPardonId.get(record.id)) || [];
+        const storiesSection = matchingStories.length > 0 ? `
+            <div class="detail-section detail-stories">
+                <div class="detail-label">In the News</div>
+                ${matchingStories.map(s => {
+                    let domain = '';
+                    try { domain = new URL(s.storyUrl).hostname.replace(/^www\./, ''); } catch(e) {}
+                    const thumbUrl = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : '';
+                    const dateStr = s.publishDate ? s.publishDate.split(' ')[0] : '';
+                    return `<a href="${s.storyUrl}" target="_blank" rel="noopener noreferrer" class="story-card">
+                        ${thumbUrl ? `<img class="story-thumb" src="${thumbUrl}" alt="${domain}">` : ''}
+                        <div class="story-info">
+                            <div class="story-publisher">${domain}</div>
+                            <div class="story-title">${s.storyTitle}</div>
+                            ${dateStr ? `<div class="story-date">${dateStr}</div>` : ''}
+                        </div>
+                    </a>`;
+                }).join('')}
+            </div>
+        ` : '';
+
         panel.innerHTML = `
             <div class="detail-name">${name}</div>
             ${dateStr ? `<div class="detail-date">${dateStr}</div>` : ''}
@@ -389,6 +421,7 @@ export class Site {
             ${warrantLink}
             ${offenseSection}
             ${sentencedSection}
+            ${storiesSection}
         `;
     }
 

@@ -30,11 +30,11 @@
 :root {
     /* Layout dimensions */
     --header-height: 52px;
-    --filter-col-width: 185px;
+    --filter-col-width: 133px;
     --results-header-height: auto;
 
     /* Spacing */
-    --gap-sm: 6px;
+    --gap-sm: 3px;
     --gap-md: 16px;
     --gap-lg: 24px;
 
@@ -171,7 +171,7 @@ a:active {
     grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
     column-gap: var(--gap-lg);
-    row-gap: 4px;
+    row-gap: 2px;
     height: 100%;
     overflow: hidden;
     padding: var(--gap-sm);
@@ -192,7 +192,7 @@ a:active {
 
 #filter-zone {
     display: grid;
-    grid-template-columns: var(--filter-col-width) 231px;
+    grid-template-columns: var(--filter-col-width) 208px;
     grid-template-rows: 1fr;
     gap: var(--gap-sm);
     padding: var(--gap-sm);
@@ -575,6 +575,75 @@ a:active {
     overflow-y: auto;
     padding: var(--gap-sm) var(--gap-lg);
     background-color: var(--results-bg);
+}
+
+/* ========================================
+   STORY CARDS
+   ======================================== */
+
+.detail-stories {
+    margin-top: 14px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+}
+
+.story-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eef0f3;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 0.15s ease;
+    border-radius: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.story-card:hover {
+    background-color: rgba(26, 54, 93, 0.05);
+}
+
+.story-card:last-child {
+    border-bottom: none;
+}
+
+.story-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    object-fit: contain;
+}
+
+.story-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.story-publisher {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.story-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent-blue);
+    line-height: 1.35;
+    margin-bottom: 2px;
+}
+
+.story-date {
+    font-size: 10px;
+    color: var(--text-muted);
 }
 
 /* ========================================
