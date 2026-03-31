@@ -396,17 +396,20 @@ export class Site {
         const matchingStories = (this.storiesByPardonId && this.storiesByPardonId.get(record.id)) || [];
         const storiesSection = matchingStories.length > 0 ? `
             <div class="detail-section detail-stories">
-                <div class="detail-label">In the News</div>
+                <div class="detail-label">Media Coverage</div>
                 ${matchingStories.map(s => {
                     let domain = '';
                     try { domain = new URL(s.storyUrl).hostname.replace(/^www\./, ''); } catch(e) {}
-                    const thumbUrl = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : '';
+                    const faviconUrl = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : '';
+                    const thumbUrl = s.image || faviconUrl;
+                    const isArticleImage = !!s.image;
                     const dateStr = s.publishDate ? s.publishDate.split(' ')[0] : '';
                     return `<a href="${s.storyUrl}" target="_blank" rel="noopener noreferrer" class="story-card">
-                        ${thumbUrl ? `<img class="story-thumb" src="${thumbUrl}" alt="${domain}">` : ''}
+                        ${thumbUrl ? `<img class="story-thumb${isArticleImage ? ' story-thumb--article' : ''}" src="${thumbUrl}" alt="${domain}">` : ''}
                         <div class="story-info">
                             <div class="story-publisher">${domain}</div>
                             <div class="story-title">${s.storyTitle}</div>
+                            ${s.authorList ? `<div class="story-author">${s.authorList}</div>` : ''}
                             ${dateStr ? `<div class="story-date">${dateStr}</div>` : ''}
                         </div>
                     </a>`;

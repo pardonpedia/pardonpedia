@@ -179,6 +179,7 @@ a:active {
     background-color: #fff;
 }
 
+
 /* Full-width time chart spanning both columns */
 #time-chart-row {
     grid-column: 1 / -1;
@@ -589,7 +590,7 @@ a:active {
 
 .story-card {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
     padding: 8px 0;
     border-bottom: 1px solid #eef0f3;
@@ -611,12 +612,20 @@ a:active {
 }
 
 .story-thumb {
-    width: 20px;
-    height: 20px;
+    width: 32px;
+    height: 32px;
     border-radius: 3px;
     flex-shrink: 0;
     margin-top: 2px;
     object-fit: contain;
+}
+
+.story-thumb--article {
+    width: 80px;
+    height: 60px;
+    border-radius: 4px;
+    object-fit: cover;
+    margin-top: 0;
 }
 
 .story-info {
@@ -639,6 +648,12 @@ a:active {
     color: var(--accent-blue);
     line-height: 1.35;
     margin-bottom: 2px;
+}
+
+.story-author {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 1px;
 }
 
 .story-date {
