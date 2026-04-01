@@ -1,15 +1,17 @@
 export class RowChart {
-    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null, barColorFn = null) {
+    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null, barColorFn = null, labelFn = null, keepZeros = false) {
         this.title = title;
         this.field = attribute;
         this.singleSelect = singleSelect;
         this.dim = dim ? dim : facts.dimension(d => d[attribute] || '');
         this.group = this.dim.group().reduceSum(dc.pluck('count'));
 
-        this.group = removeZeroes(this.group);
+        if (!keepZeros) {
+            this.group = removeZeroes(this.group);
+        }
 
         const ROW_HEIGHT = 16;
-        const MARGINS = { top: 0, right: 10, bottom: 20, left: 10 };
+        const MARGINS = { top: 0, right: 10, bottom: 4, left: 10 };
 
         const container = d3.select(parentSelector)
             .append('div')
@@ -196,7 +198,7 @@ export class RowChart {
             .dimension(this.dim)
             .group(this.group)
             .data(ordering
-                ? g => g.top(Infinity).filter(d => d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
+                ? g => g.top(Infinity).filter(d => keepZeros || d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
                 : g => g.top(maxItems))
             .width(width)
             .height(Math.max(1, Math.min(maxItems, this.group.all().length)) * (ROW_HEIGHT + 2) + MARGINS.top + MARGINS.bottom + 8)
@@ -204,7 +206,7 @@ export class RowChart {
             .margins(MARGINS)
             .elasticX(true)
             .colors(['#aecde8'])
-            .label(d => d.key)
+            .label(d => labelFn ? labelFn(d.key) : d.key)
             .labelOffsetX(5)
             .on('filtered', () => updateFunction())
             .on('pretransition', chart => {
@@ -232,7 +234,7 @@ export class RowChart {
         }
 
         const getVisibleData = ordering
-            ? () => this.group.top(Infinity).filter(d => d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
+            ? () => this.group.top(Infinity).filter(d => keepZeros || d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
             : () => this.group.top(maxItems);
 
         const adjustHeight = () => {

@@ -140,10 +140,12 @@ export class Site {
             return p === 'D' ? '#6699cc' : p === 'R' ? '#cc6666' : '#aecde8';
         };
 
+        const topicDim = this.facts.dimension(d => d.topic === 'None' ? '' : (d.topic || ''));
+
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', 133, 50,  boundRefresh, 'Presidency', presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn),
-            new RowChart(this.facts, 'clemencyType',  133, 20,  boundRefresh, 'Clemency Type', null, '#chart-clemency_type'),
-            new RowChart(this.facts, 'district',      133, 500, boundRefresh, 'District',      null, '#chart-district-wrap', true),
+            new RowChart(this.facts, 'presidentTerm', 133, 50, boundRefresh, 'Presidency',    presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn, null, true),
+            new RowChart(this.facts, 'topic',         133, 50, boundRefresh, 'Topics',        topicDim,    '#chart-topic-wrap'),
+            new RowChart(this.facts, 'clemencyType',  133, 20, boundRefresh, 'Clemency Type', null,        '#chart-clemency_type', false, false, null, null, key => key.charAt(0).toUpperCase() + key.slice(1)),
         ];
 
         dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
@@ -218,9 +220,6 @@ export class Site {
             const rowChart = dc.rowCharts.find(rc => rc.title === filterName);
             if (rowChart) {
                 rowChart.chart.filter(filterValue);
-                if (filterName === 'District') {
-                    clearSearchInput('#chart-district');
-                }
             }
 
             dc.redrawAll();
@@ -229,7 +228,6 @@ export class Site {
 
         d3.select('.clear-button').on('click', () => {
             dc.filterAll();
-            clearSearchInput('#chart-district');
             dc.redrawAll();
             this.refresh();
         });

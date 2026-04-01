@@ -371,7 +371,7 @@ a:active {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--primary-blue);
     margin-bottom: 4px;
