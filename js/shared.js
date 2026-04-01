@@ -12,16 +12,16 @@ export function formatDate(date, includeDayOfWeek = false) {
         'November', 'December'
     ];
 
-    const day = date.getUTCDate();
-    const monthIndex = date.getUTCMonth();
-    const year = date.getUTCFullYear();
+    const day = date.getDate();
+    const monthIndex = date.getMonth();
+    const year = date.getFullYear();
 
     const rslt = monthNames[monthIndex] + ' ' + day + ', ' + year;
 
     if (!includeDayOfWeek)
         return rslt;
     else
-        return daysOfWeek[date.getUTCDay()] + ', ' + rslt;
+        return daysOfWeek[date.getDay()] + ', ' + rslt;
 }
 
 // Add commas to numbers: 123456789 -> '123,456,789'

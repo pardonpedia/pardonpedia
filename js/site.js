@@ -61,7 +61,8 @@ export class Site {
         allRecords.forEach(record => {
             record.count = 1;
             if (record.grantDate) {
-                record.date = new Date(record.grantDate);
+                const [gy, gm, gd] = record.grantDate.split('-').map(Number);
+                record.date = new Date(gy, gm - 1, gd);
             }
         });
 
@@ -119,8 +120,10 @@ export class Site {
                 fullLabelOrder.set(label, +first.startYear);
                 fullLabelParty.set(label, first.partyAbbreviation);
             } else {
-                terms.forEach(t => {
-                    const label = `${t.displayName}`;
+                terms.forEach((t, i) => {
+                    const label = terms.length > 1
+                        ? `${t.displayName} ${i + 1}`
+                        : `${t.displayName}`;
                     adminIdToLabel.set(t.administrationId, label);
                     fullLabelOrder.set(label, +t.startYear);
                     fullLabelParty.set(label, t.partyAbbreviation);
@@ -337,7 +340,7 @@ export class Site {
 
         container.innerHTML = sorted.map((r, i) => {
             const dateStr = r.date && !isNaN(r.date)
-                ? `${r.date.getUTCMonth() + 1}/${r.date.getUTCDate()}/${String(r.date.getUTCFullYear()).slice(-2)}`
+                ? `${r.date.getMonth() + 1}/${r.date.getDate()}/${String(r.date.getFullYear()).slice(-2)}`
                 : '';
             const name = r.personName || 'Unknown';
             return `<div class="names-list-item${i === 0 ? ' selected' : ''}" data-idx="${i}">`

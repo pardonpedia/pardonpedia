@@ -7,6 +7,12 @@
  * dividing line at the second-term start.
  */
 
+// Parse a YYYY-MM-DD string as local midnight (avoids UTC-offset day-shift bugs)
+function parseLocalDate(str) {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+
 // Floor a date to the most recent Jan 20 boundary (inauguration-aligned year)
 function floorToTermYear(date) {
     const y = date.getFullYear();
@@ -36,13 +42,13 @@ function termYearUnits(start, end) {
 // If a president served two consecutive terms, termBoundary records the
 // second-term inauguration date for the dotted dividing line.
 function buildPresidentRegions(adminData) {
-    const sorted = [...adminData].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+    const sorted = [...adminData].sort((a, b) => parseLocalDate(a.startDate) - parseLocalDate(b.startDate));
     const regions = [];
     for (const term of sorted) {
         const last = regions[regions.length - 1];
-        const termEnd = term.endDate ? new Date(term.endDate) : new Date(2099, 0, 1);
+        const termEnd = term.endDate ? parseLocalDate(term.endDate) : new Date(2099, 0, 1);
         if (last && last.presidentId === term.presidentId) {
-            last.termBoundary = new Date(term.startDate);
+            last.termBoundary = parseLocalDate(term.startDate);
             last.endDate = termEnd;
         } else {
             regions.push({
@@ -50,7 +56,7 @@ function buildPresidentRegions(adminData) {
                 displayName:   term.displayName,
                 lastName:      term.lastName,
                 party:         term.partyAbbreviation,
-                startDate:     new Date(term.startDate),
+                startDate:     parseLocalDate(term.startDate),
                 endDate:       termEnd,
                 termBoundary:  null,
             });
@@ -81,8 +87,8 @@ export class TimeChart {
         // Sorted term spans for party lookup by exact date range
         this._termSpans = adminData
             .map(d => ({
-                start: new Date(d.startDate),
-                end:   d.endDate ? new Date(d.endDate) : new Date(2099, 0, 1),
+                start: parseLocalDate(d.startDate),
+                end:   d.endDate ? parseLocalDate(d.endDate) : new Date(2099, 0, 1),
                 party: d.partyAbbreviation,
             }))
             .sort((a, b) => a.start - b.start);
@@ -110,10 +116,10 @@ export class TimeChart {
         };
 
         // Domain: first inauguration → a couple of years past the last term end
-        const sorted      = [...this.adminData].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-        const domainStart = floorToTermYear(new Date(sorted[0].startDate));
+        const sorted      = [...this.adminData].sort((a, b) => parseLocalDate(a.startDate) - parseLocalDate(b.startDate));
+        const domainStart = floorToTermYear(parseLocalDate(sorted[0].startDate));
         const lastEnd     = sorted[sorted.length - 1].endDate;
-        const domainEnd   = lastEnd ? addTermYears(floorToTermYear(new Date(lastEnd)), 2)
+        const domainEnd   = lastEnd ? addTermYears(floorToTermYear(parseLocalDate(lastEnd)), 2)
                                     : addTermYears(floorToTermYear(new Date()), 2);
 
         const container = document.querySelector(this.parentSelector);

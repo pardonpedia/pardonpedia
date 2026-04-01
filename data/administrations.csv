@@ -1,5 +1,6 @@
 presidentId,administrationId,presidencyNumber,presidentTermNumber,startYear,endYear,presidentTerm,displayName,fullName,slug,firstName,middleName,lastName,suffix,birthDate,deathDate,birthPlace,partyId,partyName,partyAbbreviation,startDate,endDate,presidentNotes,administrationNotes
-1,1,37,2,1973,1974,Richard Nixon (1973-1974),Richard Nixon,Richard Milhous Nixon,richard-nixon,Richard,Milhous,Nixon,,1913-01-09,1994-04-22,"Yorba Linda, California, U.S.",2,Republican,R,1973-01-20,1974-08-09,,Second Nixon term only.
+1,0,37,1,1969,1973,Richard Nixon (1969-1973),Richard Nixon,Richard Milhous Nixon,richard-nixon,Richard,Milhous,Nixon,,1913-01-09,1994-04-22,"Yorba Linda, California, U.S.",2,Republican,R,1969-01-20,1973-01-20,,
+1,1,37,2,1973,1974,Richard Nixon (1973-1974),Richard Nixon,Richard Milhous Nixon,richard-nixon,Richard,Milhous,Nixon,,1913-01-09,1994-04-22,"Yorba Linda, California, U.S.",2,Republican,R,1973-01-20,1974-08-09,,
 2,2,38,1,1974,1977,Gerald Ford (1974-1977),Gerald Ford,Gerald Rudolph Ford Jr.,gerald-ford,Gerald,Rudolph,Ford,Jr.,1913-07-14,2006-12-26,"Omaha, Nebraska, U.S.",2,Republican,R,1974-08-09,1977-01-20,,
 3,3,39,1,1977,1981,Jimmy Carter (1977-1981),Jimmy Carter,James Earl Carter Jr.,jimmy-carter,James,Earl,Carter,Jr.,1924-10-01,2024-12-29,"Plains, Georgia, U.S.",1,Democratic,D,1977-01-20,1981-01-20,,
 4,4,40,1,1981,1985,Ronald Reagan (1981-1985),Ronald Reagan,Ronald Wilson Reagan,ronald-reagan,Ronald,Wilson,Reagan,,1911-02-06,2004-06-05,"Tampico, Illinois, U.S.",2,Republican,R,1981-01-20,1985-01-20,,
