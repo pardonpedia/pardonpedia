@@ -499,6 +499,9 @@
 }
 
 .record-warrant-link {
+    position: absolute;
+    top: 0;
+    right: 0;
     font-size: 12px;
     font-weight: 500;
     color: var(--accent-blue, #2b6cb0);

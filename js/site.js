@@ -385,7 +385,7 @@ export class Site {
             ? `<span class="record-tag record-tag-district">${record.district}</span>` : '';
 
         const warrantLink = record.warrantUrl
-            ? `<div class="detail-section"><a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">Warrant Document ↗</a></div>`
+            ? `<a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">Pardon Document ↗</a>`
             : '';
 
         const offenseSection = record.offense
@@ -421,10 +421,12 @@ export class Site {
         ` : '';
 
         panel.innerHTML = `
-            <div class="detail-name">${name}</div>
-            ${dateStr ? `<div class="detail-date">${dateStr}</div>` : ''}
-            <div class="detail-tags">${clemencyTag}${presidentTag}${districtTag}</div>
-            ${warrantLink}
+            <div class="detail-top">
+                ${warrantLink}
+                <div class="detail-name">${name}</div>
+                ${dateStr ? `<div class="detail-date">${dateStr}</div>` : ''}
+                <div class="detail-tags">${clemencyTag}${presidentTag}${districtTag}</div>
+            </div>
             ${offenseSection}
             ${sentencedSection}
             ${storiesSection}
