@@ -174,8 +174,8 @@ export class Site {
 
         const clemencyGroups = dc.rowCharts[2].group.all();
         const clemencyCounts = Object.fromEntries(clemencyGroups.map(d => [d.key, d.value]));
-        const pardonCount = clemencyCounts['pardon'] || 0;
-        const commutationCount = clemencyCounts['commutation'] || 0;
+        const pardonCount = clemencyCounts['Pardon'] || 0;
+        const commutationCount = clemencyCounts['Commutation'] || 0;
         const otherCount = recordCount - pardonCount - commutationCount;
         const countParts = [];
         if (pardonCount > 0) countParts.push(`${pardonCount.toLocaleString()} pardons`);
