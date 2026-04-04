@@ -145,7 +145,7 @@ export class Site {
         dc.rowCharts = [
             new RowChart(this.facts, 'presidentTerm', 133, 50, boundRefresh, 'Presidency',    presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn, null, true),
             new RowChart(this.facts, 'topic',         133, 50, boundRefresh, 'Topics',        topicDim,    '#chart-topic-wrap'),
-            new RowChart(this.facts, 'clemencyType',  133, 20, boundRefresh, 'Clemency Type', null,        '#chart-clemency_type', false, false, null, null, key => key.charAt(0).toUpperCase() + key.slice(1)),
+            new RowChart(this.facts, 'clemencyType',  133, 20, boundRefresh, 'Clemency Type', null,        '#chart-clemency_type', false, false, null, null, null),
         ];
 
         dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
@@ -170,10 +170,19 @@ export class Site {
     refresh() {
         const filterTypes = this.collectFilters();
         const hasActiveFilters = filterTypes.length > 0;
-        const filteredRecords = dc.facts.allFiltered();
-        const recordCount = filteredRecords.length;
+        const recordCount = dc.facts.allFiltered().length;
 
-        let menuHtml = `<span class="record-count">${recordCount.toLocaleString()} pardons</span>`;
+        const clemencyGroups = dc.rowCharts[2].group.all();
+        const clemencyCounts = Object.fromEntries(clemencyGroups.map(d => [d.key, d.value]));
+        const pardonCount = clemencyCounts['pardon'] || 0;
+        const commutationCount = clemencyCounts['commutation'] || 0;
+        const otherCount = recordCount - pardonCount - commutationCount;
+        const countParts = [];
+        if (pardonCount > 0) countParts.push(`${pardonCount.toLocaleString()} pardons`);
+        if (commutationCount > 0) countParts.push(`${commutationCount.toLocaleString()} commutations`);
+        if (otherCount > 0) countParts.push(`${otherCount.toLocaleString()} other`);
+
+        let menuHtml = `<span class="record-count">${countParts.join(' / ')}</span>`;
         if (hasActiveFilters) {
             menuHtml += `<button class="clear-button">Show All</button>`;
         }
@@ -382,9 +391,21 @@ export class Site {
         const districtTag = record.district
             ? `<span class="record-tag record-tag-district">${record.district}</span>` : '';
 
-        const warrantLink = record.warrantUrl
-            ? `<a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">Pardon Document ↗</a>`
+        const warrantCanvas = record.warrantKey
+            ? `<div class="record-warrant-wrap">
+                   <div id="warrant-loading" class="warrant-loading"><div class="warrant-spinner"></div></div>
+                   <a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">
+                       <canvas id="warrant-canvas" class="record-warrant-canvas" style="display:none"></canvas>
+                   </a>
+                   <div id="warrant-page-controls" class="warrant-page-controls" style="display:none">
+                       <button id="warrant-prev" class="warrant-nav-btn">&#8592;</button>
+                       <span id="warrant-page-label" class="warrant-page-label"></span>
+                       <button id="warrant-next" class="warrant-nav-btn">&#8594;</button>
+                   </div>
+               </div>`
             : '';
+
+        const hasWarrant = !!record.warrantKey;
 
         const offenseSection = record.offense
             ? `<div class="detail-section"><div class="detail-label">Offense</div><div class="detail-value">${record.offense}</div></div>`
@@ -419,16 +440,70 @@ export class Site {
         ` : '';
 
         panel.innerHTML = `
-            <div class="detail-top">
-                ${warrantLink}
-                <div class="detail-name">${name}</div>
-                ${dateStr ? `<div class="detail-date">${dateStr}</div>` : ''}
-                <div class="detail-tags">${clemencyTag}${presidentTag}${districtTag}</div>
+            <div class="pardon-detail-inner${hasWarrant ? ' pardon-detail-inner--has-warrant' : ''}">
+                <div class="pardon-detail-left">
+                    <div class="detail-top">
+                        <div class="detail-name">${name}</div>
+                        ${dateStr ? `<div class="detail-date">${dateStr}</div>` : ''}
+                        <div class="detail-tags">${clemencyTag}${presidentTag}${districtTag}</div>
+                    </div>
+                    ${offenseSection}
+                    ${sentencedSection}
+                    ${storiesSection}
+                </div>
+                ${hasWarrant ? `<div class="pardon-detail-right">${warrantCanvas}</div>` : ''}
             </div>
-            ${offenseSection}
-            ${sentencedSection}
-            ${storiesSection}
         `;
+
+        if (record.warrantKey) {
+            const pdfUrl = `docs/warrants/pdfs/${record.warrantKey}.pdf`;
+            const canvas = document.getElementById('warrant-canvas');
+            const controls = document.getElementById('warrant-page-controls');
+            const prevBtn = document.getElementById('warrant-prev');
+            const nextBtn = document.getElementById('warrant-next');
+            const pageLabel = document.getElementById('warrant-page-label');
+
+            const loading = document.getElementById('warrant-loading');
+
+            const cssWidth = 256;
+            const dpr = window.devicePixelRatio || 1;
+
+            const renderPage = (pdf, n) => {
+                pdf.getPage(n).then(page => {
+                    const viewport = page.getViewport({ scale: 1 });
+                    const scale = (cssWidth / viewport.width) * dpr;
+                    const scaled = page.getViewport({ scale });
+                    canvas.width = scaled.width;
+                    canvas.height = scaled.height;
+                    canvas.style.width = cssWidth + 'px';
+                    canvas.style.height = (scaled.height / dpr) + 'px';
+                    page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled }).promise.then(() => {
+                        if (loading) loading.style.display = 'none';
+                        canvas.style.display = '';
+                    });
+                    if (pageLabel) pageLabel.textContent = `${n} / ${pdf.numPages}`;
+                    if (prevBtn) prevBtn.disabled = n <= 1;
+                    if (nextBtn) nextBtn.disabled = n >= pdf.numPages;
+                });
+            };
+
+            pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+                let currentPage = 1;
+                renderPage(pdf, currentPage);
+                if (pdf.numPages > 1 && controls) {
+                    controls.style.display = '';
+                    prevBtn.addEventListener('click', () => {
+                        if (currentPage > 1) renderPage(pdf, --currentPage);
+                    });
+                    nextBtn.addEventListener('click', () => {
+                        if (currentPage < pdf.numPages) renderPage(pdf, ++currentPage);
+                    });
+                }
+            }).catch(() => {
+                const wrap = canvas?.closest('.record-warrant-wrap');
+                if (wrap) wrap.style.display = 'none';
+            });
+        }
     }
 
     downloadCsv(records) {

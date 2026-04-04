@@ -1,10 +1,10 @@
 {
   "pardons": {
     "file": "pardons.csv.gz",
-    "generated_at": "2026-04-01T14:42:22.007274Z"
+    "generated_at": "2026-04-04T12:59:40.390241Z"
   },
   "stories": {
     "file": "stories.csv.gz",
-    "generated_at": "2026-04-01T14:42:22.454967Z"
+    "generated_at": "2026-04-04T12:59:40.800671Z"
   }
 }

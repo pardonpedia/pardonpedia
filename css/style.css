@@ -498,18 +498,95 @@
     border: 1px solid #feebc8;
 }
 
-.record-warrant-link {
-    position: absolute;
-    top: 0;
-    right: 0;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--accent-blue, #2b6cb0);
-    text-decoration: none;
+.pardon-detail-inner {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
 }
 
-.record-warrant-link:hover {
-    text-decoration: underline;
+.pardon-detail-left {
+    flex: 1;
+    min-width: 0;
+}
+
+.pardon-detail-right {
+    flex-shrink: 0;
+}
+
+.record-warrant-link {
+    display: block;
+    line-height: 0;
+}
+
+.warrant-loading {
+    width: 256px;
+    height: 331px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+}
+
+.warrant-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #ddd;
+    border-top-color: #999;
+    border-radius: 50%;
+    animation: warrant-spin 0.7s linear infinite;
+}
+
+@keyframes warrant-spin {
+    to { transform: rotate(360deg); }
+}
+
+.record-warrant-canvas {
+    display: block;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: box-shadow 0.15s, opacity 0.15s;
+}
+
+.record-warrant-link:hover .record-warrant-canvas {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    opacity: 0.88;
+}
+
+.warrant-page-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.warrant-nav-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-dark, #1a202c);
+    line-height: 1.4;
+}
+
+.warrant-nav-btn:hover:not(:disabled) {
+    background: #f0f0f0;
+}
+
+.warrant-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.warrant-page-label {
+    font-size: 12px;
+    color: var(--text-muted, #666);
+    min-width: 40px;
+    text-align: center;
 }
 
 .record-offense {
