@@ -1,23 +1,33 @@
 /**
- * Query-string sync for chart filters (Presidency, Topics, Clemency Type).
+ * Query-string sync for chart filters (Presidency, Clemency Type, Occupation, Relationship, TOPIC).
  */
 
-export const FILTER_PARAM_KEYS = ['pre', 'topic', 'clem'];
+export const FILTER_PARAM_KEYS = ['pre', 'clem', 'occ', 'rel', 'topic'];
 
 const TITLE_TO_PARAM = {
     'Presidency': 'pre',
-    'Topics': 'topic',
+    'TOPIC': 'topic',
+    'Occupation': 'occ',
+    'Relationship to President': 'rel',
     'Clemency Type': 'clem',
 };
 
 const PARAM_TO_TITLE = {
     pre: 'Presidency',
-    topic: 'Topics',
+    topic: 'TOPIC',
+    occ: 'Occupation',
+    rel: 'Relationship to President',
     clem: 'Clemency Type',
 };
 
 /** Fixed order for stable URLs */
-const CHART_TITLE_ORDER = ['Presidency', 'Topics', 'Clemency Type'];
+const CHART_TITLE_ORDER = [
+    'Presidency',
+    'Clemency Type',
+    'Occupation',
+    'Relationship to President',
+    'TOPIC',
+];
 
 /**
  * Merge current location search with filter types: drop known filter keys, append sorted values.

@@ -77,7 +77,8 @@ a:active {
 #app-container {
     display: grid;
     grid-template-rows: var(--header-height) 1fr;
-    height: calc(100vh + 200px);
+    height: 100vh;
+    height: 100dvh;
     width: 100vw;
     overflow: hidden;
 }
@@ -174,6 +175,7 @@ a:active {
     column-gap: var(--gap-lg);
     row-gap: 2px;
     height: 100%;
+    min-height: 0;
     overflow: hidden;
     padding: var(--gap-sm);
     box-sizing: border-box;
@@ -207,8 +209,11 @@ a:active {
     grid-template-rows: 1fr;
     gap: var(--gap-sm);
     padding: var(--gap-sm);
+    grid-column: 1;
     grid-row: 2;
     height: 100%;
+    min-width: 0;
+    min-height: 0;
     overflow: hidden;
     box-sizing: border-box;
     background-color: #fff;
@@ -277,7 +282,7 @@ a:active {
     text-align: center;
 }
 
-/* Left column: presidency + clemency stacked, scrolls as a unit if needed */
+/* Left column: presidency, clemency, then occupation / relationship / topic; one scrollbar for the whole stack */
 #filter-col-left {
     display: flex;
     flex-direction: column;
@@ -286,7 +291,18 @@ a:active {
     overflow-y: auto;
     min-width: 0;
     min-height: 0;
-    height: 100%;
+    align-self: stretch;
+    /* Reserve scrollbar width so row charts stay full width; enables overflow when content is taller than grid area */
+    scrollbar-gutter: stable;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Row charts default .chart-scroll to flex+inner scroll; here the column scrolls instead */
+#filter-col-left .chart-scroll {
+    flex: 0 0 auto;
+    overflow: visible;
+    min-height: 0;
 }
 
 /* Filter columns */
@@ -333,6 +349,8 @@ a:active {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-width: 0;
+    min-height: 0;
     /* No top padding so "Pardons" lines up with presidency chart title (filter zone already padded). */
     padding: 0 var(--gap-sm) var(--gap-sm);
     box-sizing: border-box;
@@ -348,11 +366,13 @@ a:active {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 2px;
-    padding: 6px 5px;
-    border-radius: 3px;
+    gap: 1px;
+    padding: 6px 7px;
+    border-radius: 6px;
     cursor: pointer;
-    border-bottom: 1px solid #e8e8e8;
+    border: 1px solid #dbe3ec;
+    margin-bottom: 6px;
+    background-color: rgba(255, 255, 255, 0.75);
     box-sizing: border-box;
     max-width: 100%;
 }
@@ -371,7 +391,7 @@ a:active {
     justify-content: space-between;
     gap: 8px;
     min-width: 0;
-    margin-top: -3px;
+    margin-top: -4px;
 }
 
 .nli-meta {
@@ -424,7 +444,7 @@ a:active {
     font-size: 12px;
     font-weight: 400;
     color: #2f3744;
-    line-height: 1.28;
+    line-height: 1.22;
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -466,6 +486,10 @@ a:active {
     position: relative;
     margin-bottom: var(--gap-sm);
     flex-shrink: 0;
+}
+
+#names-search-container {
+    margin-top: 4px;
 }
 
 .chart-search {
@@ -587,7 +611,11 @@ a:active {
 #results-zone {
     display: flex;
     flex-direction: column;
+    grid-column: 2;
+    grid-row: 2;
     height: 100%;
+    min-width: 0;
+    min-height: 0;
     overflow: hidden;
     background-color: var(--results-bg);
     border-radius: 8px;

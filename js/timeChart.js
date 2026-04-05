@@ -126,7 +126,7 @@ export class TimeChart {
         const rawW     = container ? container.clientWidth || 800 : 800;
         /* Trim a few px so bar chart width does not overflow the grid row and show a horizontal scrollbar. */
         const width    = Math.max(100, Math.floor(rawW) - 4);
-        const height = 104;
+        const height = 80;
 
         this.chart = new dc.BarChart(this.parentSelector);
         this.chart
@@ -137,7 +137,9 @@ export class TimeChart {
             .x(d3.scaleTime().domain([domainStart, domainEnd]))
             .xUnits(termYearUnits)
             .elasticY(true)
-            .y(d3.scaleSqrt())
+            // Power scale with exponent between 0.5 (sqrt) and 1 (linear).
+            // 0.7 gives a gentler compression than sqrt without log-like distortion.
+            .y(d3.scalePow().exponent(0.7))
             .centerBar(false)
             .brushOn(false)
             .barPadding(0.2)

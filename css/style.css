@@ -215,13 +215,13 @@
     position: relative;
     border: 1px solid #ddd;
     border-radius: 4px;
-    padding: 4px 8px;
+    padding: 2px 5px;
     background-color: #fff;
 }
 
 .filter-box-title {
-    font-size: 11px;
-    margin-bottom: 4px;
+    font-size: 9px;
+    margin-bottom: 1px;
     color: var(--primary-blue, #1a365d);
     font-weight: 600;
     text-transform: uppercase;
@@ -231,18 +231,18 @@
 .filter-box-values {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 2px;
 }
 
 .filter-value-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
+    gap: 3px;
+    padding: 1px 6px;
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 3px;
-    font-size: 13px;
+    font-size: 10px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
@@ -254,8 +254,8 @@
 
 .filter-value-close {
     color: #888;
-    font-size: 12px;
-    margin-left: 2px;
+    font-size: 10px;
+    margin-left: 1px;
 }
 
 .filter-value-badge:hover .filter-value-close {
@@ -496,6 +496,14 @@
     background-color: #fffaf0;
     color: #7b341e;
     border: 1px solid #feebc8;
+}
+
+#pardon-detail {
+    transition: opacity 80ms ease;
+}
+
+#pardon-detail.fading {
+    opacity: 0;
 }
 
 .pardon-detail-inner {

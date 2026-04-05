@@ -18,9 +18,24 @@ export class Site {
         this._suppressUrlPush = false;
         this._lastPushedSearch = '';
         this._popstateBound = false;
+        this._filterColResizeObs = null;
+        this._pdfDocPromiseByKey = new Map();
 
         this.records = this.getData();
         window.site = this;
+    }
+
+    _getPdfDocumentPromise(warrantKey, pdfUrl) {
+        const existing = this._pdfDocPromiseByKey.get(warrantKey);
+        if (existing) return existing;
+
+        const promise = pdfjsLib.getDocument(pdfUrl).promise
+            .catch(err => {
+                this._pdfDocPromiseByKey.delete(warrantKey);
+                throw err;
+            });
+        this._pdfDocPromiseByKey.set(warrantKey, promise);
+        return promise;
     }
 
     async getData() {
@@ -98,6 +113,43 @@ export class Site {
 
         overlay.classList.replace('loading-visible', 'loading-hidden');
         document.getElementById('names-search-input').focus();
+
+        requestAnimationFrame(() => {
+            this._resizeFilterRowCharts();
+        });
+    }
+
+    _fallbackFilterChartWidth() {
+        return Math.max(96, Math.floor(133 * 1.44) - 6);
+    }
+
+    _measureFilterChartWidth() {
+        const col = document.getElementById('filter-col-left');
+        if (!col) return this._fallbackFilterChartWidth();
+        const w = col.clientWidth;
+        if (w < 48) return this._fallbackFilterChartWidth();
+        return Math.max(96, w - 6);
+    }
+
+    _resizeFilterRowCharts() {
+        if (!dc.rowCharts?.length) return;
+        const chartWidth = this._measureFilterChartWidth();
+        dc.rowCharts.forEach(rc => {
+            if (rc.chart) rc.chart.width(chartWidth);
+        });
+        dc.redrawAll();
+    }
+
+    _ensureFilterColResizeObserver() {
+        if (this._filterColResizeObs) return;
+        const col = document.getElementById('filter-col-left');
+        if (!col) return;
+        let t;
+        this._filterColResizeObs = new ResizeObserver(() => {
+            clearTimeout(t);
+            t = setTimeout(() => this._resizeFilterRowCharts(), 50);
+        });
+        this._filterColResizeObs.observe(col);
     }
 
     setupCharts(adminData) {
@@ -159,18 +211,23 @@ export class Site {
             return p === 'D' ? '#6699cc' : p === 'R' ? '#cc6666' : '#aecde8';
         };
 
-        const topicDim = this.facts.dimension(d => d.topic === 'None' ? '' : (d.topic || ''));
+        const noneToEmpty = v => v === 'None' ? '' : (v || '');
+        const topicDim = this.facts.dimension(d => noneToEmpty(d.topic));
+        const officeDim = this.facts.dimension(d => noneToEmpty(d.officeHeld));
+        const relationshipDim = this.facts.dimension(d => noneToEmpty(d.relationship));
 
-        /* Slightly under grid track calc(133px * 1.44) so SVGs do not exceed column (avoids horiz scrollbar). */
-        const filterChartWidth = Math.max(100, Math.floor(133 * 1.44) - 2);
+        const filterChartWidth = this._measureFilterChartWidth();
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', filterChartWidth, 50, boundRefresh, 'Presidency',    presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn, null, true),
-            new RowChart(this.facts, 'topic',         filterChartWidth, 50, boundRefresh, 'Topics',        topicDim,    '#chart-topic-wrap'),
-            new RowChart(this.facts, 'clemencyType',  filterChartWidth, 20, boundRefresh, 'Clemency Type', null,        '#chart-clemency_type', false, false, null, null, null),
+            new RowChart(this.facts, 'presidentTerm', filterChartWidth, 50, boundRefresh, 'Presidency',              presTermDim,       '#chart-president_term', false, false, termOrdering, termColorFn, null, true),
+            new RowChart(this.facts, 'clemencyType',  filterChartWidth, 20, boundRefresh, 'Clemency Type',           null,              '#chart-clemency_type', false, false, null, null, null),
+            new RowChart(this.facts, 'officeHeld',    filterChartWidth, 50, boundRefresh, 'Occupation',              officeDim,         '#chart-officeHeld-wrap'),
+            new RowChart(this.facts, 'relationship',  filterChartWidth, 50, boundRefresh, 'Relationship to President', relationshipDim, '#chart-relationship-wrap'),
+            new RowChart(this.facts, 'topic',         filterChartWidth, 50, boundRefresh, 'TOPIC',                   topicDim,          '#chart-topic-wrap'),
         ];
 
         dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
 
+        this._ensureFilterColResizeObserver();
         this._ensurePopstateListener();
     }
 
@@ -219,7 +276,8 @@ export class Site {
         const hasActiveFilters = filterTypes.length > 0;
         const recordCount = dc.facts.allFiltered().length;
 
-        const clemencyGroups = dc.rowCharts[2].group.all();
+        const clemencyChart = dc.rowCharts.find(rc => rc.field === 'clemencyType');
+        const clemencyGroups = clemencyChart ? clemencyChart.group.all() : [];
         const clemencyCounts = Object.fromEntries(clemencyGroups.map(d => [d.key, d.value]));
         const pardonCount = clemencyCounts['Pardon'] || 0;
         const commutationCount = clemencyCounts['Commutation'] || 0;
@@ -434,6 +492,12 @@ export class Site {
                 this._namesHighlightIdx = i;
                 this.selectRecord(sorted[i], el);
             });
+            el.addEventListener('mouseenter', () => {
+                const r = sorted[i];
+                if (r.warrantKey) {
+                    this._getPdfDocumentPromise(r.warrantKey, `docs/warrants/pdfs/${r.warrantKey}.pdf`);
+                }
+            });
         });
 
         this._namesHighlightIdx = 0;
@@ -444,7 +508,20 @@ export class Site {
         this.selectedRecord = record;
         document.querySelectorAll('.names-list-item').forEach(item => item.classList.remove('selected'));
         if (el) el.classList.add('selected');
-        this.renderDetail(record);
+
+        const panel = document.getElementById('pardon-detail');
+        if (!panel.hasChildNodes()) {
+            this.renderDetail(record);
+            return;
+        }
+
+        panel.classList.add('fading');
+        const onFaded = () => {
+            panel.removeEventListener('transitionend', onFaded);
+            this.renderDetail(record);
+            requestAnimationFrame(() => panel.classList.remove('fading'));
+        };
+        panel.addEventListener('transitionend', onFaded, { once: true });
     }
 
     renderDetail(record) {
@@ -466,10 +543,12 @@ export class Site {
 
         const warrantCanvas = record.warrantKey
             ? `<div class="record-warrant-wrap">
-                   <div id="warrant-loading" class="warrant-loading"><div class="warrant-spinner"></div></div>
                    <a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">
-                       <canvas id="warrant-canvas" class="record-warrant-canvas" style="display:none"></canvas>
+                       <img id="warrant-thumb" class="record-warrant-canvas"
+                            src="docs/warrants/thumbs/${record.warrantKey}.jpg"
+                            style="width:256px" alt="Warrant preview">
                    </a>
+                   <canvas id="warrant-canvas" class="record-warrant-canvas" style="display:none"></canvas>
                    <div id="warrant-page-controls" class="warrant-page-controls" style="display:none">
                        <button id="warrant-prev" class="warrant-nav-btn">&#8592;</button>
                        <span id="warrant-page-label" class="warrant-page-label"></span>
@@ -530,19 +609,24 @@ export class Site {
 
         if (record.warrantKey) {
             const pdfUrl = `docs/warrants/pdfs/${record.warrantKey}.pdf`;
+            const thumb = document.getElementById('warrant-thumb');
             const canvas = document.getElementById('warrant-canvas');
             const controls = document.getElementById('warrant-page-controls');
             const prevBtn = document.getElementById('warrant-prev');
             const nextBtn = document.getElementById('warrant-next');
             const pageLabel = document.getElementById('warrant-page-label');
 
-            const loading = document.getElementById('warrant-loading');
-
             const cssWidth = 256;
             const dpr = window.devicePixelRatio || 1;
+            const isActiveRecord = () => this.selectedRecord?.id === record.id;
+
+            let currentPage = 1;
+            let pdfDoc = null;
 
             const renderPage = (pdf, n) => {
+                if (!isActiveRecord()) return;
                 pdf.getPage(n).then(page => {
+                    if (!isActiveRecord()) return;
                     const viewport = page.getViewport({ scale: 1 });
                     const scale = (cssWidth / viewport.width) * dpr;
                     const scaled = page.getViewport({ scale });
@@ -551,7 +635,8 @@ export class Site {
                     canvas.style.width = cssWidth + 'px';
                     canvas.style.height = (scaled.height / dpr) + 'px';
                     page.render({ canvasContext: canvas.getContext('2d'), viewport: scaled }).promise.then(() => {
-                        if (loading) loading.style.display = 'none';
+                        if (!isActiveRecord()) return;
+                        if (thumb) thumb.style.display = 'none';
                         canvas.style.display = '';
                     });
                     if (pageLabel) pageLabel.textContent = `${n} / ${pdf.numPages}`;
@@ -560,16 +645,33 @@ export class Site {
                 });
             };
 
-            pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
-                let currentPage = 1;
-                renderPage(pdf, currentPage);
+            const goToPage = (n) => {
+                if (!pdfDoc || !isActiveRecord()) return;
+                currentPage = n;
+                if (n === 1) {
+                    canvas.style.display = 'none';
+                    if (thumb) thumb.style.display = '';
+                } else {
+                    renderPage(pdfDoc, n);
+                }
+                if (pageLabel) pageLabel.textContent = `${n} / ${pdfDoc.numPages}`;
+                if (prevBtn) prevBtn.disabled = n <= 1;
+                if (nextBtn) nextBtn.disabled = n >= pdfDoc.numPages;
+            };
+
+            this._getPdfDocumentPromise(record.warrantKey, pdfUrl).then(pdf => {
+                if (!isActiveRecord()) return;
+                pdfDoc = pdf;
                 if (pdf.numPages > 1 && controls) {
                     controls.style.display = '';
+                    pageLabel.textContent = `1 / ${pdf.numPages}`;
+                    prevBtn.disabled = true;
+                    nextBtn.disabled = false;
                     prevBtn.addEventListener('click', () => {
-                        if (currentPage > 1) renderPage(pdf, --currentPage);
+                        if (currentPage > 1) goToPage(currentPage - 1);
                     });
                     nextBtn.addEventListener('click', () => {
-                        if (currentPage < pdf.numPages) renderPage(pdf, ++currentPage);
+                        if (currentPage < pdf.numPages) goToPage(currentPage + 1);
                     });
                 }
             }).catch(() => {
