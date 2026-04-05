@@ -11,6 +11,8 @@ export class RowChart {
         }
 
         const ROW_HEIGHT = 16;
+        // dc.js rowChart default gap; y_i = (i+1)*gap + i*ROW_HEIGHT — must stay in sync with .gap()
+        const ROW_GAP = 5;
         const MARGINS = { top: 0, right: 10, bottom: 4, left: 10 };
 
         const container = d3.select(parentSelector)
@@ -198,11 +200,12 @@ export class RowChart {
             .dimension(this.dim)
             .group(this.group)
             .data(ordering
-                ? g => g.top(Infinity).filter(d => keepZeros || d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
+                ? g => g.all().filter(d => keepZeros || d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
                 : g => g.top(maxItems))
             .width(width)
-            .height(Math.max(1, Math.min(maxItems, this.group.all().length)) * (ROW_HEIGHT + 2) + MARGINS.top + MARGINS.bottom + 8)
+            .height(Math.max(1, Math.min(maxItems, this.group.all().length)) * (ROW_HEIGHT + ROW_GAP) + MARGINS.top + MARGINS.bottom)
             .fixedBarHeight(ROW_HEIGHT)
+            .gap(ROW_GAP)
             .margins(MARGINS)
             .elasticX(true)
             .colors(['#aecde8'])
@@ -234,13 +237,13 @@ export class RowChart {
         }
 
         const getVisibleData = ordering
-            ? () => this.group.top(Infinity).filter(d => keepZeros || d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
+            ? () => this.group.all().filter(d => keepZeros || d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
             : () => this.group.top(maxItems);
 
         const adjustHeight = () => {
             const visibleData = getVisibleData();
             const visible = visibleData.length;
-            this.chart.height(Math.max(1, visible) * (ROW_HEIGHT + 2) + MARGINS.top + MARGINS.bottom + 8);
+            this.chart.height(Math.max(1, visible) * (ROW_HEIGHT + ROW_GAP) + MARGINS.top + MARGINS.bottom);
         };
         this.chart.on('preRender', adjustHeight);
         this.chart.on('preRedraw', adjustHeight);

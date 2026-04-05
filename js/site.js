@@ -114,7 +114,6 @@ export class Site {
             if (consecutive) {
                 const first  = terms[0];
                 const last   = terms[terms.length - 1];
-                const endStr = last.endYear || 'present';
                 const label  = `${first.displayName}`;
                 terms.forEach(t => adminIdToLabel.set(t.administrationId, label));
                 fullLabelOrder.set(label, +first.startYear);
@@ -131,9 +130,17 @@ export class Site {
             }
         });
 
-        const presTermDim  = this.facts.dimension(d =>
-            adminIdToLabel.get(d.administrationId) || d.presidentTerm || ''
-        );
+        // Stamp displayPresidency onto each record in a single pass so the
+        // crossfilter dimension is a plain field read with no runtime lookups.
+        this.records.forEach(d => {
+            d.displayPresidency = adminIdToLabel.get(d.administrationId) || d.presidentTerm || '';
+            if (!fullLabelOrder.has(d.displayPresidency))
+                fullLabelOrder.set(d.displayPresidency, fullLabelOrder.get(adminIdToLabel.get(d.administrationId)));
+            if (!fullLabelParty.has(d.displayPresidency))
+                fullLabelParty.set(d.displayPresidency, fullLabelParty.get(adminIdToLabel.get(d.administrationId)));
+        });
+
+        const presTermDim = this.facts.dimension(d => d.displayPresidency);
         const termOrdering = d => -(fullLabelOrder.get(d.key) ?? 0);
         const termColorFn  = key => {
             const p = fullLabelParty.get(key);
