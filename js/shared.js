@@ -24,6 +24,20 @@ export function formatDate(date, includeDayOfWeek = false) {
         return daysOfWeek[date.getDay()] + ', ' + rslt;
 }
 
+/** e.g. "Oct 17, 2025" */
+export function formatShortDate(date) {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
+export function escapeHtml(s) {
+    if (s === null || s === undefined) return '';
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;');
+}
+
 // Add commas to numbers: 123456789 -> '123,456,789'
 export function addCommas(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');

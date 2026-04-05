@@ -123,7 +123,9 @@ export class TimeChart {
                                     : addTermYears(floorToTermYear(new Date()), 2);
 
         const container = document.querySelector(this.parentSelector);
-        const width  = container ? container.clientWidth || 800 : 800;
+        const rawW     = container ? container.clientWidth || 800 : 800;
+        /* Trim a few px so bar chart width does not overflow the grid row and show a horizontal scrollbar. */
+        const width    = Math.max(100, Math.floor(rawW) - 4);
         const height = 104;
 
         this.chart = new dc.BarChart(this.parentSelector);
@@ -157,7 +159,7 @@ export class TimeChart {
 
         // Redraw whenever the container changes width
         this._resizeObserver = new ResizeObserver(entries => {
-            const newWidth = entries[0].contentRect.width;
+            const newWidth = Math.max(100, Math.floor(entries[0].contentRect.width) - 4);
             if (newWidth > 0 && Math.abs(newWidth - this.chart.width()) > 2) {
                 this.chart.width(newWidth);
                 this.chart.render();

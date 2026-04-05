@@ -30,7 +30,8 @@
 :root {
     /* Layout dimensions */
     --header-height: 52px;
-    --filter-col-width: 133px;
+    /* Row chart / filter column: 133px × 1.2 × 1.2 */
+    --filter-col-width: calc(133px * 1.44);
     --results-header-height: auto;
 
     /* Spacing */
@@ -185,6 +186,14 @@ a:active {
     grid-column: 1 / -1;
     grid-row: 1;
     border-bottom: 1px solid var(--border-color);
+    min-width: 0;
+    overflow-x: hidden;
+}
+
+#chart-grant-date {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* ========================================
@@ -193,7 +202,8 @@ a:active {
 
 #filter-zone {
     display: grid;
-    grid-template-columns: var(--filter-col-width) 208px;
+    /* Names column: +10% then +20% vs base 208px → 208 × 1.1 × 1.2 */
+    grid-template-columns: var(--filter-col-width) calc(208px * 1.32);
     grid-template-rows: 1fr;
     gap: var(--gap-sm);
     padding: var(--gap-sm);
@@ -272,7 +282,9 @@ a:active {
     display: flex;
     flex-direction: column;
     gap: var(--gap-sm);
+    overflow-x: hidden;
     overflow-y: auto;
+    min-width: 0;
     min-height: 0;
     height: 100%;
 }
@@ -321,7 +333,8 @@ a:active {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: var(--gap-sm);
+    /* No top padding so "Pardons" lines up with presidency chart title (filter zone already padded). */
+    padding: 0 var(--gap-sm) var(--gap-sm);
     box-sizing: border-box;
 }
 
@@ -333,13 +346,15 @@ a:active {
 
 .names-list-item {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 4px;
-    padding: 5px 6px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 6px 5px;
     border-radius: 3px;
     cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e8e8e8;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 .names-list-item:hover {
@@ -350,22 +365,71 @@ a:active {
     background-color: rgba(26, 54, 93, 0.12);
 }
 
-.nli-name {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-dark);
+.nli-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+    margin-top: -3px;
+}
+
+.nli-meta {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     flex: 1;
-    min-width: 0;
 }
 
-.nli-date {
-    font-size: 10px;
-    color: var(--text-muted);
-    white-space: nowrap;
+.nli-footer-clemency {
     flex-shrink: 0;
+}
+
+.nli-clemency {
+    font-size: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.nli-clemency--pardon {
+    color: #6282a8;
+}
+
+.nli-clemency--commutation {
+    color: #8f77b0;
+}
+
+.nli-clemency--other {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.nli-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+.nli-offense {
+    font-size: 12px;
+    font-weight: 400;
+    color: #2f3744;
+    line-height: 1.28;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
 }
 
 .chart-title {

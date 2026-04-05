@@ -4,8 +4,9 @@
 
 import { RowChart } from './rowChart.js';
 import { TimeChart } from './timeChart.js';
-import { formatDate, scrollToTop, addCommas } from './shared.js';
+import { formatDate, formatShortDate, escapeHtml, scrollToTop, addCommas } from './shared.js';
 import { trackPageView } from './analytics.js';
+import { applyParamsToCharts, searchStringFromFilterTypes } from './filterUrl.js';
 
 trackPageView();
 
@@ -13,6 +14,10 @@ export class Site {
     constructor() {
         if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
             document.title = 'Pardonpedia DEV';
+
+        this._suppressUrlPush = false;
+        this._lastPushedSearch = '';
+        this._popstateBound = false;
 
         this.records = this.getData();
         window.site = this;
@@ -83,7 +88,14 @@ export class Site {
         this.setupCharts(adminData);
         this.setupNamesList();
         dc.renderAll();
+
+        this._suppressUrlPush = true;
+        applyParamsToCharts(new URLSearchParams(window.location.search));
+        dc.redrawAll();
+        this._lastPushedSearch = searchStringFromFilterTypes(this.collectFilters());
         this.refresh();
+        this._suppressUrlPush = false;
+
         overlay.classList.replace('loading-visible', 'loading-hidden');
         document.getElementById('names-search-input').focus();
     }
@@ -149,13 +161,41 @@ export class Site {
 
         const topicDim = this.facts.dimension(d => d.topic === 'None' ? '' : (d.topic || ''));
 
+        /* Slightly under grid track calc(133px * 1.44) so SVGs do not exceed column (avoids horiz scrollbar). */
+        const filterChartWidth = Math.max(100, Math.floor(133 * 1.44) - 2);
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', 133, 50, boundRefresh, 'Presidency',    presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn, null, true),
-            new RowChart(this.facts, 'topic',         133, 50, boundRefresh, 'Topics',        topicDim,    '#chart-topic-wrap'),
-            new RowChart(this.facts, 'clemencyType',  133, 20, boundRefresh, 'Clemency Type', null,        '#chart-clemency_type', false, false, null, null, null),
+            new RowChart(this.facts, 'presidentTerm', filterChartWidth, 50, boundRefresh, 'Presidency',    presTermDim, '#chart-president_term', false, false, termOrdering, termColorFn, null, true),
+            new RowChart(this.facts, 'topic',         filterChartWidth, 50, boundRefresh, 'Topics',        topicDim,    '#chart-topic-wrap'),
+            new RowChart(this.facts, 'clemencyType',  filterChartWidth, 20, boundRefresh, 'Clemency Type', null,        '#chart-clemency_type', false, false, null, null, null),
         ];
 
         dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
+
+        this._ensurePopstateListener();
+    }
+
+    _ensurePopstateListener() {
+        if (this._popstateBound) return;
+        this._popstateBound = true;
+        window.addEventListener('popstate', () => {
+            if (!dc.rowCharts?.length) return;
+            this._suppressUrlPush = true;
+            applyParamsToCharts(new URLSearchParams(window.location.search));
+            dc.redrawAll();
+            this._lastPushedSearch = searchStringFromFilterTypes(this.collectFilters());
+            this.refresh();
+            this._suppressUrlPush = false;
+        });
+    }
+
+    _syncUrlWithFilters() {
+        if (this._suppressUrlPush) return;
+        const next = searchStringFromFilterTypes(this.collectFilters());
+        if (next === this._lastPushedSearch) return;
+        this._lastPushedSearch = next;
+        const qs = next ? `?${next}` : '';
+        const hash = window.location.hash || '';
+        history.pushState(null, '', `${window.location.pathname}${qs}${hash}`);
     }
 
     collectFilters() {
@@ -254,6 +294,7 @@ export class Site {
         });
 
         dc.redrawAll();
+        this._syncUrlWithFilters();
         scrollToTop('#names-list');
         this.buildNamesList(this._namesSearchTerm || '');
     }
@@ -352,14 +393,39 @@ export class Site {
             return;
         }
 
+        const clemencyClassAndLabel = (type) => {
+            const t = (type || '').toLowerCase();
+            if (t === 'commutation') return { cls: 'nli-clemency--commutation', label: 'Commutation' };
+            if (t === 'pardon') return { cls: 'nli-clemency--pardon', label: 'Pardon' };
+            return { cls: 'nli-clemency--other', label: escapeHtml(type || '') };
+        };
+
+        const truncateOffense = (text, maxLen) => {
+            const s = (text || '').trim();
+            if (!s) return '';
+            if (s.length <= maxLen) return s;
+            return `${s.slice(0, maxLen - 1)}…`;
+        };
+
         container.innerHTML = sorted.map((r, i) => {
-            const dateStr = r.date && !isNaN(r.date)
-                ? `${r.date.getMonth() + 1}/${r.date.getDate()}/${String(r.date.getFullYear()).slice(-2)}`
+            const dateStr = r.date && !isNaN(r.date) ? formatShortDate(r.date) : '';
+            const pres = escapeHtml(r.presidentName || r.presidentTerm || '');
+            const metaLine = [pres, dateStr].filter(Boolean).join(' · ');
+            const name = escapeHtml(r.personName || 'Unknown');
+            const { cls: clemCls, label: clemLabel } = clemencyClassAndLabel(r.clemencyType);
+            const clemHtml = clemLabel
+                ? `<span class="nli-clemency ${clemCls}">${clemLabel}</span>`
                 : '';
-            const name = r.personName || 'Unknown';
+            const offenseRaw = truncateOffense(r.offense, 120);
+            const offenseHtml = offenseRaw ? `<div class="nli-offense">${escapeHtml(offenseRaw)}</div>` : '';
+
             return `<div class="names-list-item${i === 0 ? ' selected' : ''}" data-idx="${i}">`
-                + `<span class="nli-name">${name}</span>`
-                + (dateStr ? `<span class="nli-date">${dateStr}</span>` : '')
+                + `<div class="nli-name">${name}</div>`
+                + offenseHtml
+                + `<div class="nli-footer">`
+                + `<span class="nli-meta">${metaLine || '—'}</span>`
+                + (clemHtml ? `<span class="nli-footer-clemency">${clemHtml}</span>` : '')
+                + `</div>`
                 + `</div>`;
         }).join('');
 

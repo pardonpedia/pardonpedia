@@ -220,7 +220,7 @@
 }
 
 .filter-box-title {
-    font-size: 13px;
+    font-size: 11px;
     margin-bottom: 4px;
     color: var(--primary-blue, #1a365d);
     font-weight: 600;
@@ -242,7 +242,7 @@
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 3px;
-    font-size: 15px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.15s ease;
 }
