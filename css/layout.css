@@ -92,7 +92,7 @@ a:active {
     justify-content: space-between;
     align-items: center;
     padding: 4px var(--gap-lg);
-    border-bottom: 3px solid var(--primary-blue);
+    border-bottom: 1.5px solid var(--primary-blue);
     background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
 }
 
@@ -131,7 +131,7 @@ a:active {
     align-items: center;
     gap: 8px;
     padding-left: 20px;
-    border-left: 3px solid var(--primary-blue);
+    border-left: 1.5px solid var(--primary-blue);
     align-self: center;
     height: 26px;
     margin-top: 6px;

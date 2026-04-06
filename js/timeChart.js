@@ -126,7 +126,7 @@ export class TimeChart {
         const rawW     = container ? container.clientWidth || 800 : 800;
         /* Trim a few px so bar chart width does not overflow the grid row and show a horizontal scrollbar. */
         const width    = Math.max(100, Math.floor(rawW) - 4);
-        const height = 80;
+        const height = 100;
 
         this.chart = new dc.BarChart(this.parentSelector);
         this.chart
