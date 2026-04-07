@@ -2,6 +2,10 @@
 
 Notable updates to Pardonpedia.
 
+## Issues
+
+- Need to confirm names for Obama/Biden drug sentence commutations are included correctly.
+
 ## April 6, 2026
 
 - Improvements to the grant-date timeline chart.
