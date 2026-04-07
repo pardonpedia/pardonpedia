@@ -2,7 +2,7 @@
  * PardonPedia - Clemency Records Explorer
  */
 
-import { RowChart } from './rowChart.js';
+import { RowChart, computeFrozenFacetKeys } from './rowChart.js';
 import { TimeChart } from './timeChart.js';
 import { formatDate, formatShortDate, escapeHtml, scrollToTop, addCommas } from './shared.js';
 import { trackPageView } from './analytics.js';
@@ -216,13 +216,18 @@ export class Site {
         const officeDim = this.facts.dimension(d => noneToEmpty(d.officeHeld));
         const relationshipDim = this.facts.dimension(d => noneToEmpty(d.relationship));
 
+        const frozenClemency = computeFrozenFacetKeys(this.records, 'clemencyType', 20);
+        const frozenOffice = computeFrozenFacetKeys(this.records, 'officeHeld', 50, noneToEmpty);
+        const frozenRelationship = computeFrozenFacetKeys(this.records, 'relationship', 50, noneToEmpty);
+        const frozenTopic = computeFrozenFacetKeys(this.records, 'topic', 50, noneToEmpty);
+
         const filterChartWidth = this._measureFilterChartWidth();
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', filterChartWidth, 50, boundRefresh, 'Presidency',              presTermDim,       '#chart-president_term', false, false, termOrdering, termColorFn, null, true),
-            new RowChart(this.facts, 'clemencyType',  filterChartWidth, 20, boundRefresh, 'Clemency Type',           null,              '#chart-clemency_type', false, false, null, null, null),
-            new RowChart(this.facts, 'officeHeld',    filterChartWidth, 50, boundRefresh, 'Occupation',              officeDim,         '#chart-officeHeld-wrap'),
-            new RowChart(this.facts, 'relationship',  filterChartWidth, 50, boundRefresh, 'Relationship to President', relationshipDim, '#chart-relationship-wrap'),
-            new RowChart(this.facts, 'topic',         filterChartWidth, 50, boundRefresh, 'TOPIC',                   topicDim,          '#chart-topic-wrap'),
+            new RowChart(this.facts, 'presidentTerm', filterChartWidth, 50, boundRefresh, 'Presidency',              presTermDim,       '#chart-president_term', false, false, termOrdering, termColorFn, null, true, null),
+            new RowChart(this.facts, 'clemencyType',  filterChartWidth, 20, boundRefresh, 'Clemency Type',           null,              '#chart-clemency_type', false, false, null, null, null, false, frozenClemency),
+            new RowChart(this.facts, 'officeHeld',    filterChartWidth, 50, boundRefresh, 'Occupation',              officeDim,         '#chart-officeHeld-wrap', false, false, null, null, null, false, frozenOffice),
+            new RowChart(this.facts, 'relationship',  filterChartWidth, 50, boundRefresh, 'Relationship to President', relationshipDim, '#chart-relationship-wrap', false, false, null, null, null, false, frozenRelationship),
+            new RowChart(this.facts, 'topic',         filterChartWidth, 50, boundRefresh, 'TOPIC',                   topicDim,          '#chart-topic-wrap', false, false, null, null, null, false, frozenTopic),
         ];
 
         dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);

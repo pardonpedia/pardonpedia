@@ -1,13 +1,40 @@
+/**
+ * Top-N distinct keys by global count (full dataset), for frozen facet lists.
+ * normalizeKey normalizes a raw field value to match the crossfilter dimension (default: String or '').
+ */
+export function computeFrozenFacetKeys(records, field, maxItems, normalizeKey = null) {
+    const norm = normalizeKey || (v => (v == null || v === '') ? '' : String(v));
+    const counts = new Map();
+    for (const r of records) {
+        const k = norm(r[field]);
+        if (k === '' || k == null) continue;
+        counts.set(k, (counts.get(k) || 0) + 1);
+    }
+    return [...counts.entries()]
+        .sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))
+        .slice(0, maxItems)
+        .map(([k]) => k);
+}
+
 export class RowChart {
-    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null, barColorFn = null, labelFn = null, keepZeros = false) {
+    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null, barColorFn = null, labelFn = null, keepZeros = false, frozenFacetKeys = null) {
         this.title = title;
         this.field = attribute;
         this.singleSelect = singleSelect;
         this.dim = dim ? dim : facts.dimension(d => d[attribute] || '');
-        this.group = this.dim.group().reduceSum(dc.pluck('count'));
+        const rawGroup = this.dim.group().reduceSum(dc.pluck('count'));
 
-        if (!keepZeros) {
-            this.group = removeZeroes(this.group);
+        this.frozenFacetKeys = Array.isArray(frozenFacetKeys) && frozenFacetKeys.length ? frozenFacetKeys : null;
+        this._ordering = ordering;
+        this._keepZeros = keepZeros;
+        this._maxItems = maxItems;
+
+        if (this.frozenFacetKeys) {
+            this.group = rawGroup;
+        } else if (!keepZeros) {
+            this.group = removeZeroes(rawGroup);
+        } else {
+            this.group = rawGroup;
         }
 
         const ROW_HEIGHT = 16;
@@ -57,6 +84,12 @@ export class RowChart {
             let selectedIndex = -1;
 
             const getAllItems = () => {
+                if (this.frozenFacetKeys) {
+                    const map = new Map(group.all().map(d => [d.key, d.value]));
+                    return this.frozenFacetKeys
+                        .map(k => ({ key: k, value: map.get(k) ?? 0 }))
+                        .filter(d => d.value > 0);
+                }
                 return group.top(Infinity).filter(d => d.value > 0);
             };
 
@@ -196,18 +229,20 @@ export class RowChart {
             });
         };
 
+        const initialRowCount = this.frozenFacetKeys
+            ? this.frozenFacetKeys.length
+            : Math.max(1, Math.min(maxItems, this.group.all().length));
+
         this.chart = dc.rowChart('#chart-' + attribute + '-content')
             .dimension(this.dim)
             .group(this.group)
-            .data(ordering
-                ? g => g.all().filter(d => keepZeros || d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
-                : g => g.top(maxItems))
+            .data(g => this._computeChartData(g))
             .width(width)
-            .height(Math.max(1, Math.min(maxItems, this.group.all().length)) * (ROW_HEIGHT + ROW_GAP) + MARGINS.top + MARGINS.bottom)
+            .height(initialRowCount * (ROW_HEIGHT + ROW_GAP) + MARGINS.top + MARGINS.bottom)
             .fixedBarHeight(ROW_HEIGHT)
             .gap(ROW_GAP)
             .margins(MARGINS)
-            .elasticX(true)
+            .elasticX(false)
             .colors(['#aecde8'])
             .label(d => labelFn ? labelFn(d.key) : d.key)
             .labelOffsetX(5)
@@ -224,7 +259,6 @@ export class RowChart {
 
         this.chart.xAxis().ticks(0).tickSize(0).tickFormat(() => '');
 
-
         if (singleSelect) {
             this.chart.filterHandler((dimension, filters) => {
                 if (filters.length === 0) {
@@ -236,17 +270,21 @@ export class RowChart {
             });
         }
 
-        const getVisibleData = ordering
-            ? () => this.group.all().filter(d => keepZeros || d.value > 0).sort((a, b) => ordering(a) - ordering(b)).slice(0, maxItems)
-            : () => this.group.top(maxItems);
+        const beforeDraw = () => {
+            const visible = Math.max(1, this._computeChartData(this.group).length);
+            this.chart.height(visible * (ROW_HEIGHT + ROW_GAP) + MARGINS.top + MARGINS.bottom);
 
-        const adjustHeight = () => {
-            const visibleData = getVisibleData();
-            const visible = visibleData.length;
-            this.chart.height(Math.max(1, visible) * (ROW_HEIGHT + ROW_GAP) + MARGINS.top + MARGINS.bottom);
+            // With elasticX off we own the x scale. dc's elastic [0,0] domain breaks label positions
+            // when all values are zero; keep domain max ≥ 1 so _translateX stays stable.
+            const rows = this.chart.data();
+            const maxV = rows.length ? d3.max(rows, d => d.value) : 0;
+            const hi = maxV > 0 ? maxV : 1;
+            const effW = this.chart.effectiveWidth();
+            this.chart.x(d3.scaleLinear().domain([0, hi]).range([0, effW]));
+            this.chart.xAxis().scale(this.chart.x());
         };
-        this.chart.on('preRender', adjustHeight);
-        this.chart.on('preRedraw', adjustHeight);
+        this.chart.on('preRender', beforeDraw);
+        this.chart.on('preRedraw', beforeDraw);
 
 
         if (this.setChartRef) {
@@ -260,5 +298,23 @@ export class RowChart {
                 top: n => group.top(Infinity).filter(keep).slice(0, n)
             };
         }
+    }
+
+    _computeChartData(g) {
+        if (this.frozenFacetKeys) {
+            const map = new Map(g.all().map(d => [d.key, d.value]));
+            const keys = [...this.frozenFacetKeys];
+            for (const f of this.chart.filters()) {
+                if (f !== '' && f != null && !keys.includes(f)) keys.push(f);
+            }
+            return keys.map(k => ({ key: k, value: map.get(k) ?? 0 }));
+        }
+        if (this._ordering) {
+            return g.all()
+                .filter(d => this._keepZeros || d.value > 0)
+                .sort((a, b) => this._ordering(a) - this._ordering(b))
+                .slice(0, this._maxItems);
+        }
+        return g.top(this._maxItems);
     }
 }

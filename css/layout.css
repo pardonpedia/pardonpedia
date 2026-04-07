@@ -96,12 +96,32 @@ a:active {
     background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
 }
 
+.header-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    align-self: flex-start;
+    padding-top: 4px;
+}
+
 #updated-date {
     font-size: 11px;
     font-style: italic;
     color: var(--text-muted);
-    align-self: flex-start;
-    padding-top: 4px;
+}
+
+.header-release-notes {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent-blue);
+    text-decoration: none;
+    letter-spacing: 0.2px;
+}
+
+.header-release-notes:hover {
+    color: var(--primary-blue);
+    text-decoration: underline;
 }
 
 #title h1 {
