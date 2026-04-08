@@ -16,13 +16,32 @@ export function computeFrozenFacetKeys(records, field, maxItems, normalizeKey = 
         .map(([k]) => k);
 }
 
+/** Top-N facet keys by total of sumField (e.g. forgiven dollars), not row count */
+export function computeFrozenFacetKeysBySum(records, field, sumField, maxItems, normalizeKey = null) {
+    const norm = normalizeKey || (v => (v == null || v === '') ? '' : String(v));
+    const sums = new Map();
+    for (const r of records) {
+        const k = norm(r[field]);
+        if (k === '' || k == null) continue;
+        const add = Number(r[sumField]) || 0;
+        sums.set(k, (sums.get(k) || 0) + add);
+    }
+    return [...sums.entries()]
+        .sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))
+        .slice(0, maxItems)
+        .map(([k]) => k);
+}
+
 export class RowChart {
-    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null, barColorFn = null, labelFn = null, keepZeros = false, frozenFacetKeys = null) {
+    constructor(facts, attribute, width, maxItems, updateFunction, title, dim, parentSelector = '#chart-container', showSearch = false, singleSelect = false, ordering = null, barColorFn = null, labelFn = null, keepZeros = false, frozenFacetKeys = null, valueSumField = null, valueFormat = null) {
         this.title = title;
         this.field = attribute;
         this.singleSelect = singleSelect;
+        this._valueFormat = typeof valueFormat === 'function' ? valueFormat : null;
         this.dim = dim ? dim : facts.dimension(d => d[attribute] || '');
-        const rawGroup = this.dim.group().reduceSum(dc.pluck('count'));
+        const rawGroup = valueSumField
+            ? this.dim.group().reduceSum(d => Number(d[valueSumField]) || 0)
+            : this.dim.group().reduceSum(dc.pluck('count'));
 
         this.frozenFacetKeys = Array.isArray(frozenFacetKeys) && frozenFacetKeys.length ? frozenFacetKeys : null;
         this._ordering = ordering;
@@ -197,6 +216,7 @@ export class RowChart {
             .attr('id', contentId)
             .attr('class', 'chart-scroll');
 
+        const valueFmt = this._valueFormat;
         const applyRowStyles = (chart) => {
             const filters = chart.filters();
             const innerWidth = chart.width() - chart.margins().left - chart.margins().right;
@@ -225,7 +245,7 @@ export class RowChart {
                     .attr('y', ROW_HEIGHT / 2)
                     .attr('dy', '0.35em')
                     .attr('text-anchor', 'end')
-                    .text(d.value.toLocaleString());
+                    .text(valueFmt ? valueFmt(d.value) : d.value.toLocaleString());
             });
         };
 

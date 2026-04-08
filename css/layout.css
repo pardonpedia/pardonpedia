@@ -218,6 +218,37 @@ a:active {
     box-sizing: border-box;
 }
 
+/* Givebacks page: copy above forgiven-amount bar chart */
+.givebacks-time-chart-head {
+    padding: 8px 2px 4px;
+    margin-left: 10px;
+    min-width: 0;
+}
+
+.givebacks-time-chart-lede {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.givebacks-time-chart-source {
+    font-size: 11px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.givebacks-time-chart-source a {
+    color: var(--accent-blue);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.givebacks-time-chart-source a:hover {
+    text-decoration: underline;
+}
+
 /* ========================================
    FILTER ZONE (Left side - 2 columns)
    ======================================== */
@@ -250,12 +281,31 @@ a:active {
     background-color: var(--results-bg);
 }
 
+.detail-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
 .detail-name {
     font-size: 22px;
     font-weight: 700;
     color: var(--text-dark);
-    margin-bottom: 6px;
     line-height: 1.2;
+    flex: 1;
+    min-width: 0;
+}
+
+.detail-district {
+    flex-shrink: 0;
+    max-width: 42%;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--text-muted);
+    text-align: right;
 }
 
 .detail-date {
@@ -458,6 +508,74 @@ a:active {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     line-clamp: 2;
+}
+
+.nli-amount {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35em 0.5em;
+    margin-top: 2px;
+    line-height: 1.2;
+}
+
+.nli-amount-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary-blue);
+}
+
+.nli-amount-remedy {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Givebacks: remedy pills — tints of shared.js remedyBarFill (stack + row chart) */
+.remedy-type-pill {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 4px;
+    line-height: 1.2;
+}
+
+.remedy-type-pill--compact {
+    font-size: 10px;
+    padding: 2px 7px;
+    font-weight: 600;
+}
+
+.remedy-type-pill--fine {
+    background-color: #fef9c3;
+    color: #a16207;
+}
+
+.remedy-type-pill--restitution {
+    background-color: #d1fae5;
+    color: #047857;
+}
+
+.remedy-type-pill--forfeiture {
+    background-color: #f3e8ff;
+    color: #7e22ce;
+}
+
+.remedy-type-pill--other {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+.detail-remedy-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-giveback-amt {
+    font-weight: 600;
 }
 
 .nli-offense {

@@ -30,6 +30,30 @@ export function formatShortDate(date) {
     return `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
+/**
+ * Parse CSV grantDate (YYYY-MM-DD or ISO datetime) as local calendar midnight.
+ * Avoids UTC day-shift from `new Date(iso)` and bad numeric day when a time suffix is present.
+ */
+export function parseCsvGrantDate(str) {
+    if (!str || typeof str !== 'string') return undefined;
+    const ymd = str.trim().slice(0, 10);
+    const parts = ymd.split('-');
+    if (parts.length !== 3) return new Date(NaN);
+    const [y, m, d] = parts.map(Number);
+    if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return new Date(NaN);
+    return new Date(y, m - 1, d);
+}
+
+/** Human-readable calendar date for pipeline `generated_at` (UTC date of the build). */
+export function formatMetaUpdatedDate(isoTimestamp) {
+    const d = new Date(isoTimestamp);
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        timeZone: 'UTC',
+    });
+}
+
 export function escapeHtml(s) {
     if (s === null || s === undefined) return '';
     return String(s)
@@ -53,6 +77,38 @@ export function scrollToTop(divId) {
             let i = d3.interpolateNumber(node.scrollTop, 0);
             return function(t) { node.scrollTop = i(t); };
         });
+}
+
+/**
+ * Givebacks remedy label → stable slug for CSS / chart colors (Fine, Restitution, Forfeiture).
+ */
+export function remedyTypeSlug(remedyRaw) {
+    const t = String(remedyRaw || '').trim().toLowerCase();
+    if (t === 'fine') return 'fine';
+    if (t === 'restitution') return 'restitution';
+    if (t === 'forfeiture') return 'forfeiture';
+    return 'other';
+}
+
+/**
+ * Stacked time chart + row-chart bar fills. Order: bottom → top stack. No red/blue.
+ */
+export const REMEDY_STACK_SPECS = [
+    { slug: 'fine', label: 'Fine' },
+    { slug: 'restitution', label: 'Restitution' },
+    { slug: 'forfeiture', label: 'Forfeiture' },
+    { slug: 'other', label: 'Other' },
+];
+
+const REMEDY_BAR_FILL = {
+    fine: '#ca8a04',
+    restitution: '#059669',
+    forfeiture: '#9333ea',
+    other: '#64748b',
+};
+
+export function remedyBarFill(slug) {
+    return REMEDY_BAR_FILL[slug] || REMEDY_BAR_FILL.other;
 }
 
 // Slugify a string

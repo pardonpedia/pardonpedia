@@ -1,21 +1,63 @@
 /**
- * PardonPedia - Clemency Records Explorer
+ * Givebacks — monetary forfeiture / forgiven amounts (money.csv).
  */
 
-import { RowChart, computeFrozenFacetKeys } from './rowChart.js';
-import { TimeChart } from './timeChart.js';
-import { formatShortDate, escapeHtml, scrollToTop, parseCsvGrantDate, formatMetaUpdatedDate } from './shared.js';
+import { RowChart, computeFrozenFacetKeysBySum } from './rowChart.js';
+import { ForgivenAmountMonthChart } from './forgivenAmountWeekChart.js';
+import { formatShortDate, escapeHtml, scrollToTop, formatMetaUpdatedDate } from './shared.js';
 import { renderPardonDetail } from './detailPanel.js';
 import { trackPageView } from './analytics.js';
-import { applyParamsToCharts, searchStringFromFilterTypes } from './filterUrl.js';
-import { downloadFilteredCsv, PARDONS_EXPORT_COLUMNS } from './csvDownload.js';
+import { applyGivebacksParamsToCharts, givebacksSearchStringFromFilterTypes } from './givebacksFilterUrl.js';
+import { downloadFilteredCsv, MONEY_EXPORT_COLUMNS } from './csvDownload.js';
 
 trackPageView();
 
-export class Site {
+const moneyFmt = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+});
+
+function grantDateTimestamp(r) {
+    if (r.date instanceof Date && !Number.isNaN(r.date.getTime())) return r.date.getTime();
+    if (r.grantDate) {
+        const p = String(r.grantDate).split('-').map(Number);
+        if (p.length >= 3 && p.every(n => !Number.isNaN(n)))
+            return new Date(p[0], p[1] - 1, p[2]).getTime();
+    }
+    return NaN;
+}
+
+/** Grant date ascending (oldest first); undated rows last; then name, administration id. */
+function sortGivebacksRecords(records) {
+    return [...records].sort((a, b) => {
+        const ta = grantDateTimestamp(a);
+        const tb = grantDateTimestamp(b);
+        const aOk = !Number.isNaN(ta);
+        const bOk = !Number.isNaN(tb);
+        if (aOk && bOk && ta !== tb) return ta - tb;
+        if (aOk !== bOk) return aOk ? -1 : 1;
+        const byName = (a.personName || '').localeCompare(b.personName || '', undefined, { sensitivity: 'base' });
+        if (byName !== 0) return byName;
+        return (+a.administrationId || 0) - (+b.administrationId || 0);
+    });
+}
+
+/** Compact dollars for narrow row-chart labels (whole dollars) */
+const rowMoneyFmt = v => new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    notation: 'compact',
+    compactDisplay: 'short',
+}).format(Math.round(v));
+
+export class GivebacksSite {
     constructor() {
         if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-            document.title = 'Pardonpedia DEV';
+            document.title = 'Pardonpedia Givebacks DEV';
 
         this._suppressUrlPush = false;
         this._lastPushedSearch = '';
@@ -24,7 +66,7 @@ export class Site {
         this._pdfDocPromiseByKey = new Map();
 
         this.records = this.getData();
-        window.site = this;
+        window.givebacksSite = this;
     }
 
     _getPdfDocumentPromise(warrantKey, pdfUrl) {
@@ -44,30 +86,24 @@ export class Site {
         const overlay = document.getElementById('loading-overlay');
         overlay.classList.replace('loading-hidden', 'loading-visible');
 
-        const [pardonsResp, adminResp, metaResp, storiesResp, moneyResp] = await Promise.all([
-            fetch('data/pardons.csv.gz'),
+        const [moneyResp, adminResp, metaResp, storiesResp] = await Promise.all([
+            fetch('data/money.csv.gz'),
             fetch('data/administrations.csv'),
             fetch('data/pardons.meta.json'),
             fetch('data/stories.csv.gz'),
-            fetch('data/money.csv.gz'),
         ]);
 
         const [buf, adminText, metaJson, storiesBuf] = await Promise.all([
-            pardonsResp.arrayBuffer(),
+            moneyResp.arrayBuffer(),
             adminResp.text(),
             metaResp.json(),
             storiesResp.arrayBuffer(),
         ]);
 
         const adminData = d3.csvParse(adminText);
-        this.termOrder  = new Map(adminData.map(d => [d.presidentTerm, +d.startYear]));
-        this.termParty  = new Map(adminData.map(d => [d.presidentTerm, d.partyAbbreviation]));
-        this.yearParty  = new Map();
-        adminData.forEach(d => {
-            const start = +d.startYear;
-            const end   = d.endYear ? +d.endYear : 2030;
-            for (let y = start; y < end; y++) this.yearParty.set(y, d.partyAbbreviation);
-        });
+        const presidentDisplayByAdminId = new Map(
+            adminData.map(d => [String(d.administrationId).trim(), (d.displayName || '').trim()]),
+        );
 
         const text = pako.inflate(new Uint8Array(buf), { to: 'string' });
         const allRecords = d3.csvParse(text);
@@ -81,53 +117,45 @@ export class Site {
             this.storiesByPardonId.get(s.pardonId).push(s);
         });
 
-        const moneyByPardonId = new Map();
-        if (moneyResp.ok) {
-            const moneyBuf = await moneyResp.arrayBuffer();
-            const moneyText = pako.inflate(new Uint8Array(moneyBuf), { to: 'string' });
-            d3.csvParse(moneyText).forEach(m => {
-                const key = String(m.pardonMoneyId ?? m.id ?? '').trim();
-                if (key) moneyByPardonId.set(key, m);
-            });
-        }
-
         allRecords.forEach(record => {
             record.count = 1;
-            if (record.grantDate)
-                record.date = parseCsvGrantDate(record.grantDate);
+            if (record.grantDate) {
+                const [gy, gm, gd] = record.grantDate.split('-').map(Number);
+                record.date = new Date(gy, gm - 1, gd);
+            }
+            record.forgivenAmountNum = record.forgivenAmount === '' || record.forgivenAmount == null
+                ? 0
+                : Number(record.forgivenAmount);
+            if (Number.isNaN(record.forgivenAmountNum)) record.forgivenAmountNum = 0;
 
-            const pid = String(record.id ?? '').trim();
-            const m = moneyByPardonId.get(pid);
-            if (m) {
-                record.forgivenAmount = m.forgivenAmount;
-                record.remedyType = m.remedyType;
-                record.forgivenAmountNum = m.forgivenAmount === '' || m.forgivenAmount == null
-                    ? 0
-                    : Number(m.forgivenAmount);
-                if (Number.isNaN(record.forgivenAmountNum)) record.forgivenAmountNum = 0;
+            const aid = String(record.administrationId ?? '').trim();
+            const hasPresName = record.presidentName && String(record.presidentName).trim();
+            if (aid && !hasPresName) {
+                const shortName = presidentDisplayByAdminId.get(aid);
+                if (shortName) record.presidentName = shortName;
             }
         });
 
         this.records = allRecords;
 
-        // Display the dataset generation date from meta file
-        const generatedAt = metaJson?.pardons?.generated_at;
+        const generatedAt = metaJson?.money?.generated_at;
         if (generatedAt) {
             const formatted = formatMetaUpdatedDate(generatedAt);
-            if (formatted) document.getElementById('updated-date').textContent = `Updated ${formatted}`;
+            const el = document.getElementById('updated-date');
+            if (el && formatted) el.textContent = `Updated ${formatted}`;
         }
 
         this.facts = crossfilter(this.records);
         dc.facts = this.facts;
 
-        this.setupCharts(adminData);
+        this.setupCharts();
         this.setupNamesList();
         dc.renderAll();
 
         this._suppressUrlPush = true;
-        applyParamsToCharts(new URLSearchParams(window.location.search));
+        applyGivebacksParamsToCharts(new URLSearchParams(window.location.search));
         dc.redrawAll();
-        this._lastPushedSearch = searchStringFromFilterTypes(this.collectFilters());
+        this._lastPushedSearch = givebacksSearchStringFromFilterTypes(this.collectFilters());
         this.refresh();
         this._suppressUrlPush = false;
 
@@ -172,85 +200,24 @@ export class Site {
         this._filterColResizeObs.observe(col);
     }
 
-    setupCharts(adminData) {
+    setupCharts() {
         const boundRefresh = () => this.refresh();
         dc.refresh = boundRefresh;
 
-        // Build combined labels for consecutive two-term presidents.
-        // Non-consecutive terms (e.g. Trump 1 & 2 separated by Biden) stay separate.
-        const presidentTerms = new Map();
-        adminData.forEach(d => {
-            if (!presidentTerms.has(d.presidentId)) presidentTerms.set(d.presidentId, []);
-            presidentTerms.get(d.presidentId).push(d);
-        });
-
-        const adminIdToLabel  = new Map(); // administrationId → display label
-        const fullLabelOrder  = new Map(); // display label    → start year (for sort)
-        const fullLabelParty  = new Map(); // display label    → party abbreviation
-
-        presidentTerms.forEach(terms => {
-            terms.sort((a, b) => +a.startYear - +b.startYear);
-
-            // Consecutive = every term's endDate matches the next term's startDate
-            const consecutive = terms.length > 1 &&
-                terms.every((t, i) => i === terms.length - 1 || t.endDate === terms[i + 1].startDate);
-
-            if (consecutive) {
-                const first  = terms[0];
-                const last   = terms[terms.length - 1];
-                const label  = `${first.displayName}`;
-                terms.forEach(t => adminIdToLabel.set(t.administrationId, label));
-                fullLabelOrder.set(label, +first.startYear);
-                fullLabelParty.set(label, first.partyAbbreviation);
-            } else {
-                terms.forEach((t, i) => {
-                    const label = terms.length > 1
-                        ? `${t.displayName} ${i + 1}`
-                        : `${t.displayName}`;
-                    adminIdToLabel.set(t.administrationId, label);
-                    fullLabelOrder.set(label, +t.startYear);
-                    fullLabelParty.set(label, t.partyAbbreviation);
-                });
-            }
-        });
-
-        // Stamp displayPresidency onto each record in a single pass so the
-        // crossfilter dimension is a plain field read with no runtime lookups.
-        this.records.forEach(d => {
-            d.displayPresidency = adminIdToLabel.get(d.administrationId) || d.presidentTerm || '';
-            if (!fullLabelOrder.has(d.displayPresidency))
-                fullLabelOrder.set(d.displayPresidency, fullLabelOrder.get(adminIdToLabel.get(d.administrationId)));
-            if (!fullLabelParty.has(d.displayPresidency))
-                fullLabelParty.set(d.displayPresidency, fullLabelParty.get(adminIdToLabel.get(d.administrationId)));
-        });
-
-        const presTermDim = this.facts.dimension(d => d.displayPresidency);
-        const termOrdering = d => -(fullLabelOrder.get(d.key) ?? 0);
-        const termColorFn  = key => {
-            const p = fullLabelParty.get(key);
-            return p === 'D' ? '#6699cc' : p === 'R' ? '#cc6666' : '#aecde8';
-        };
-
         const noneToEmpty = v => v === 'None' ? '' : (v || '');
-        const topicDim = this.facts.dimension(d => noneToEmpty(d.topic));
-        const officeDim = this.facts.dimension(d => noneToEmpty(d.officeHeld));
-        const relationshipDim = this.facts.dimension(d => noneToEmpty(d.relationship));
+        const offenseTypeDim = this.facts.dimension(d => noneToEmpty(d.offenseType));
+        const remedyTypeDim = this.facts.dimension(d => noneToEmpty(d.remedyType));
 
-        const frozenClemency = computeFrozenFacetKeys(this.records, 'clemencyType', 20);
-        const frozenOffice = computeFrozenFacetKeys(this.records, 'officeHeld', 50, noneToEmpty);
-        const frozenRelationship = computeFrozenFacetKeys(this.records, 'relationship', 50, noneToEmpty);
-        const frozenTopic = computeFrozenFacetKeys(this.records, 'topic', 50, noneToEmpty);
+        const frozenOffense = computeFrozenFacetKeysBySum(this.records, 'offenseType', 'forgivenAmountNum', 50, noneToEmpty);
+        const frozenRemedy = computeFrozenFacetKeysBySum(this.records, 'remedyType', 'forgivenAmountNum', 50, noneToEmpty);
 
         const filterChartWidth = this._measureFilterChartWidth();
         dc.rowCharts = [
-            new RowChart(this.facts, 'presidentTerm', filterChartWidth, 50, boundRefresh, 'Presidency',              presTermDim,       '#chart-president_term', false, false, termOrdering, termColorFn, null, true, null),
-            new RowChart(this.facts, 'clemencyType',  filterChartWidth, 20, boundRefresh, 'Clemency Type',           null,              '#chart-clemency_type', false, false, null, null, null, false, frozenClemency),
-            new RowChart(this.facts, 'officeHeld',    filterChartWidth, 50, boundRefresh, 'Occupation',              officeDim,         '#chart-officeHeld-wrap', false, false, null, null, null, false, frozenOffice),
-            new RowChart(this.facts, 'relationship',  filterChartWidth, 50, boundRefresh, 'Relationship to President', relationshipDim, '#chart-relationship-wrap', false, false, null, null, null, false, frozenRelationship),
-            new RowChart(this.facts, 'topic',         filterChartWidth, 50, boundRefresh, 'TOPIC',                   topicDim,          '#chart-topic-wrap', false, false, null, null, null, false, frozenTopic),
+            new RowChart(this.facts, 'remedyType', filterChartWidth, 50, boundRefresh, 'Remedy', remedyTypeDim, '#chart-remedyType-wrap', false, false, null, null, null, false, frozenRemedy, 'forgivenAmountNum', rowMoneyFmt),
+            new RowChart(this.facts, 'offenseType', filterChartWidth, 50, boundRefresh, 'Offense', offenseTypeDim, '#chart-offenseType-wrap', false, false, null, null, null, false, frozenOffense, 'forgivenAmountNum', rowMoneyFmt),
         ];
 
-        dc.timeChart = new TimeChart(this.facts, adminData, '#chart-grant-date', boundRefresh);
+        new ForgivenAmountMonthChart(this.facts, '#chart-grant-date', boundRefresh);
 
         this._ensureFilterColResizeObserver();
         this._ensurePopstateListener();
@@ -262,9 +229,9 @@ export class Site {
         window.addEventListener('popstate', () => {
             if (!dc.rowCharts?.length) return;
             this._suppressUrlPush = true;
-            applyParamsToCharts(new URLSearchParams(window.location.search));
+            applyGivebacksParamsToCharts(new URLSearchParams(window.location.search));
             dc.redrawAll();
-            this._lastPushedSearch = searchStringFromFilterTypes(this.collectFilters());
+            this._lastPushedSearch = givebacksSearchStringFromFilterTypes(this.collectFilters());
             this.refresh();
             this._suppressUrlPush = false;
         });
@@ -272,7 +239,7 @@ export class Site {
 
     _syncUrlWithFilters() {
         if (this._suppressUrlPush) return;
-        const next = searchStringFromFilterTypes(this.collectFilters());
+        const next = givebacksSearchStringFromFilterTypes(this.collectFilters());
         if (next === this._lastPushedSearch) return;
         this._lastPushedSearch = next;
         const qs = next ? `?${next}` : '';
@@ -282,37 +249,26 @@ export class Site {
 
     collectFilters() {
         const filterTypes = [];
-
         dc.rowCharts.forEach(rc => {
             const chartFilters = rc.chart.filters();
             if (chartFilters.length > 0) {
                 filterTypes.push({
                     name: rc.title,
-                    filters: chartFilters
+                    filters: chartFilters,
                 });
             }
         });
-
         return filterTypes;
     }
 
     refresh() {
         const filterTypes = this.collectFilters();
         const hasActiveFilters = filterTypes.length > 0;
-        const recordCount = dc.facts.allFiltered().length;
+        const records = dc.facts.allFiltered();
+        const recordCount = records.length;
+        const totalForgiven = records.reduce((s, r) => s + (r.forgivenAmountNum || 0), 0);
 
-        const clemencyChart = dc.rowCharts.find(rc => rc.field === 'clemencyType');
-        const clemencyGroups = clemencyChart ? clemencyChart.group.all() : [];
-        const clemencyCounts = Object.fromEntries(clemencyGroups.map(d => [d.key, d.value]));
-        const pardonCount = clemencyCounts['Pardon'] || 0;
-        const commutationCount = clemencyCounts['Commutation'] || 0;
-        const otherCount = recordCount - pardonCount - commutationCount;
-        const countParts = [];
-        if (pardonCount > 0) countParts.push(`${pardonCount.toLocaleString()} pardons`);
-        if (commutationCount > 0) countParts.push(`${commutationCount.toLocaleString()} commutations`);
-        if (otherCount > 0) countParts.push(`${otherCount.toLocaleString()} other`);
-
-        let menuHtml = `<span class="record-count">${countParts.join(' / ')}</span>`;
+        let menuHtml = `<span class="record-count">${recordCount.toLocaleString()} recipients, ${moneyFmt.format(totalForgiven)} given back</span>`;
         if (hasActiveFilters) {
             menuHtml += `<button class="clear-button">Show All</button>`;
         }
@@ -336,19 +292,6 @@ export class Site {
         } else {
             d3.select('#filters').html('');
         }
-
-        const clearSearchInput = (containerSelector) => {
-            const container = d3.select(containerSelector);
-            const input = container.select('.chart-search');
-            if (!input.empty()) {
-                input.property('value', '');
-                input.classed('has-selection', false);
-            }
-            const searchContainer = container.select('.chart-search-container');
-            if (!searchContainer.empty()) {
-                searchContainer.classed('has-selection', false);
-            }
-        };
 
         d3.selectAll('.filter-value-badge').on('click', (event) => {
             event.stopPropagation();
@@ -374,8 +317,8 @@ export class Site {
         d3.select('#download-csv').on('click', () => {
             downloadFilteredCsv(
                 dc.facts.allFiltered(),
-                PARDONS_EXPORT_COLUMNS,
-                `pardonpedia-${new Date().toISOString().split('T')[0]}`,
+                MONEY_EXPORT_COLUMNS,
+                `pardonpedia-givebacks-${new Date().toISOString().split('T')[0]}`,
             );
         });
 
@@ -454,18 +397,7 @@ export class Site {
             records = records.filter(r => r.personName && r.personName.toLowerCase().includes(lower));
         }
 
-        const sorted = [...records]
-            .sort((a, b) => {
-                const aHasDate = a.date && !isNaN(a.date);
-                const bHasDate = b.date && !isNaN(b.date);
-                if (aHasDate !== bHasDate) return aHasDate ? -1 : 1;
-                if (aHasDate && bHasDate) {
-                    const dateDiff = b.date - a.date;
-                    if (dateDiff !== 0) return dateDiff;
-                }
-                return (+b.administrationId || 0) - (+a.administrationId || 0);
-            })
-;
+        const sorted = sortGivebacksRecords(records);
 
         const countEl = document.getElementById('names-list-count');
         if (countEl) countEl.textContent = sorted.length.toLocaleString();
@@ -504,9 +436,17 @@ export class Site {
                 : '';
             const offenseRaw = truncateOffense(r.offense, 120);
             const offenseHtml = offenseRaw ? `<div class="nli-offense">${escapeHtml(offenseRaw)}</div>` : '';
+            const amt = moneyFmt.format(r.forgivenAmountNum || 0);
+            const remedyRaw = (r.remedyType || '').trim();
+            const remedyLabel = remedyRaw && remedyRaw !== 'None' ? remedyRaw : '';
+            const remedyHtml = remedyLabel
+                ? `<span class="nli-amount-remedy">${escapeHtml(remedyLabel)}</span>`
+                : '';
+            const amountHtml = `<div class="nli-amount"><span class="nli-amount-value">${amt}</span>${remedyHtml}</div>`;
 
             return `<div class="names-list-item${i === 0 ? ' selected' : ''}" data-idx="${i}">`
                 + `<div class="nli-name">${name}</div>`
+                + amountHtml
                 + offenseHtml
                 + `<div class="nli-footer">`
                 + `<span class="nli-meta">${metaLine || '—'}</span>`
@@ -571,4 +511,4 @@ export class Site {
 
 }
 
-new Site();
+new GivebacksSite();

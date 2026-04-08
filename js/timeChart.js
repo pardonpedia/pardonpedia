@@ -137,9 +137,7 @@ export class TimeChart {
             .x(d3.scaleTime().domain([domainStart, domainEnd]))
             .xUnits(termYearUnits)
             .elasticY(true)
-            // Power scale with exponent between 0.5 (sqrt) and 1 (linear).
-            // 0.7 gives a gentler compression than sqrt without log-like distortion.
-            .y(d3.scalePow().exponent(0.7))
+            .y(d3.scaleSqrt())
             .centerBar(false)
             .brushOn(false)
             .barPadding(0.2)

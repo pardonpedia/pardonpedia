@@ -5,10 +5,10 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width,initial-scale=1'>
 
-    <title>Pardonpedia</title>
-    <meta name="description" content="Encyclopedia of presidential pardons and clemency">
-    <link rel="canonical" href="https://pardonpedia.org/">
-    <noscript>Pardonpedia tracks presidential pardons and clemency grants issued by U.S. presidents from Nixon to the present day.</noscript>
+    <title>Givebacks — Pardonpedia</title>
+    <meta name="description" content="Forgiven amounts and forfeiture remedies tied to presidential clemency">
+    <link rel="canonical" href="https://pardonpedia.org/givebacks.html">
+    <noscript>Pardonpedia Givebacks summarizes monetary amounts forgiven or forfeited in clemency grants.</noscript>
 
     <link rel='icon' type='image/x-icon' href='data:;base64,iVBORw0KGgo='>
 
@@ -21,7 +21,7 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'></script>
     <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
-    <script type="module" src='js/site.js'></script>
+    <script type="module" src='js/givebacks-site.js'></script>
 
     <link href='https://cdn.jsdelivr.net/npm/dc@4.2.7/dist/style/dc.min.css' rel='stylesheet' type='text/css'>
 
@@ -36,15 +36,14 @@
     </div>
 
     <div id='app-container'>
-        <!-- Header Row -->
         <header id='app-header'>
             <div id='title'>
                 <div class='title-main'>
                     <h1>Pardonpedia</h1>
                 </div>
                 <nav id='nav-links'>
-                    <a href='index.html' class='active'>Pardons</a>
-                    <a href='givebacks.html'>Givebacks</a>
+                    <a href='index.html'>Pardons</a>
+                    <a href='givebacks.html' class='active'>Givebacks</a>
                     <a href='about.html'>About</a>
                 </nav>
             </div>
@@ -54,35 +53,26 @@
             </div>
         </header>
 
-        <!-- Main Content: Filter Zone + Results Zone -->
         <main id='main-content'>
 
-            <!-- Full-width time chart row -->
             <div id='time-chart-row'>
+                <div class='givebacks-time-chart-head'>
+                    <p class='givebacks-time-chart-lede'>Fines, forfeitures, and restitution forgiven by virtue of Trump's pardons and commutations. <span class='givebacks-time-chart-source'><a href='https://www.lawyeroyer.com/p/pardon-trackers' target='_blank' rel='noopener noreferrer'>Source: Liz Oyer</a></span></p>
+                </div>
                 <div id='chart-grant-date'></div>
             </div>
 
-            <!-- Filter Zone (2 columns) -->
             <div id='filter-zone'>
-                <!-- Column 1: Presidency, Clemency, Occupation, Relationship, TOPIC (stacked) -->
                 <div id='filter-col-left'>
-                    <div id='filter-col-president' class='filter-column'>
-                        <div id='chart-president_term'></div>
-                    </div>
-                    <div id='filter-col-clemency' class='filter-column'>
-                        <div id='chart-clemency_type'></div>
-                    </div>
-                    <div id='filter-col-topic' class='filter-column'>
-                        <div id='chart-officeHeld-wrap'></div>
-                        <div id='chart-relationship-wrap'></div>
-                        <div id='chart-topic-wrap'></div>
+                    <div id='filter-col-givebacks-facets' class='filter-column'>
+                        <div id='chart-remedyType-wrap'></div>
+                        <div id='chart-offenseType-wrap'></div>
                     </div>
                 </div>
 
-                <!-- Column 2: Names List -->
                 <div id='names-list-col'>
                     <div class='chart-title'>
-                        <span class='chart-title-text'>CLEMENCY RECIPIENT</span>
+                        <span class='chart-title-text'>Giveback Recipient</span>
                         <span id='names-list-count' class='chart-title-count'></span>
                     </div>
                     <div class='chart-search-container' id='names-search-container'>
@@ -94,7 +84,6 @@
                 </div>
             </div>
 
-            <!-- Results Zone (Detail Panel) -->
             <div id='results-zone'>
                 <div id='results-header'>
                     <div id='results-header-top'>
@@ -120,37 +109,6 @@
                 setTimeout(() => { window.location.href = href; }, 150);
             });
         });
-    </script>
-    <script type="module">
-        function nudgeGrantDateYearTicks() {
-            const root = document.querySelector('#chart-grant-date');
-            if (!root) return;
-            root.querySelectorAll('svg g.tick text').forEach(el => {
-                const t = el.textContent?.trim();
-                if (t !== '2025' && t !== '2026') return;
-                const prev = el.getAttribute('transform') || '';
-                const add = 'translate(50,50)';
-                el.setAttribute('transform', prev ? `${prev} ${add}` : add);
-            });
-        }
-
-        let nudgeAttached = false;
-        function attachYearTickNudge() {
-            if (nudgeAttached) return true;
-            const c = window.dc?.timeChart;
-            if (!c?.on) return false;
-            c.on('postRender.nudgeYearTicks', nudgeGrantDateYearTicks);
-            nudgeAttached = true;
-            nudgeGrantDateYearTicks();
-            return true;
-        }
-
-        if (!attachYearTickNudge()) {
-            const obs = new MutationObserver(() => {
-                if (attachYearTickNudge()) obs.disconnect();
-            });
-            obs.observe(document.getElementById('app-container'), { childList: true, subtree: true });
-        }
     </script>
 </body>
 </html>
