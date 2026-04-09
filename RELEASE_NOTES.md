@@ -4,16 +4,15 @@ Notable updates to Pardonpedia.
 
 ## Issues
 
-- Need to confirm names for Obama/Biden drug sentence commutations are included correctly.
-
-
-## April 7, 2026
-
-- Added screen for givebacks and included giveback info on pardon screen
+- Need to confirm names for Obama/Biden drug sentence commutations are included correctly
 
 ## April 9, 2026
 
 - Added wikipedia links for recent pardonees
+
+## April 7, 2026
+
+- Added screen for givebacks and included giveback info on pardon screen
 
 ## April 6, 2026
 
