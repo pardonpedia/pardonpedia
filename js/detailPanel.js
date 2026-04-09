@@ -124,6 +124,13 @@ export function renderPardonDetail(panel, record, ctx) {
            </div>`
         : '';
 
+    const wikiUrlRaw = typeof record.wikipediaUrl === 'string' ? record.wikipediaUrl.trim() : '';
+    const wikipediaSection = wikiUrlRaw
+        ? `<div class="detail-section detail-wikipedia">
+               <a href="${escapeHtml(wikiUrlRaw)}" target="_blank" rel="noopener noreferrer">Wikipedia</a>
+           </div>`
+        : '';
+
     const matchingStories = (ctx.storiesByPardonId && ctx.storiesByPardonId.get(record.id)) || [];
     const storiesSection = matchingStories.length > 0 ? `
         <div class="detail-section detail-stories">
@@ -163,6 +170,7 @@ export function renderPardonDetail(panel, record, ctx) {
                 ${offenseSection}
                 ${sentencedSection}
                 ${storiesSection}
+                ${wikipediaSection}
             </div>
             ${hasWarrant ? `<div class="pardon-detail-right">${warrantCanvas}</div>` : ''}
         </div>

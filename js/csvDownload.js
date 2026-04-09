@@ -8,6 +8,7 @@ export const PARDONS_EXPORT_COLUMNS = Object.freeze([
     'id', 'administrationId', 'presidencyNumber', 'presidentTermNumber', 'presidentName',
     'presidentTerm', 'sourceUrl', 'clemencyType', 'grantDate', 'personName', 'warrantUrl',
     'warrantKey', 'district', 'sentenced', 'offense', 'topic', 'officeHeld', 'relationship',
+    'wikipediaUrl',
 ]);
 
 /** @type {readonly string[]} */
