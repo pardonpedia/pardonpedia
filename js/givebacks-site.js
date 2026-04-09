@@ -137,6 +137,7 @@ export class GivebacksSite {
         });
 
         this.records = allRecords;
+        this._setGivebacksGrandTotalLede();
 
         const generatedAt = metaJson?.money?.generated_at;
         if (generatedAt) {
@@ -165,6 +166,14 @@ export class GivebacksSite {
         requestAnimationFrame(() => {
             this._resizeFilterRowCharts();
         });
+    }
+
+    /** Top lede: full-dataset forgiven sum (ignores chart filters). */
+    _setGivebacksGrandTotalLede() {
+        const el = document.getElementById('givebacks-lede-head');
+        if (!el) return;
+        const grandTotal = this.records.reduce((s, r) => s + (r.forgivenAmountNum || 0), 0);
+        el.textContent = `${moneyFmt.format(grandTotal)} in Givebacks `;
     }
 
     _fallbackFilterChartWidth() {

@@ -233,6 +233,12 @@ a:active {
     color: var(--text-dark);
 }
 
+.givebacks-lede-head {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
 .givebacks-time-chart-source {
     font-size: 11px;
     font-weight: 400;
@@ -785,7 +791,7 @@ a:active {
 #menu-info .record-count {
     font-size: 12px;
     font-weight: 400;
-    color: var(--text-muted);
+    color: #0a0a0a;
 }
 
 #menu-info .record-filters {
