@@ -2,7 +2,7 @@
  * Shared detail panel HTML + warrant PDF preview (Pardons and Givebacks).
  */
 
-import { formatDate, escapeHtml, remedyTypeSlug } from './shared.js';
+import { formatDate, escapeHtml, remedyTypeSlug, parseCsvGrantDate } from './shared.js';
 
 /** Readable clemency label (matches names-list styling). */
 function clemencyTypeLine(type) {
@@ -57,6 +57,14 @@ function givebackMoneyAndRemedy(record) {
     }).format(amt);
 
     return { moneyStr, remedyLabel, slug: remedyTypeSlug(remedyLabel) };
+}
+
+function formatCourtDocDateCell(raw) {
+    const s = (raw == null ? '' : String(raw)).trim();
+    if (!s) return '—';
+    const d = parseCsvGrantDate(s);
+    if (!d || Number.isNaN(d.getTime())) return escapeHtml(s);
+    return escapeHtml(formatDate(d));
 }
 
 /**
@@ -131,6 +139,31 @@ export function renderPardonDetail(panel, record, ctx) {
            </div>`
         : '';
 
+    const courtDocs = Array.isArray(record.courtDocuments) ? record.courtDocuments : [];
+    const courtDocumentsSection = courtDocs.length > 0 ? `
+        <div class="detail-section detail-court-docs">
+            <div class="detail-label">Court documents</div>
+            <div class="detail-court-docs-scroll">
+                <table class="detail-court-docs-table">
+                    <tbody>
+                        ${courtDocs.map(doc => {
+                            const url = typeof doc.sourceUrl === 'string' ? doc.sourceUrl.trim() : '';
+                            const typeRaw = (doc.documentTypeName || doc.documentType || '').trim();
+                            const typeDisplay = typeRaw || (url ? 'Document' : '—');
+                            const typeCell = url
+                                ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(typeDisplay)}</a>`
+                                : escapeHtml(typeDisplay);
+                            const dateCell = formatCourtDocDateCell(doc.documentDate);
+                            const caseLabel = escapeHtml((doc.caseName || doc.title || '').trim() || '—');
+                            const courtNameLabel = escapeHtml((doc.courtName || '').trim() || '—');
+                            return `<tr><td>${typeCell}</td><td>${dateCell}</td><td>${caseLabel}</td><td>${courtNameLabel}</td></tr>`;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    ` : '';
+
     const matchingStories = (ctx.storiesByPardonId && ctx.storiesByPardonId.get(record.id)) || [];
     const storiesSection = matchingStories.length > 0 ? `
         <div class="detail-section detail-stories">
@@ -169,6 +202,7 @@ export function renderPardonDetail(panel, record, ctx) {
                 ${remedySection}
                 ${offenseSection}
                 ${sentencedSection}
+                ${courtDocumentsSection}
                 ${storiesSection}
                 ${wikipediaSection}
             </div>

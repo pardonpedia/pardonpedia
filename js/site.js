@@ -44,12 +44,13 @@ export class Site {
         const overlay = document.getElementById('loading-overlay');
         overlay.classList.replace('loading-hidden', 'loading-visible');
 
-        const [pardonsResp, adminResp, metaResp, storiesResp, moneyResp] = await Promise.all([
+        const [pardonsResp, adminResp, metaResp, storiesResp, moneyResp, courtDocsResp] = await Promise.all([
             fetch('data/pardons.csv.gz'),
             fetch('data/administrations.csv'),
             fetch('data/pardons.meta.json'),
             fetch('data/stories.csv.gz'),
             fetch('data/money.csv.gz'),
+            fetch('data/court_documents.csv.gz'),
         ]);
 
         const [buf, adminText, metaJson, storiesBuf] = await Promise.all([
@@ -91,6 +92,21 @@ export class Site {
             });
         }
 
+        const courtDocumentsByPardonId = new Map();
+        if (courtDocsResp.ok) {
+            const courtBuf = await courtDocsResp.arrayBuffer();
+            const courtText = pako.inflate(new Uint8Array(courtBuf), { to: 'string' });
+            d3.csvParse(courtText).forEach(row => {
+                const key = String(row.pardonId ?? '').trim();
+                if (!key) return;
+                if (!courtDocumentsByPardonId.has(key)) courtDocumentsByPardonId.set(key, []);
+                courtDocumentsByPardonId.get(key).push(row);
+            });
+            courtDocumentsByPardonId.forEach(docs => {
+                docs.sort((a, b) => String(a.documentDate || '').localeCompare(String(b.documentDate || '')));
+            });
+        }
+
         allRecords.forEach(record => {
             record.count = 1;
             if (record.grantDate)
@@ -106,6 +122,7 @@ export class Site {
                     : Number(m.forgivenAmount);
                 if (Number.isNaN(record.forgivenAmountNum)) record.forgivenAmountNum = 0;
             }
+            record.courtDocuments = courtDocumentsByPardonId.get(pid) ?? [];
         });
 
         this.records = allRecords;

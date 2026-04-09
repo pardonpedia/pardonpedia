@@ -635,3 +635,47 @@
     font-weight: 500;
     opacity: 0.7;
 }
+
+/* Court documents table (pardon detail panel) */
+.detail-court-docs {
+    margin-top: 10px;
+}
+
+.detail-court-docs-scroll {
+    overflow-x: auto;
+    margin-top: 4px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.detail-court-docs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dark, #1a202c);
+}
+
+.detail-court-docs-table td {
+    padding: 6px 8px 6px 0;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-color, #cbd5e0);
+}
+
+.detail-court-docs-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.detail-court-docs-table td:nth-child(3) {
+    min-width: 120px;
+}
+
+.detail-court-docs-table a {
+    color: var(--accent-blue, #0066cc);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.detail-court-docs-table a:hover {
+    text-decoration: underline;
+}

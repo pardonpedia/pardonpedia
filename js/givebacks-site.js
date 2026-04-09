@@ -86,11 +86,12 @@ export class GivebacksSite {
         const overlay = document.getElementById('loading-overlay');
         overlay.classList.replace('loading-hidden', 'loading-visible');
 
-        const [moneyResp, adminResp, metaResp, storiesResp] = await Promise.all([
+        const [moneyResp, adminResp, metaResp, storiesResp, courtDocsResp] = await Promise.all([
             fetch('data/money.csv.gz'),
             fetch('data/administrations.csv'),
             fetch('data/pardons.meta.json'),
             fetch('data/stories.csv.gz'),
+            fetch('data/court_documents.csv.gz'),
         ]);
 
         const [buf, adminText, metaJson, storiesBuf] = await Promise.all([
@@ -117,6 +118,21 @@ export class GivebacksSite {
             this.storiesByPardonId.get(s.pardonId).push(s);
         });
 
+        const courtDocumentsByPardonId = new Map();
+        if (courtDocsResp.ok) {
+            const courtBuf = await courtDocsResp.arrayBuffer();
+            const courtText = pako.inflate(new Uint8Array(courtBuf), { to: 'string' });
+            d3.csvParse(courtText).forEach(row => {
+                const key = String(row.pardonId ?? '').trim();
+                if (!key) return;
+                if (!courtDocumentsByPardonId.has(key)) courtDocumentsByPardonId.set(key, []);
+                courtDocumentsByPardonId.get(key).push(row);
+            });
+            courtDocumentsByPardonId.forEach(docs => {
+                docs.sort((a, b) => String(a.documentDate || '').localeCompare(String(b.documentDate || '')));
+            });
+        }
+
         allRecords.forEach(record => {
             record.count = 1;
             if (record.grantDate) {
@@ -134,6 +150,9 @@ export class GivebacksSite {
                 const shortName = presidentDisplayByAdminId.get(aid);
                 if (shortName) record.presidentName = shortName;
             }
+
+            const pardonKey = String(record.pardonMoneyId ?? record.id ?? '').trim();
+            record.courtDocuments = courtDocumentsByPardonId.get(pardonKey) ?? [];
         });
 
         this.records = allRecords;
