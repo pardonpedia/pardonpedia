@@ -322,12 +322,12 @@ a:active {
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .givebacks-table thead th {
     text-align: left;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: #2a3240;
     background: #f5f6f4;
@@ -348,7 +348,7 @@ a:active {
     display: inline-block;
     margin-top: 2px;
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     line-height: 1.25;
 }
@@ -357,7 +357,7 @@ a:active {
     top: var(--gb-header-row-height);
     z-index: 3;
     background: #eef1f4;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     vertical-align: middle;
     padding-top: 7px;
@@ -365,12 +365,12 @@ a:active {
 }
 
 #gb-total-pardonee {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 #gb-total-victim,
 #gb-total-gov {
-    font-size: 18px;
+    font-size: 17px;
     line-height: 1.05;
     text-align: right;
 }
@@ -382,7 +382,7 @@ a:active {
 }
 
 .gb-name {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     line-height: 1.15;
     color: #202733;
@@ -390,13 +390,13 @@ a:active {
 }
 
 .gb-meta {
-    font-size: 8px;
+    font-size: 7px;
     color: #465265;
     margin-bottom: 6px;
 }
 
 .gb-amount {
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1;
     font-weight: 700;
     color: #ad3e4f;
@@ -404,19 +404,19 @@ a:active {
 }
 
 .gb-subtext {
-    font-size: 8px;
+    font-size: 7px;
     color: #3f4b5d;
 }
 
 .gb-none {
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1;
     font-style: italic;
     color: #555f6e;
 }
 
 .gb-doc-placeholder {
-    font-size: 8px;
+    font-size: 7px;
     color: #274f78;
     text-decoration: underline;
     margin-bottom: 6px;
@@ -433,8 +433,15 @@ a:active {
 }
 
 .gb-col-offense {
-    font-size: 13px;
+    font-size: 12px;
     color: #3f4b5d;
+}
+
+.givebacks-table .gb-columns-row th:nth-child(3),
+.givebacks-table .gb-columns-row th:nth-child(4),
+.givebacks-table .gb-totals-row th:nth-child(3),
+.givebacks-table .gb-totals-row th:nth-child(4) {
+    text-align: right;
 }
 
 .gb-col-victim,
@@ -941,6 +948,28 @@ a:active {
     justify-content: space-between;
     align-items: center;
     gap: var(--gap-md);
+}
+
+.results-header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.results-header-source {
+    font-size: 11px;
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.results-header-source a {
+    color: var(--accent-blue);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.results-header-source a:hover {
+    text-decoration: underline;
 }
 
 #menu-info {
