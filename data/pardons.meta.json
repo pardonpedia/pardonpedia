@@ -1,18 +1,22 @@
 {
   "pardons": {
     "file": "pardons.csv.gz",
-    "generated_at": "2026-04-09T17:17:54.554525Z"
+    "generated_at": "2026-04-13T13:11:16.087106Z"
   },
   "stories": {
     "file": "stories.csv.gz",
-    "generated_at": "2026-04-09T17:17:55.125638Z"
+    "generated_at": "2026-04-13T13:11:16.596656Z"
   },
   "money": {
     "file": "money.csv.gz",
-    "generated_at": "2026-04-09T17:17:55.630559Z"
+    "generated_at": "2026-04-13T13:11:17.123704Z"
+  },
+  "givebacks": {
+    "file": "givebacks.csv.gz",
+    "generated_at": "2026-04-13T13:11:17.598768Z"
   },
   "court_documents": {
     "file": "court_documents.csv.gz",
-    "generated_at": "2026-04-09T17:17:56.016413Z"
+    "generated_at": "2026-04-13T13:11:18.018425Z"
   }
 }

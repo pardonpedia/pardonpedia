@@ -53,9 +53,9 @@
             </div>
         </header>
 
-        <main id='main-content'>
+        <main id='main-content' class='givebacks-table-mode'>
 
-            <div id='time-chart-row'>
+            <div id='time-chart-row' class='preserved-hidden'>
                 <div class='givebacks-time-chart-head'>
                     <p class='givebacks-time-chart-lede'><span id='givebacks-lede-head' class='givebacks-lede-head'></span><span class='givebacks-lede-tail'>Fines, forfeitures, and restitution forgiven by Trump's pardons and commutations. </span><span class='givebacks-time-chart-source'><a href='https://www.lawyeroyer.com/p/pardon-trackers' target='_blank' rel='noopener noreferrer'>Source: Liz Oyer</a></span></p>
                 </div>
@@ -70,7 +70,7 @@
                     </div>
                 </div>
 
-                <div id='names-list-col'>
+                <div id='names-list-col' class='preserved-hidden'>
                     <div class='chart-title'>
                         <span class='chart-title-text'>Giveback Recipient</span>
                         <span id='names-list-count' class='chart-title-count'></span>
@@ -92,7 +92,30 @@
                     </div>
                     <div id='filters'></div>
                 </div>
-                <div id='pardon-detail'></div>
+                <div id='givebacks-table-panel'>
+                    <div class='givebacks-table-scroll'>
+                        <table id='givebacks-table' class='givebacks-table'>
+                            <thead>
+                                <tr class='gb-columns-row'>
+                                    <th>Pardonee</th>
+                                    <th>Offense</th>
+                                    <th>Money owed to victims<br><span class='col-subhead'>Restitution courts ordered - now erased</span></th>
+                                    <th>Money owed to government<br><span class='col-subhead'>Fines &amp; forfeitures - now erased</span></th>
+                                    <th>Court documents</th>
+                                </tr>
+                                <tr class='gb-totals-row'>
+                                    <th id='gb-total-pardonee'>Total (0 records)</th>
+                                    <th id='gb-total-offense'></th>
+                                    <th id='gb-total-victim'>$0</th>
+                                    <th id='gb-total-gov'>$0</th>
+                                    <th id='gb-total-docs'></th>
+                                </tr>
+                            </thead>
+                            <tbody id='givebacks-table-body'></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id='pardon-detail' class='preserved-hidden'></div>
             </div>
         </main>
     </div>

@@ -6,9 +6,15 @@ Notable updates to Pardonpedia.
 
 - Need to confirm names for Obama/Biden drug sentence commutations are included correctly
 
+
+## April 13, 2026
+
+- Replaced charts on giveback screen with a simple table 
+
 ## April 9, 2026
 
 - Added wikipedia links for recent pardonees
+- Added setup for court documents: see Ross William Ulbricht
 
 ## April 7, 2026
 

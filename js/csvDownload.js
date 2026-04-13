@@ -19,6 +19,12 @@ export const MONEY_EXPORT_COLUMNS = Object.freeze([
     'offenseType', 'remedyType', 'forgivenAmount',
 ]);
 
+/** @type {readonly string[]} */
+export const GIVEBACKS_EXPORT_COLUMNS = Object.freeze([
+    'pardonId', 'name', 'grantDate', 'clemencyType', 'offenseType',
+    'fineAmount', 'forfeitureAmount', 'restitutionAmount', 'presidentTerm', 'wikipediaUrl',
+]);
+
 /**
  * @param {unknown[]} records
  * @param {readonly string[]} columns

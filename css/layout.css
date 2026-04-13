@@ -202,6 +202,10 @@ a:active {
     background-color: #fff;
 }
 
+.preserved-hidden {
+    display: none !important;
+}
+
 
 /* Full-width time chart spanning both columns */
 #time-chart-row {
@@ -276,6 +280,15 @@ a:active {
     background-color: #fff;
 }
 
+#main-content.givebacks-table-mode #filter-zone {
+    grid-template-columns: var(--filter-col-width);
+}
+
+#main-content.givebacks-table-mode #names-list-col,
+#main-content.givebacks-table-mode #chart-remedyType-wrap {
+    display: none;
+}
+
 /* ========================================
    PARDON DETAIL PANEL
    ======================================== */
@@ -285,6 +298,155 @@ a:active {
     overflow-y: auto;
     padding: var(--gap-md) var(--gap-lg);
     background-color: var(--results-bg);
+}
+
+#givebacks-table-panel {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 10px 12px;
+    background-color: var(--results-bg);
+}
+
+.givebacks-table-scroll {
+    height: 100%;
+    overflow: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.givebacks-table {
+    --gb-header-row-height: 56px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: 12px;
+}
+
+.givebacks-table thead th {
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    color: #2a3240;
+    background: #f5f6f4;
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 12px;
+    vertical-align: top;
+    position: sticky;
+    top: 0;
+    z-index: 4;
+}
+
+.givebacks-table .gb-columns-row th {
+    top: 0;
+    z-index: 4;
+}
+
+.givebacks-table .col-subhead {
+    display: inline-block;
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+.givebacks-table .gb-totals-row th {
+    top: var(--gb-header-row-height);
+    z-index: 3;
+    background: #eef1f4;
+    font-size: 14px;
+    font-weight: 700;
+    vertical-align: middle;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+#gb-total-pardonee {
+    font-size: 14px;
+}
+
+#gb-total-victim,
+#gb-total-gov {
+    font-size: 18px;
+    line-height: 1.05;
+    text-align: right;
+}
+
+.givebacks-table td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 12px;
+    vertical-align: top;
+}
+
+.gb-name {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #202733;
+    margin-bottom: 2px;
+}
+
+.gb-meta {
+    font-size: 8px;
+    color: #465265;
+    margin-bottom: 6px;
+}
+
+.gb-amount {
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 700;
+    color: #ad3e4f;
+    margin-bottom: 3px;
+}
+
+.gb-subtext {
+    font-size: 8px;
+    color: #3f4b5d;
+}
+
+.gb-none {
+    font-size: 13px;
+    line-height: 1;
+    font-style: italic;
+    color: #555f6e;
+}
+
+.gb-doc-placeholder {
+    font-size: 8px;
+    color: #274f78;
+    text-decoration: underline;
+    margin-bottom: 6px;
+}
+
+.gb-doc-placeholder:last-child {
+    margin-bottom: 0;
+}
+
+.givebacks-table-empty {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 24px;
+}
+
+.gb-col-offense {
+    font-size: 13px;
+    color: #3f4b5d;
+}
+
+.gb-col-victim,
+.gb-col-gov {
+    text-align: right;
+}
+
+.gb-col-victim .gb-subtext,
+.gb-col-gov .gb-subtext,
+.gb-col-victim .gb-none,
+.gb-col-gov .gb-none {
+    text-align: right;
 }
 
 .detail-name-row {

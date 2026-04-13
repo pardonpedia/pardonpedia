@@ -2,19 +2,19 @@
  * Query-string sync for Givebacks row charts (Offense, Remedy).
  */
 
-export const GIVEBACKS_FILTER_PARAM_KEYS = ['off', 'rem'];
+export const GIVEBACKS_FILTER_PARAM_KEYS = ['off'];
 
 const TITLE_TO_PARAM = {
     Offense: 'off',
-    Remedy: 'rem',
+    // Remedy: 'rem',
 };
 
 const PARAM_TO_TITLE = {
     off: 'Offense',
-    rem: 'Remedy',
+    // rem: 'Remedy',
 };
 
-const CHART_TITLE_ORDER = ['Remedy', 'Offense'];
+const CHART_TITLE_ORDER = ['Offense'];
 
 export function givebacksFiltersToSearchParams(filterTypes) {
     const p = new URLSearchParams(window.location.search);

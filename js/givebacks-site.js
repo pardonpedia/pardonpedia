@@ -1,14 +1,14 @@
 /**
- * Givebacks — monetary forfeiture / forgiven amounts (money.csv).
+ * Givebacks table view (givebacks.csv).
  */
 
 import { RowChart, computeFrozenFacetKeysBySum } from './rowChart.js';
 import { ForgivenAmountMonthChart } from './forgivenAmountWeekChart.js';
-import { formatShortDate, escapeHtml, scrollToTop, formatMetaUpdatedDate } from './shared.js';
+import { formatShortDate, escapeHtml, formatMetaUpdatedDate } from './shared.js';
 import { renderPardonDetail } from './detailPanel.js';
 import { trackPageView } from './analytics.js';
 import { applyGivebacksParamsToCharts, givebacksSearchStringFromFilterTypes } from './givebacksFilterUrl.js';
-import { downloadFilteredCsv, MONEY_EXPORT_COLUMNS } from './csvDownload.js';
+import { downloadFilteredCsv, GIVEBACKS_EXPORT_COLUMNS } from './csvDownload.js';
 
 trackPageView();
 
@@ -29,18 +29,24 @@ function grantDateTimestamp(r) {
     return NaN;
 }
 
-/** Grant date ascending (oldest first); undated rows last; then name, administration id. */
+function parseMoney(value) {
+    if (value === '' || value == null) return 0;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+}
+
+/** Grant date descending (newest first); undated rows last; then name, id. */
 function sortGivebacksRecords(records) {
     return [...records].sort((a, b) => {
         const ta = grantDateTimestamp(a);
         const tb = grantDateTimestamp(b);
         const aOk = !Number.isNaN(ta);
         const bOk = !Number.isNaN(tb);
-        if (aOk && bOk && ta !== tb) return ta - tb;
+        if (aOk && bOk && ta !== tb) return tb - ta;
         if (aOk !== bOk) return aOk ? -1 : 1;
         const byName = (a.personName || '').localeCompare(b.personName || '', undefined, { sensitivity: 'base' });
         if (byName !== 0) return byName;
-        return (+a.administrationId || 0) - (+b.administrationId || 0);
+        return (+a.id || 0) - (+b.id || 0);
     });
 }
 
@@ -86,36 +92,51 @@ export class GivebacksSite {
         const overlay = document.getElementById('loading-overlay');
         overlay.classList.replace('loading-hidden', 'loading-visible');
 
-        const [moneyResp, adminResp, metaResp, storiesResp, courtDocsResp] = await Promise.all([
-            fetch('data/money.csv.gz'),
-            fetch('data/administrations.csv'),
+        const [givebacksResp, metaResp, courtDocsResp] = await Promise.all([
+            fetch('data/givebacks.csv.gz'),
             fetch('data/pardons.meta.json'),
-            fetch('data/stories.csv.gz'),
             fetch('data/court_documents.csv.gz'),
         ]);
 
-        const [buf, adminText, metaJson, storiesBuf] = await Promise.all([
-            moneyResp.arrayBuffer(),
-            adminResp.text(),
+        const [buf, metaJson] = await Promise.all([
+            givebacksResp.arrayBuffer(),
             metaResp.json(),
-            storiesResp.arrayBuffer(),
         ]);
 
-        const adminData = d3.csvParse(adminText);
-        const presidentDisplayByAdminId = new Map(
-            adminData.map(d => [String(d.administrationId).trim(), (d.displayName || '').trim()]),
-        );
-
         const text = pako.inflate(new Uint8Array(buf), { to: 'string' });
-        const allRecords = d3.csvParse(text);
+        const allRecords = d3.csvParse(text).map((row) => {
+            const restitutionAmountNum = parseMoney(row.restitutionAmount);
+            const fineAmountNum = parseMoney(row.fineAmount);
+            const forfeitureAmountNum = parseMoney(row.forfeitureAmount);
+            const governmentAmountNum = fineAmountNum + forfeitureAmountNum;
+            const totalGivebackNum = restitutionAmountNum + governmentAmountNum;
+            const id = String(row.pardonId ?? '').trim();
+            const offenseType = (row.offenseType || '').trim();
+            const grantDate = (row.grantDate || '').trim();
 
-        const storiesText = pako.inflate(new Uint8Array(storiesBuf), { to: 'string' });
-        this.stories = d3.csvParse(storiesText);
-
-        this.storiesByPardonId = new Map();
-        this.stories.forEach(s => {
-            if (!this.storiesByPardonId.has(s.pardonId)) this.storiesByPardonId.set(s.pardonId, []);
-            this.storiesByPardonId.get(s.pardonId).push(s);
+            const record = {
+                ...row,
+                id,
+                pardonId: id,
+                personName: row.name,
+                offenseType,
+                grantDate,
+                presidentName: row.presidentTerm,
+                count: 1,
+                restitutionAmountNum,
+                fineAmountNum,
+                forfeitureAmountNum,
+                governmentAmountNum,
+                totalGivebackNum,
+                // Preserve existing givebacks compatibility fields used by chart/detail code.
+                forgivenAmountNum: totalGivebackNum,
+                forgivenAmount: String(totalGivebackNum),
+            };
+            if (grantDate) {
+                const [gy, gm, gd] = grantDate.split('-').map(Number);
+                record.date = new Date(gy, gm - 1, gd);
+            }
+            return record;
         });
 
         const courtDocumentsByPardonId = new Map();
@@ -134,31 +155,14 @@ export class GivebacksSite {
         }
 
         allRecords.forEach(record => {
-            record.count = 1;
-            if (record.grantDate) {
-                const [gy, gm, gd] = record.grantDate.split('-').map(Number);
-                record.date = new Date(gy, gm - 1, gd);
-            }
-            record.forgivenAmountNum = record.forgivenAmount === '' || record.forgivenAmount == null
-                ? 0
-                : Number(record.forgivenAmount);
-            if (Number.isNaN(record.forgivenAmountNum)) record.forgivenAmountNum = 0;
-
-            const aid = String(record.administrationId ?? '').trim();
-            const hasPresName = record.presidentName && String(record.presidentName).trim();
-            if (aid && !hasPresName) {
-                const shortName = presidentDisplayByAdminId.get(aid);
-                if (shortName) record.presidentName = shortName;
-            }
-
-            const pardonKey = String(record.pardonMoneyId ?? record.id ?? '').trim();
+            const pardonKey = String(record.pardonId ?? record.id ?? '').trim();
             record.courtDocuments = courtDocumentsByPardonId.get(pardonKey) ?? [];
         });
 
         this.records = allRecords;
         this._setGivebacksGrandTotalLede();
 
-        const generatedAt = metaJson?.money?.generated_at;
+        const generatedAt = metaJson?.givebacks?.generated_at;
         if (generatedAt) {
             const formatted = formatMetaUpdatedDate(generatedAt);
             const el = document.getElementById('updated-date');
@@ -169,7 +173,6 @@ export class GivebacksSite {
         dc.facts = this.facts;
 
         this.setupCharts();
-        this.setupNamesList();
         dc.renderAll();
 
         this._suppressUrlPush = true;
@@ -180,7 +183,6 @@ export class GivebacksSite {
         this._suppressUrlPush = false;
 
         overlay.classList.replace('loading-visible', 'loading-hidden');
-        document.getElementById('names-search-input').focus();
 
         requestAnimationFrame(() => {
             this._resizeFilterRowCharts();
@@ -234,15 +236,14 @@ export class GivebacksSite {
 
         const noneToEmpty = v => v === 'None' ? '' : (v || '');
         const offenseTypeDim = this.facts.dimension(d => noneToEmpty(d.offenseType));
-        const remedyTypeDim = this.facts.dimension(d => noneToEmpty(d.remedyType));
 
-        const frozenOffense = computeFrozenFacetKeysBySum(this.records, 'offenseType', 'forgivenAmountNum', 50, noneToEmpty);
-        const frozenRemedy = computeFrozenFacetKeysBySum(this.records, 'remedyType', 'forgivenAmountNum', 50, noneToEmpty);
+        const frozenOffense = computeFrozenFacetKeysBySum(this.records, 'offenseType', 'totalGivebackNum', 50, noneToEmpty);
+        // Keep remedy chart code path available for future restore.
+        this._preservedRemedyFacet = computeFrozenFacetKeysBySum(this.records, 'remedyType', 'totalGivebackNum', 50, noneToEmpty);
 
         const filterChartWidth = this._measureFilterChartWidth();
         dc.rowCharts = [
-            new RowChart(this.facts, 'remedyType', filterChartWidth, 50, boundRefresh, 'Remedy', remedyTypeDim, '#chart-remedyType-wrap', false, false, null, null, null, false, frozenRemedy, 'forgivenAmountNum', rowMoneyFmt),
-            new RowChart(this.facts, 'offenseType', filterChartWidth, 50, boundRefresh, 'Offense', offenseTypeDim, '#chart-offenseType-wrap', false, false, null, null, null, false, frozenOffense, 'forgivenAmountNum', rowMoneyFmt),
+            new RowChart(this.facts, 'offenseType', filterChartWidth, 50, boundRefresh, 'Offense', offenseTypeDim, '#chart-offenseType-wrap', false, false, null, null, null, false, frozenOffense, 'totalGivebackNum', rowMoneyFmt),
         ];
 
         new ForgivenAmountMonthChart(this.facts, '#chart-grant-date', boundRefresh);
@@ -294,7 +295,7 @@ export class GivebacksSite {
         const hasActiveFilters = filterTypes.length > 0;
         const records = dc.facts.allFiltered();
         const recordCount = records.length;
-        const totalForgiven = records.reduce((s, r) => s + (r.forgivenAmountNum || 0), 0);
+        const totalForgiven = records.reduce((s, r) => s + (r.totalGivebackNum || 0), 0);
 
         let menuHtml = `<span class="record-count">${recordCount.toLocaleString()} recipients, ${moneyFmt.format(totalForgiven)} given back</span>`;
         if (hasActiveFilters) {
@@ -345,15 +346,76 @@ export class GivebacksSite {
         d3.select('#download-csv').on('click', () => {
             downloadFilteredCsv(
                 dc.facts.allFiltered(),
-                MONEY_EXPORT_COLUMNS,
+                GIVEBACKS_EXPORT_COLUMNS,
                 `pardonpedia-givebacks-${new Date().toISOString().split('T')[0]}`,
             );
         });
 
         dc.redrawAll();
         this._syncUrlWithFilters();
-        scrollToTop('#names-list');
-        this.buildNamesList(this._namesSearchTerm || '');
+        this.buildGivebacksTable();
+    }
+
+    _syncStickyHeaderOffsets() {
+        const table = document.getElementById('givebacks-table');
+        if (!table) return;
+        const headerRow = table.querySelector('thead .gb-columns-row');
+        if (!headerRow) return;
+        const h = Math.max(1, Math.ceil(headerRow.getBoundingClientRect().height));
+        table.style.setProperty('--gb-header-row-height', `${h}px`);
+    }
+
+    buildGivebacksTable() {
+        const tbody = document.getElementById('givebacks-table-body');
+        if (!tbody) return;
+
+        const records = sortGivebacksRecords(this.facts.allFiltered());
+        const totalVictim = records.reduce((sum, r) => sum + (r.restitutionAmountNum || 0), 0);
+        const totalGov = records.reduce((sum, r) => sum + (r.governmentAmountNum || 0), 0);
+
+        const totalPardoneeEl = document.getElementById('gb-total-pardonee');
+        const totalVictimEl = document.getElementById('gb-total-victim');
+        const totalGovEl = document.getElementById('gb-total-gov');
+        if (totalPardoneeEl) totalPardoneeEl.textContent = `Total for ${records.length.toLocaleString()} Pardonees`;
+        if (totalVictimEl) totalVictimEl.textContent = moneyFmt.format(totalVictim);
+        if (totalGovEl) totalGovEl.textContent = moneyFmt.format(totalGov);
+
+        if (records.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="givebacks-table-empty">No records found.</td></tr>`;
+            return;
+        }
+
+        const rows = records.map((r) => {
+            const name = escapeHtml(r.personName || 'Unknown');
+            const dateStr = r.date && !isNaN(r.date) ? formatShortDate(r.date) : '';
+            const clem = escapeHtml(r.clemencyType || '');
+            const metaLine = [clem, dateStr].filter(Boolean).join(' ');
+            const offenseText = escapeHtml((r.offenseType || '—').trim() || '—');
+
+            const victimNum = r.restitutionAmountNum || 0;
+            const govNum = r.governmentAmountNum || 0;
+            const fineNum = r.fineAmountNum || 0;
+            const forfeitureNum = r.forfeitureAmountNum || 0;
+
+            const victimCell = victimNum > 0
+                ? `<div class="gb-amount">${moneyFmt.format(victimNum)}</div><div class="gb-subtext">Restitution erased</div>`
+                : `<div class="gb-none">---</div>`;
+            const govCell = govNum > 0
+                ? `<div class="gb-amount">${moneyFmt.format(govNum)}</div><div class="gb-subtext">Fines ${moneyFmt.format(fineNum)} + forfeitures ${moneyFmt.format(forfeitureNum)}</div>`
+                : `<div class="gb-none">---</div>`;
+
+            return (
+                `<tr class="gb-data-row">`
+                + `<td class="gb-col-pardonee"><div class="gb-name">${name}</div><div class="gb-meta">${metaLine || '—'}</div></td>`
+                + `<td class="gb-col-offense">${offenseText}</td>`
+                + `<td class="gb-col-victim">${victimCell}</td>`
+                + `<td class="gb-col-gov">${govCell}</td>`
+                + `<td class="gb-col-docs"><div class="gb-doc-placeholder">Placeholder: Judgment &amp; Commitment</div><div class="gb-doc-placeholder">Placeholder: Indictment</div></td>`
+                + `</tr>`
+            );
+        });
+        tbody.innerHTML = rows.join('');
+        this._syncStickyHeaderOffsets();
     }
 
     setupNamesList() {
