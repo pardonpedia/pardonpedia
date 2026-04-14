@@ -4,7 +4,7 @@
 
 import { RowChart, computeFrozenFacetKeysBySum } from './rowChart.js';
 import { ForgivenAmountMonthChart } from './forgivenAmountWeekChart.js';
-import { formatShortDate, escapeHtml, formatMetaUpdatedDate } from './shared.js';
+import { formatShortDate, escapeHtml, formatMetaUpdatedDate, parseCsvGrantDate } from './shared.js';
 import { renderPardonDetail } from './detailPanel.js';
 import { trackPageView } from './analytics.js';
 import { applyGivebacksParamsToCharts, givebacksSearchStringFromFilterTypes } from './givebacksFilterUrl.js';
@@ -35,14 +35,22 @@ function parseMoney(value) {
     return Number.isFinite(n) ? n : 0;
 }
 
-/** Grant date descending (newest first); undated rows last; then name, id. */
+function formatCourtDocShortDate(value) {
+    const raw = typeof value === 'string' ? value.trim() : '';
+    if (!raw) return '';
+    const parsed = parseCsvGrantDate(raw);
+    if (parsed instanceof Date && !Number.isNaN(parsed.getTime())) return formatShortDate(parsed);
+    return raw.slice(0, 10);
+}
+
+/** Grant date ascending (oldest first); undated rows last; then name, id. */
 function sortGivebacksRecords(records) {
     return [...records].sort((a, b) => {
         const ta = grantDateTimestamp(a);
         const tb = grantDateTimestamp(b);
         const aOk = !Number.isNaN(ta);
         const bOk = !Number.isNaN(tb);
-        if (aOk && bOk && ta !== tb) return tb - ta;
+        if (aOk && bOk && ta !== tb) return ta - tb;
         if (aOk !== bOk) return aOk ? -1 : 1;
         const byName = (a.personName || '').localeCompare(b.personName || '', undefined, { sensitivity: 'base' });
         if (byName !== 0) return byName;
@@ -403,6 +411,26 @@ export class GivebacksSite {
             const govCell = govNum > 0
                 ? `<div class="gb-amount">${moneyFmt.format(govNum)}</div><div class="gb-subtext">Fines ${moneyFmt.format(fineNum)} + forfeitures ${moneyFmt.format(forfeitureNum)}</div>`
                 : `<div class="gb-none">---</div>`;
+            const courtDocs = Array.isArray(r.courtDocuments) ? r.courtDocuments : [];
+            const docsCell = courtDocs.length > 0
+                ? `<td class="gb-col-docs">${(() => {
+                    const district = escapeHtml(
+                        (courtDocs.find((doc) => (doc.courtName || '').trim())?.courtName || '').trim() || 'District'
+                    );
+                    const districtHeader = `<div class="gb-doc-district">${district}</div>`;
+                    const docsList = courtDocs.map((doc) => {
+                        const typeLabel = (doc.documentTypeName || doc.documentType || doc.title || 'Document').trim() || 'Document';
+                        const datePrefix = formatCourtDocShortDate(doc.documentDate);
+                        const label = escapeHtml(datePrefix ? `${datePrefix} ${typeLabel}` : typeLabel);
+                        const urlRaw = typeof doc.sourceUrl === 'string' ? doc.sourceUrl.trim() : '';
+                        const href = /^https?:\/\//i.test(urlRaw) ? escapeHtml(urlRaw) : '';
+                        return href
+                            ? `<div class="gb-doc-placeholder"><a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a></div>`
+                            : `<div class="gb-doc-placeholder">${label}</div>`;
+                    }).join('');
+                    return `${districtHeader}${docsList}`;
+                })()}</td>`
+                : `<td class="gb-col-docs"></td>`;
 
             return (
                 `<tr class="gb-data-row">`
@@ -410,7 +438,7 @@ export class GivebacksSite {
                 + `<td class="gb-col-offense">${offenseText}</td>`
                 + `<td class="gb-col-victim">${victimCell}</td>`
                 + `<td class="gb-col-gov">${govCell}</td>`
-                + `<td class="gb-col-docs"><div class="gb-doc-placeholder">Placeholder: Judgment &amp; Commitment</div><div class="gb-doc-placeholder">Placeholder: Indictment</div></td>`
+                + docsCell
                 + `</tr>`
             );
         });

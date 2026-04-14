@@ -1,37 +1,75 @@
-pardonId,name,grantDate,clemencyType,offenseType,fineAmount,forfeitureAmount,restitutionAmount,presidentTerm,wikipediaUrl
-34,Devon Archer,2025-03-25,Pardon,Fraud,0.00,0.00,43427436.00,Donald John Trump (2025 - present),
-35,Benjamin Delo,2025-03-27,Pardon,Money laundering,10000000.00,0.00,0.00,Donald John Trump (2025 - present),
-36,Gregory Dwyer,2025-03-27,Pardon,Money laundering,150000.00,0.00,0.00,Donald John Trump (2025 - present),
-37,Arthur Hayes,2025-03-27,Pardon,Money laundering,10000000.00,0.00,0.00,Donald John Trump (2025 - present),
-39,Trevor Milton,2025-03-27,Pardon,Fraud,0.00,0.00,676054698.70,Donald John Trump (2025 - present),
-40,Samuel Reed,2025-03-27,Pardon,Money laundering,10000000.00,0.00,0.00,Donald John Trump (2025 - present),
-41,Jason Galanis,2025-03-28,Commutation,Fraud,0.00,0.00,80817513.43,Donald John Trump (2025 - present),
-42,"Ozy Media, Inc.",2025-03-28,Commutation,Fraud,0.00,0.00,36769153.97,Donald John Trump (2025 - present),
-44,Michele Fiore,2025-04-23,Pardon,Fraud,0.00,0.00,70000.00,Donald John Trump (2025 - present),
-45,Paul Walczak,2025-04-23,Pardon,Tax evasion,0.00,0.00,4381265.76,Donald John Trump (2025 - present),
-47,James Callahan,2025-05-27,Pardon,False reporting,0.00,0.00,315000.00,Donald John Trump (2025 - present),
-50,Julie Chrisley,2025-05-28,Commutation,Fraud,0.00,0.00,4740645.04,Donald John Trump (2025 - present),
-51,Todd Chrisley,2025-05-28,Commutation,Fraud,0.00,0.00,17270741.57,Donald John Trump (2025 - present),
-52,Lawrence S. Duran,2025-05-28,Commutation,Fraud,0.00,0.00,87533863.46,Donald John Trump (2025 - present),
-61,Marian I Morgan,2025-05-28,Commutation,Fraud,0.00,0.00,19958995.00,Donald John Trump (2025 - present),
-63,Charles Overton Scott,2025-05-28,Commutation,Fraud,5000.00,0.00,500000.00,Donald John Trump (2025 - present),
-64,Alexander Sittenfeld,2025-05-28,Commutation,Public corruption,40000.00,0.00,0.00,Donald John Trump (2025 - present),
-70,Jeremy Young Hutchinson,2025-05-29,Commutation,Public corruption,0.00,0.00,355535.10,Donald John Trump (2025 - present),
-73,Imaad Shah Zuberi,2025-10-01,Commutation,Fraud,1750000.00,0.00,15705080.11,Donald John Trump (2025 - present),
-75,Changpeng Zhao,2025-10-21,Pardon,Money laundering,50000000.00,0.00,0.00,Donald John Trump (2025 - present),
-77,Glen Casada,2025-11-07,Pardon,Public corruption,30000.00,0.00,0.00,Donald John Trump (2025 - present),
-78,Cade Cothren,2025-11-07,Pardon,Public corruption,25000.00,0.00,0.00,Donald John Trump (2025 - present),
-79,"Robert Henry Harshbarger, Jr.",2025-11-07,Pardon,Fraud,25000.00,0.00,848504.34,Donald John Trump (2025 - present),
-81,Michael McMahon,2025-11-07,Pardon,"Stalking, other",11000.00,0.00,0.00,Donald John Trump (2025 - present),
-84,Joseph Lewis,2025-11-12,Pardon,Fraud,5000000.00,0.00,400000.00,Donald John Trump (2025 - present),
-86,Joseph Schwartz,2025-11-14,Pardon,Fraud,100000.00,0.00,5000000.00,Donald John Trump (2025 - present),
-88,David Gentile,2025-11-26,Commutation,Fraud,0.00,15581317.00,0.00,Donald John Trump (2025 - present),
-89,Juan Orlando Hernandez,2025-12-01,Pardon,"Drugs, weapons",8000000.00,15525000.00,0.00,Donald John Trump (2025 - present),
-97,Jacob Deutsch,2026-01-15,Commutation,Fraud,10000.00,0.00,0.00,Donald John Trump (2025 - present),
-102,Adriana Isabel Camberos,2026-01-15,Pardon,Fraud,0.00,0.00,48824415.45,Donald John Trump (2025 - present),
-103,Andres Enrique Camberos,2026-01-15,Pardon,Fraud,0.00,0.00,48824415.45,Donald John Trump (2025 - present),
-105,"Arie Eric De Jong, III",2026-01-15,Pardon,Illegal dumping,15000.00,0.00,2254593.27,Donald John Trump (2025 - present),
-110,David Levy,2026-01-15,Pardon,Fraud,5000.00,0.00,0.00,Donald John Trump (2025 - present),
-111,Hollie Ann Nadel,2026-01-15,Pardon,Fraud,0.00,0.00,250000.00,Donald John Trump (2025 - present),
-114,Terren Scott Peizer,2026-01-16,Pardon,Fraud,5250000.00,12711324.00,0.00,Donald John Trump (2025 - present),
-10591,Carlos Watson,2025-03-28,Commutation,Fraud,0.00,0.00,36769153.97,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Carlos_Watson_(journalist)
+pardonId,name,grantDate,clemencyType,offenseType,fineAmount,forfeitureAmount,restitutionAmount,presidentTerm,wikipediaUrl,wikipediaSummaryTitle,wikipediaSummaryExtract,wikipediaThumbnailUrl,wikipediaArticleUrl,hasValidWikipediaInfo
+34,Devon Archer,2025-03-25,Pardon,Fraud,0.00,0.00,43427436.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Devon_Archer,Devon Archer,"Devon Archer is an American businessman and venture capital and private-equity fund investor. He was a founding board member of BHR Partners, a Chinese investment company, in 2013. From April 2014 to October 2019, Archer and his business partner Hunter Biden served on the board of Burisma Holdings, one of the largest private natural gas producers in Ukraine.",https://upload.wikimedia.org/wikipedia/commons/c/cc/Marjorie_Taylor_Greene_having_dinner_with_Tony_Bobulinski_and_Devon_Archer_during_2024_RNC_%28cropped_to_Archer%29.jpg,https://en.wikipedia.org/wiki/Devon_Archer,True
+35,Benjamin Delo,2025-03-27,Pardon,Money laundering,10000000.00,0.00,0.00,Donald John Trump (2025 - present),,,,,,False
+36,Gregory Dwyer,2025-03-27,Pardon,Money laundering,150000.00,0.00,0.00,Donald John Trump (2025 - present),,,,,,False
+37,Arthur Hayes,2025-03-27,Pardon,Money laundering,10000000.00,0.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Arthur_Hayes,Arthur Hayes,"Arthur Hayes may refer to:Arthur Hayes (cricketer) (1923–1999), South African cricketer
+Arthur Hayes (banker), American banker and entrepreneur
+Arthur H. Hayes Jr. (1933–2010), American pharmacologist, medical educator and government agency head",,https://en.wikipedia.org/wiki/Arthur_Hayes,True
+39,Trevor Milton,2025-03-27,Pardon,Fraud,0.00,0.00,676054698.70,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Trevor_Milton,Trevor Milton,"Trevor Robert Milton is an American entrepreneur and convicted fraudster who is the founder, former executive chairman and CEO of Nikola Corporation. He is the current CEO of SyberJet Aircraft, a Utah-based aviation company.",https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Trevor_Milton_%28cropped%29.jpg/330px-Trevor_Milton_%28cropped%29.jpg,https://en.wikipedia.org/wiki/Trevor_Milton,True
+40,Samuel Reed,2025-03-27,Pardon,Money laundering,10000000.00,0.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Samuel_Reed,Samuel Reed,"Samuel Reed may refer to:Samuel B. Reed (1834–?), American architect
+Samuel M. Reed (1901–1996), American businessman
+Sam Reed, American accountant and politician
+Sam Reed (musician)
+Sam Reed (footballer)",,https://en.wikipedia.org/wiki/Samuel_Reed,True
+41,Jason Galanis,2025-03-28,Commutation,Fraud,0.00,0.00,80817513.43,Donald John Trump (2025 - present),,,,,,False
+42,"Ozy Media, Inc.",2025-03-28,Commutation,Fraud,0.00,0.00,36769153.97,Donald John Trump (2025 - present),,,,,,False
+44,Michele Fiore,2025-04-23,Pardon,Fraud,0.00,0.00,70000.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Michele_Fiore,Michele Fiore,Michele Ann Fiore is an American politician and committeewoman for the Nevada Republican Party and justice of the peace for Pahrump in Nye County. She was formerly a member of the Nevada Assembly and the Las Vegas City Council.,https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Las_Vegas_City_Councilwoman_Michele_Fiore.jpg/330px-Las_Vegas_City_Councilwoman_Michele_Fiore.jpg,https://en.wikipedia.org/wiki/Michele_Fiore,True
+45,Paul Walczak,2025-04-23,Pardon,Tax evasion,0.00,0.00,4381265.76,Donald John Trump (2025 - present),,,,,,False
+47,James Callahan,2025-05-27,Pardon,False reporting,0.00,0.00,315000.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/James_Callahan,James Callahan,James Callahan may refer to:,,https://en.wikipedia.org/wiki/James_Callahan,True
+50,Julie Chrisley,2025-05-28,Commutation,Fraud,0.00,0.00,4740645.04,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Julie_Chrisley,Julie Chrisley,"Julie Chrisley is an American reality-television personality. She rose to fame as the matriarch of the USA Network series Chrisley Knows Best (2014–2023) and its spin-offs. In 2022, she and her husband, Todd Chrisley, were convicted of bank fraud and tax evasion. After a series of appeals, U.S. President Donald Trump in May 2025 granted them full presidential pardons.",https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Julie_Chrisley_by_Gage_Skidmore.jpg/330px-Julie_Chrisley_by_Gage_Skidmore.jpg,https://en.wikipedia.org/wiki/Julie_Chrisley,True
+51,Todd Chrisley,2025-05-28,Commutation,Fraud,0.00,0.00,17270741.57,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Todd_Chrisley,Todd Chrisley,"Michael Todd Chrisley is an American media personality, real‑estate entrepreneur, and convicted fraudster. He is known as the patriarch of Chrisley Knows Best, a USA Network series that aired from 2014 to 2023 and chronicled his family’s lives in Georgia and Tennessee. Chrisley’s flamboyant taste, sharp one‑liners, and famously strict helicopter parenting style became signature elements of the show.",https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Todd_Chrisley.jpg/330px-Todd_Chrisley.jpg,https://en.wikipedia.org/wiki/Todd_Chrisley,True
+52,Lawrence S. Duran,2025-05-28,Commutation,Fraud,0.00,0.00,87533863.46,Donald John Trump (2025 - present),,,,,,False
+61,Marian I Morgan,2025-05-28,Commutation,Fraud,0.00,0.00,19958995.00,Donald John Trump (2025 - present),,,,,,False
+63,Charles Overton Scott,2025-05-28,Commutation,Fraud,5000.00,0.00,500000.00,Donald John Trump (2025 - present),,,,,,False
+64,Alexander Sittenfeld,2025-05-28,Commutation,Public corruption,40000.00,0.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/P.G._Sittenfeld,P.G. Sittenfeld,"Alexander Paul George Sittenfeld is an American politician who served on the Cincinnati City Council from 2011 to 2020. In 2022, Sittenfeld was convicted on federal charges of bribery and attempted extortion in connection with an undercover investigation by the FBI. In May 2025, following the rejection of his appeal, he was granted a pardon by President Donald Trump.",https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/PG_Sittenfeld_in_OTR_%2824490403750%29_%281%29.jpg/330px-PG_Sittenfeld_in_OTR_%2824490403750%29_%281%29.jpg,https://en.wikipedia.org/wiki/P.G._Sittenfeld,True
+70,Jeremy Young Hutchinson,2025-05-29,Commutation,Public corruption,0.00,0.00,355535.10,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Jeremy_Young_Hutchinson,Jeremy Young Hutchinson,"Jeremy Young Hutchinson is a former politician. A Republican, he served in the Arkansas State Senate for District 33 in the capital city of Little Rock, Arkansas. He served in the Arkansas House of Representatives from two different districts in Pulaski County and as a state senator.",,https://en.wikipedia.org/wiki/Jeremy_Young_Hutchinson,True
+73,Imaad Shah Zuberi,2025-10-01,Commutation,Fraud,1750000.00,0.00,15705080.11,Donald John Trump (2025 - present),,,,,,False
+75,Changpeng Zhao,2025-10-21,Pardon,Money laundering,50000000.00,0.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Changpeng_Zhao,Changpeng Zhao,"Changpeng Zhao, commonly known as CZ, is a Canadian businessman who is known for co-founding cryptocurrency companies, such as Binance and Blockchain.com. He has also served as CTO of OKCoin and CEO of Binance. According to Forbes, Zhao is the richest Canadian and the 17th-richest person in the world, with a net worth estimated at $111.8 billion as of March 2026.",https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Changpeng_Zhao_in_2022.jpg/330px-Changpeng_Zhao_in_2022.jpg,https://en.wikipedia.org/wiki/Changpeng_Zhao,True
+77,Glen Casada,2025-11-07,Pardon,Public corruption,30000.00,0.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Glen_Casada,Glen Casada,"Richard Glen Casada Jr. is an American politician, and a former Republican member of the Tennessee House of Representatives, where he represented District 63 from 2003 to 2023. He was the Speaker of the Tennessee House of Representatives from January 8, 2019 through August 2, 2019, whereupon he resigned his post amid scandal. This was the shortest stint of a Tennessee Speaker of the House in modern history. Casada was previously the Majority Leader of the Tennessee House of Representatives. His opposition to Syrian refugees attracted national attention in the media in 2015.",https://upload.wikimedia.org/wikipedia/commons/c/cb/Glen_Casada.jpg,https://en.wikipedia.org/wiki/Glen_Casada,True
+78,Cade Cothren,2025-11-07,Pardon,Public corruption,25000.00,0.00,0.00,Donald John Trump (2025 - present),,,,,,False
+79,"Robert Henry Harshbarger, Jr.",2025-11-07,Pardon,Fraud,25000.00,0.00,848504.34,Donald John Trump (2025 - present),,,,,,False
+81,Michael McMahon,2025-11-07,Pardon,"Stalking, other",11000.00,0.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Michael_McMahon,Michael McMahon,"Michael E. McMahon is an American politician and attorney serving as the district attorney for Richmond County, which is coextensive with Staten Island. A member of the Democratic Party, McMahon is a former U.S. representative for New York's 13th congressional district, serving from 2009 until 2011, and a former member of the New York City Council.",https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Congressman_McMahon_Official_Picture.jpg/330px-Congressman_McMahon_Official_Picture.jpg,https://en.wikipedia.org/wiki/Michael_McMahon,True
+84,Joseph Lewis,2025-11-12,Pardon,Fraud,5000000.00,0.00,400000.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Joseph_Lewis,Joseph Lewis,"Joseph Lewis may refer to:Joseph Lewis Jr. (1772–1834), U.S. Representative from Virginia
+Joseph Lewis Jr., Judge on the Florida First District Court of Appeal
+Joseph Horace Lewis (1824–1904), U.S. Representative from Kentucky
+Hungry Joe, American swindler and bunco man
+Joseph Lewis (secularist) (1889–1968), American author and president of Freethinkers of America
+Joseph H. Lewis (1907–2000), American B-movie director
+Joseph Lewis (cyclist), Australian cyclist
+Joseph Lewis, Welsh ice hockey player
+Joseph J. Lewis (1801–1883), IRS commissioner
+Bud Lewis, American golfer
+JT Lewis, American political candidate
+Trey Lewis (basketball), American basketball player",,https://en.wikipedia.org/wiki/Joseph_Lewis,True
+86,Joseph Schwartz,2025-11-14,Pardon,Fraud,100000.00,0.00,5000000.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Joseph_Schwartz,Joseph Schwartz,"Joseph Schwartz or Joseph Schwarz may refer to:Joseph Schwartz (architect) (1858–1927), architect of Sioux Falls, South Dakota
+Joseph A. Schwarcz, chemistry professor
+Joseph M. Schwartz, political theorist and left political activist
+Joseph Schwartz, owner of the San Diego Mariners ice hockey team
+Joseph Schwarz (baritone) (1880–1926), Russian-born German baritone
+Joseph Schwarz (geographer) (1804–1865), Jewish geographer, Palestine researcher and rabbi",,https://en.wikipedia.org/wiki/Joseph_Schwartz,True
+88,David Gentile,2025-11-26,Commutation,Fraud,0.00,15581317.00,0.00,Donald John Trump (2025 - present),,,,,,False
+89,Juan Orlando Hernandez,2025-12-01,Pardon,"Drugs, weapons",8000000.00,15525000.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Juan_Orlando_Hern%C3%A1ndez,Juan Orlando Hernández,"Juan Orlando Hernández Alvarado, also known by his initials JOH, is a Honduran lawyer and politician who served as the president of Honduras from 2014 to 2022.",https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Juan_Orlando_Hern%C3%A1ndez%2C_May_2015.jpg/330px-Juan_Orlando_Hern%C3%A1ndez%2C_May_2015.jpg,https://en.wikipedia.org/wiki/Juan_Orlando_Hern%C3%A1ndez,True
+97,Jacob Deutsch,2026-01-15,Commutation,Fraud,10000.00,0.00,0.00,Donald John Trump (2025 - present),,,,,,False
+102,Adriana Isabel Camberos,2026-01-15,Pardon,Fraud,0.00,0.00,48824415.45,Donald John Trump (2025 - present),,,,,,False
+103,Andres Enrique Camberos,2026-01-15,Pardon,Fraud,0.00,0.00,48824415.45,Donald John Trump (2025 - present),,,,,,False
+105,"Arie Eric De Jong, III",2026-01-15,Pardon,Illegal dumping,15000.00,0.00,2254593.27,Donald John Trump (2025 - present),,,,,,False
+110,David Levy,2026-01-15,Pardon,Fraud,5000.00,0.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/David_Levy,David Levy,"David Levy may refer to:David A. Levy, American politician
+David Benjamin Levy, American musicologist
+David H. Levy, Canadian astronomer and science writer
+David Levy Yulee (1810–1886), American politician and attorney
+David L. Levy (1936–2014), children's rights activist
+David Levy, British chess player
+David Levy (historian), American historian
+David Levy (inventor), American inventor
+David Levy (1937–2024), Israeli politician
+David Levy (psychologist), American psychologist, author, actor
+David Levy (footballer), Israeli footballer
+David Levy (economist), American economist and author
+David Guy Levy, president and CEO of Periscope Entertainment
+David Levy, former CEO of the Brooklyn Nets and former president of the Turner Broadcasting System
+David M. Levy, American computer scientist
+David C. Levy, museum director
+David Levy, creator and executive producer of The Addams Family",,https://en.wikipedia.org/wiki/David_Levy,True
+111,Hollie Ann Nadel,2026-01-15,Pardon,Fraud,0.00,0.00,250000.00,Donald John Trump (2025 - present),,,,,,False
+114,Terren Scott Peizer,2026-01-16,Pardon,Fraud,5250000.00,12711324.00,0.00,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Terren_Peizer,Terren Peizer,"Terren Scott Peizer is an American businessperson who was convicted of insider trading and securities fraud. He worked as a junk bond salesman at Drexel Burnham Lambert. He testified against his former boss Mike Milken in 1990 in Milken's securities fraud prosecution in exchange for immunity from both criminal prosecution and SEC sanctions. In the decades that followed, Peizer was an investor, manager, and owner of a series of small-cap companies in various industries, several of which lost money, lost stock value, or went bankrupt during or shortly after his involvement.",,https://en.wikipedia.org/wiki/Terren_Peizer,True
+10591,Carlos Watson,2025-03-28,Commutation,Fraud,0.00,0.00,36769153.97,Donald John Trump (2025 - present),https://en.wikipedia.org/wiki/Carlos_Watson,,,,,False

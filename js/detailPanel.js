@@ -67,6 +67,31 @@ function formatCourtDocDateCell(raw) {
     return escapeHtml(formatDate(d));
 }
 
+function asTrimmedString(value) {
+    return typeof value === 'string' ? value.trim() : '';
+}
+
+function parseOptionalBool(value) {
+    if (value == null) return null;
+    const s = String(value).trim().toLowerCase();
+    if (!s) return null;
+    if (s === 'true' || s === '1' || s === 'yes' || s === 'y') return true;
+    if (s === 'false' || s === '0' || s === 'no' || s === 'n') return false;
+    return null;
+}
+
+function detailSourceLabel(sourceUrl) {
+    const url = asTrimmedString(sourceUrl);
+    if (!url) return '';
+    try {
+        const host = new URL(url).hostname.replace(/^www\./, '');
+        if (host.includes('justice.gov') || host.includes('doj.gov')) return 'Department of Justice';
+        return host;
+    } catch (e) {
+        return '';
+    }
+}
+
 /**
  * @param {HTMLElement} panel
  * @param {object|null} record
@@ -95,30 +120,32 @@ export function renderPardonDetail(panel, record, ctx) {
         detailPill(record.topic, 'record-tag-topic'),
     ].filter(Boolean).join('');
 
-    const warrantCanvas = record.warrantKey
-        ? `<div class="record-warrant-wrap">
-               <a href="${record.warrantUrl}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">
-                   <img id="warrant-thumb" class="record-warrant-canvas"
+    const warrantUrl = asTrimmedString(record.warrantUrl);
+    const warrantThumb = `<img id="warrant-thumb" class="record-warrant-canvas"
                         src="docs/warrants/thumbs/${record.warrantKey}.jpg"
-                        style="width:256px" alt="Warrant preview">
-               </a>
-               <canvas id="warrant-canvas" class="record-warrant-canvas" style="display:none"></canvas>
-               <div id="warrant-page-controls" class="warrant-page-controls" style="display:none">
-                   <button id="warrant-prev" class="warrant-nav-btn">&#8592;</button>
+                        style="width:220px" alt="Warrant preview">`;
+    const warrantCanvasEl = `<canvas id="warrant-canvas" class="record-warrant-canvas" style="display:none"></canvas>`;
+    const warrantPreviewInner = `${warrantThumb}${warrantCanvasEl}`;
+    const warrantPreviewWrap = warrantUrl
+        ? `<a href="${escapeHtml(warrantUrl)}" target="_blank" rel="noopener noreferrer" class="record-warrant-link">${warrantPreviewInner}</a>`
+        : warrantPreviewInner;
+    const warrantCanvas = record.warrantKey
+        ? `<div class="record-warrant-wrap detail-clemency-doc-preview">
+               ${warrantPreviewWrap}
+               <div id="warrant-page-controls" class="warrant-page-controls detail-clemency-page-controls" style="display:none">
+                   <button id="warrant-prev" class="warrant-nav-btn">← Prev</button>
                    <span id="warrant-page-label" class="warrant-page-label"></span>
-                   <button id="warrant-next" class="warrant-nav-btn">&#8594;</button>
+                   <button id="warrant-next" class="warrant-nav-btn">Next →</button>
                </div>
            </div>`
         : '';
 
-    const hasWarrant = !!record.warrantKey;
-
     const offenseSection = record.offense
-        ? `<div class="detail-section"><div class="detail-label">Offense</div><div class="detail-value">${record.offense}</div></div>`
+        ? `<div class="detail-section"><div class="detail-label">Offense</div><div class="detail-value">${escapeHtml(record.offense)}</div></div>`
         : '';
 
     const sentencedSection = record.sentenced
-        ? `<div class="detail-section"><div class="detail-label">Sentence</div><div class="detail-value">${record.sentenced}</div></div>`
+        ? `<div class="detail-section"><div class="detail-label">Sentence</div><div class="detail-value">${escapeHtml(record.sentenced)}</div></div>`
         : '';
 
     const gb = givebackMoneyAndRemedy(record);
@@ -132,10 +159,24 @@ export function renderPardonDetail(panel, record, ctx) {
            </div>`
         : '';
 
-    const wikiUrlRaw = typeof record.wikipediaUrl === 'string' ? record.wikipediaUrl.trim() : '';
-    const wikipediaSection = wikiUrlRaw
-        ? `<div class="detail-section detail-wikipedia">
-               <a href="${escapeHtml(wikiUrlRaw)}" target="_blank" rel="noopener noreferrer">Wikipedia</a>
+    const wikiTitle = asTrimmedString(record.wikipediaSummaryTitle) || asTrimmedString(record.wikipediaName);
+    const wikiSummary = asTrimmedString(record.wikipediaSummaryExtract);
+    const wikiThumbUrl = asTrimmedString(record.wikipediaThumbnailUrl);
+    const wikiArticleUrl = asTrimmedString(record.wikipediaArticleUrl) || asTrimmedString(record.wikipediaUrl);
+    const wikiHasValid = parseOptionalBool(record.hasValidWikipediaInfo);
+    const wikiHasRenderableContent = !!(wikiTitle || wikiSummary || wikiThumbUrl || wikiArticleUrl);
+    const showWikipediaBackground = wikiHasRenderableContent && (wikiHasValid == null || wikiHasValid === true);
+    const wikipediaBackgroundSection = showWikipediaBackground
+        ? `<div class="detail-column detail-column-background">
+               <div class="detail-column-heading">Background <span class="detail-column-heading-pill">Wikipedia</span></div>
+               <div class="detail-background-card">
+                   ${wikiThumbUrl ? `<img class="detail-background-thumb" src="${escapeHtml(wikiThumbUrl)}" alt="Wikipedia image for ${escapeHtml(name)}">` : ''}
+                   <div class="detail-background-copy">
+                       ${wikiTitle ? `<div class="detail-background-title">${escapeHtml(wikiTitle)}</div>` : ''}
+                       ${wikiSummary ? `<div class="detail-background-summary">${escapeHtml(wikiSummary)}</div>` : ''}
+                       ${wikiArticleUrl ? `<a class="detail-background-link" href="${escapeHtml(wikiArticleUrl)}" target="_blank" rel="noopener noreferrer">View Wikipedia article ↗</a>` : ''}
+                   </div>
+               </div>
            </div>`
         : '';
 
@@ -167,7 +208,7 @@ export function renderPardonDetail(panel, record, ctx) {
     const matchingStories = (ctx.storiesByPardonId && ctx.storiesByPardonId.get(record.id)) || [];
     const storiesSection = matchingStories.length > 0 ? `
         <div class="detail-section detail-stories">
-            <div class="detail-label">Media Coverage</div>
+            <div class="detail-column-heading">Media coverage</div>
             ${matchingStories.map(s => {
                 let domain = '';
                 try { domain = new URL(s.storyUrl).hostname.replace(/^www\./, ''); } catch (e) { /* ignore */ }
@@ -188,29 +229,44 @@ export function renderPardonDetail(panel, record, ctx) {
         </div>
     ` : '';
 
+    const sourceLabel = detailSourceLabel(record.sourceUrl);
+    const sourcePill = sourceLabel ? `<span class="detail-column-heading-pill">${escapeHtml(sourceLabel)}</span>` : '';
+    const hasClemencyDoc = !!record.warrantKey;
+    const clemencyDocSection = hasClemencyDoc ? `
+        <div class="detail-section detail-clemency-document">
+            <div class="detail-label">Clemency document</div>
+            ${warrantCanvas}
+        </div>
+    ` : '';
+
     panel.innerHTML = `
-        <div class="pardon-detail-inner${hasWarrant ? ' pardon-detail-inner--has-warrant' : ''}">
-            <div class="pardon-detail-left">
+        <div class="pardon-detail-inner">
+            <div class="pardon-detail-main">
                 <div class="detail-top">
                     <div class="detail-name-row">
                         <div class="detail-name">${name}</div>
-                        ${districtText ? `<div class="detail-district">${districtText}</div>` : ''}
+                        ${warrantUrl ? `<a class="detail-primary-link" href="${escapeHtml(warrantUrl)}" target="_blank" rel="noopener noreferrer">Full pardon</a>` : ''}
                     </div>
-                    ${subtitleLine ? `<div class="detail-date">${subtitleLine}</div>` : ''}
+                    ${(subtitleLine || districtText) ? `<div class="detail-date">${escapeHtml(subtitleLine)}${districtText ? ` <span class="detail-date-sep">•</span> ${escapeHtml(districtText)}` : ''}</div>` : ''}
                     ${detailTags ? `<div class="detail-tags">${detailTags}</div>` : ''}
                 </div>
-                ${remedySection}
-                ${offenseSection}
-                ${sentencedSection}
-                ${courtDocumentsSection}
+                <div class="detail-content-split${showWikipediaBackground ? '' : ' detail-content-split--single'}">
+                    ${wikipediaBackgroundSection}
+                    <div class="detail-column detail-column-official">
+                        <div class="detail-column-heading">Official record ${sourcePill}</div>
+                        ${remedySection}
+                        ${offenseSection}
+                        ${sentencedSection}
+                        ${clemencyDocSection}
+                        ${courtDocumentsSection}
+                    </div>
+                </div>
                 ${storiesSection}
-                ${wikipediaSection}
             </div>
-            ${hasWarrant ? `<div class="pardon-detail-right">${warrantCanvas}</div>` : ''}
         </div>
     `;
 
-    if (record.warrantKey) {
+    if (record.warrantKey && hasClemencyDoc) {
         const pdfUrl = `docs/warrants/pdfs/${record.warrantKey}.pdf`;
         const thumb = document.getElementById('warrant-thumb');
         const canvas = document.getElementById('warrant-canvas');
@@ -219,7 +275,7 @@ export function renderPardonDetail(panel, record, ctx) {
         const nextBtn = document.getElementById('warrant-next');
         const pageLabel = document.getElementById('warrant-page-label');
 
-        const cssWidth = 256;
+        const cssWidth = 220;
         const dpr = window.devicePixelRatio || 1;
         const isActiveRecord = () => ctx.getSelectedRecord()?.id === record.id;
 

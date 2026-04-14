@@ -519,18 +519,216 @@
 }
 
 .pardon-detail-inner {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
+    width: 100%;
 }
 
-.pardon-detail-left {
-    flex: 1;
+.pardon-detail-main {
     min-width: 0;
 }
 
-.pardon-detail-right {
+.detail-content-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 0;
+    border: 1px solid var(--border-color, #cbd5e0);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.detail-content-split--single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.detail-column {
+    padding: 18px 20px;
+}
+
+.detail-column + .detail-column {
+    border-left: 1px solid var(--border-color, #cbd5e0);
+}
+
+.detail-column-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 17px;
+    font-weight: 550;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #5a5f64;
+}
+
+.detail-column-heading-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    background: #efeee9;
+    color: #797872;
+}
+
+.detail-primary-link {
     flex-shrink: 0;
+    border: 1px solid #dfd9d9;
+    border-radius: 8px;
+    background: #efe9ea;
+    color: #83413d;
+    padding: 7px 12px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.detail-primary-link:hover {
+    text-decoration: none;
+    background: #e8dddd;
+}
+
+.detail-date-sep {
+    margin: 0 6px;
+}
+
+.detail-background-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.detail-background-thumb {
+    width: 129px;
+    height: 129px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #c9c6bf;
+    background: #ecece9;
+    flex-shrink: 0;
+}
+
+.detail-background-copy {
+    min-width: 0;
+}
+
+.detail-background-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-dark, #1a202c);
+    margin-bottom: 4px;
+}
+
+.detail-background-summary {
+    font-size: 15px;
+    line-height: 1.45;
+    color: #2f3238;
+}
+
+.detail-background-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #315f9f;
+}
+
+.detail-background-link:hover {
+    text-decoration: underline;
+}
+
+.detail-clemency-document-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.detail-clemency-doc-preview .record-warrant-canvas {
+    border-radius: 6px;
+}
+
+.detail-clemency-document-copy {
+    min-width: 0;
+    padding-top: 3px;
+}
+
+.detail-clemency-document-meta {
+    font-size: 14px;
+    color: #6a6d71;
+    margin-bottom: 2px;
+}
+
+.detail-clemency-document-source {
+    font-weight: 600;
+}
+
+.detail-clemency-document-id {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #61666f;
+    word-break: break-word;
+    letter-spacing: 0.02em;
+}
+
+.detail-clemency-document-link {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #315f9f;
+}
+
+.detail-clemency-document-link:hover {
+    text-decoration: underline;
+}
+
+.detail-clemency-doc-preview .record-warrant-canvas {
+    background: #f7f3ea;
+    border: 1px solid #c7c0b0;
+    box-shadow: 0 1px 3px rgba(45, 39, 24, 0.14);
+}
+
+.detail-clemency-page-controls {
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+.detail-clemency-document .warrant-nav-btn {
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #56606e;
+    background: none;
+}
+
+.detail-clemency-document .warrant-nav-btn:hover:not(:disabled) {
+    background: none;
+    color: #2f4666;
+    text-decoration: underline;
+}
+
+.detail-clemency-document .warrant-page-label {
+    min-width: 0;
+    font-size: 13px;
+    color: #525b69;
+}
+
+@media (max-width: 1100px) {
+    .detail-content-split {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .detail-column + .detail-column {
+        border-left: none;
+        border-top: 1px solid var(--border-color, #cbd5e0);
+    }
 }
 
 .record-warrant-link {

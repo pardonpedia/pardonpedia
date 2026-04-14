@@ -416,9 +416,19 @@ a:active {
 }
 
 .gb-doc-placeholder {
-    font-size: 7px;
+    font-size: 12px;
+    line-height: 1.25;
     color: #274f78;
     text-decoration: underline;
+    margin-bottom: 6px;
+}
+
+.gb-doc-district {
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #3f4b5d;
     margin-bottom: 6px;
 }
 
@@ -465,7 +475,7 @@ a:active {
 }
 
 .detail-name {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--text-dark);
     line-height: 1.2;
