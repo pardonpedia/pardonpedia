@@ -4,6 +4,18 @@
     <loc>https://pardonpedia.org/</loc>
   </url>
   <url>
-    <loc>https://pardonpedia.org/about.html</loc>
+    <loc>https://pardonpedia.org/givebacks.html</loc>
+  </url>
+  <url>
+    <loc>https://pardonpedia.org/pages/about.html</loc>
+  </url>
+  <url>
+    <loc>https://pardonpedia.org/pages/methodology.html</loc>
+  </url>
+  <url>
+    <loc>https://pardonpedia.org/pages/data-dictionary.html</loc>
+  </url>
+  <url>
+    <loc>https://pardonpedia.org/pages/release-notes.html</loc>
   </url>
 </urlset>

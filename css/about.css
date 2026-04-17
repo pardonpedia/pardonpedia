@@ -43,7 +43,7 @@ html, body {
     width: 100%;
     max-width: 680px;
     color: var(--text-dark);
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.7;
     font-weight: 400;
 }
@@ -54,7 +54,7 @@ html, body {
 }
 
 .about-content h1 {
-    font-size: 28px;
+    font-size: 25px;
     font-weight: 800;
     color: var(--primary-blue);
     margin: 0 0 20px 0;
@@ -64,7 +64,7 @@ html, body {
 }
 
 .about-content h2 {
-    font-size: 19px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--primary-blue);
     margin: 36px 0 10px 0;
@@ -72,7 +72,7 @@ html, body {
 }
 
 .about-content h3 {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-dark);
     margin: 24px 0 8px 0;
@@ -126,7 +126,7 @@ html, body {
 
 .about-content code {
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-    font-size: 13px;
+    font-size: 12px;
     background-color: var(--light-bg);
     border: 1px solid var(--border-color);
     border-radius: 3px;
@@ -146,7 +146,7 @@ html, body {
     background: none;
     border: none;
     padding: 0;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .about-content hr {
@@ -154,3 +154,44 @@ html, body {
     border-top: 1px solid var(--border-color);
     margin: 32px 0;
 }
+
+.about-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 16px 0;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.about-content th {
+    text-align: left;
+    font-weight: 700;
+    color: var(--primary-blue);
+    background-color: var(--light-bg);
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.about-content td {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
+}
+
+.about-content tr:last-child td {
+    border-bottom: none;
+}
+
+.about-content tbody tr:hover {
+    background-color: rgba(26, 54, 93, 0.03);
+}
+
+.content-compact { font-size: 11px; }
+.content-compact h1 { font-size: 19px; }
+.content-compact h2 { font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 16px 0 4px 0; }
+.content-compact h3 { font-size: 11px; }
+.content-compact code { font-size: 9px; }
+.content-compact pre code { font-size: 9px; }
+.content-compact table { font-size: 10px; }
+.content-compact ul, .content-compact ol { margin: 0 0 8px 0; }
+.content-compact p { margin: 0 0 8px 0; }

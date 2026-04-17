@@ -7,6 +7,19 @@ Notable updates to Pardonpedia.
 - Need to confirm names for Obama/Biden drug sentence commutations are included correctly
 
 
+## April 17, 2026
+
+- Added **Data Sources** dropdown menu with links to Methodology, Data Dictionary, Release Notes, and About
+- New **Methodology** page documenting data sources, record matching, archiving policy, and a data flow diagram
+- New **Data Dictionary** page (placeholder — content forthcoming)
+- Moved About into the Data Sources menu; reorganized content pages into `pages/` and markdown sources into `content/`
+- Added Mermaid.js support for rendering diagrams in markdown pages
+- Improved table styling across all content pages
+
+## April 14, 2026
+
+- Added photo and Wikipedia summary to pardonee detail page
+
 ## April 13, 2026
 
 - Replaced charts on giveback screen with a simple table 
