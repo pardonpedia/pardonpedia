@@ -9,33 +9,47 @@ The intended audience includes journalists, researchers, policy analysts, attorn
 
 ---
 
-## 2. Data Source Diagram
+## 2. Data Sources
 
-The DOJ Office of the Pardon Attorney is the primary source that identifies clemency recipients. For blanket pardons where individuals are not named, Wikipedia is used to identify recipients. Once a pardonee is identified, dependent government sources are queried for additional record details.
+The DOJ Office of the Pardon Attorney is the primary source identifying clemency recipients. For blanket pardons where individuals are not named, Wikipedia is used to identify recipients. Once a pardonee is identified, details are added from government are other sources.
 
 ```mermaid
-flowchart TD
-    DOJ["DOJ Office of the\nPardon Attorney\njustice.gov/pardon"]
-    WIKI["Wikipedia\n(blanket pardons only)"]
-    CL["CourtListener / RECAP\ncourtlistener.com"]
-    BOP["Bureau of Prisons\nbop.gov"]
-    GOVINFO["GovInfo / GPO\ngovinfo.gov"]
-    PACER["PACER\npacer.gov"]
-    result["Pardonpedia Record"]
+flowchart TB
+    subgraph discovery [Pardonee Identification]
+        direction LR
+        DOJ["DOJ Office of the\nPardon Attorney\njustice.gov/pardon"] -.-> WIKI["Wikipedia\n(Names of recipients of\n blanket pardons)"]
+    end
+    subgraph usGovDocs [Court and other US Government Documentation]
+        direction LR
+        PACER["PACER\n(via CourtListener)"] --> CL["CourtListener / RECAP\ncourtlistener.com"] ~~~ BOP["Bureau of Prisons\nbop.gov"] ~~~ GOVINFO["GovInfo / GPO\ngovinfo.gov"]
+    end
+    subgraph context [Pardon Context]
+        direction LR
+        WIKIPEDIA["Wikipedia articles\n for pardonees"] ~~~ PRESS["Press Coverage"]
+    end
 
-    DOJ -->|"Name, date, offense,\nsentence, warrant"| WIKI
-    WIKI -.->|"Identifies unnamed\nindividuals"| CL
-    WIKI -.->|"Identifies unnamed\nindividuals"| BOP
-    WIKI -.->|"Identifies unnamed\nindividuals"| GOVINFO
-    DOJ -->|"Named pardons"| CL
-    DOJ -->|"Named pardons"| BOP
-    DOJ -->|"Named pardons"| GOVINFO
-    PACER -->|mirrors| CL
+    discovery --> usGovDocs
+    usGovDocs --> context
 
-    CL -->|"District, docket,\ncharges, sentence docs"| result
-    BOP -->|"Demographics,\nrelease date"| result
-    GOVINFO -->|"Proclamations,\nwarrant PDFs"| result
+    click DOJ "https://www.justice.gov/pardon/clemency-recipients" _blank
+    click WIKI "https://en.wikipedia.org/wiki/List_of_people_pardoned_or_granted_clemency_by_the_president_of_the_United_States" _blank
+    click PACER "https://pacer.uscourts.gov" _blank
+    click CL "https://www.courtlistener.com" _blank
+    click BOP "https://www.bop.gov/inmateloc/" _blank
+    click GOVINFO "https://www.govinfo.gov" _blank
+    click WIKIPEDIA "https://en.wikipedia.org" _blank
+
+    classDef secondary fill:#f7f7f7,stroke:#888,stroke-dasharray:5 4,color:#555
+    class WIKI,WIKIPEDIA,PRESS,CL secondary
+
+    classDef tertiary fill:#e8f0fe,stroke:#1a365d,color:#1a202c,font-size:11px,font-style:italic
+    class PACER tertiary
 ```
+
+<div class="chart-legend">
+  <span class="legend-item"><span class="legend-swatch legend-primary"></span>U.S. Government source</span>
+  <span class="legend-item"><span class="legend-swatch legend-secondary"></span>Contextual / non-government</span>
+</div>
 
 ---
 
@@ -235,18 +249,6 @@ Some gaps are structural — they reflect the nature of the clemency power or th
 | Missing district data | Null (unknown) vs. flagged no-conviction cases are distinguished |
 | BOP record absent (no prison term served) | Fields marked *Not applicable* |
 
----
-
-## 8. Corrections and Feedback
-
-Pardonpedia is committed to accuracy. If you identify an error in a data element, a broken source link, an incorrect record match, or a factual misstatement in an editorial summary, please contact us at **[contact address]**.
-
-When reporting an error, please include:
-- The pardonee name and page URL
-- The specific field or statement in question
-- The source you believe is correct, with a link if available
-
-Corrections are reviewed by an editor and, where confirmed, applied to both the displayed record and the underlying database. Significant corrections are noted in the [Release Notes](#) for that page or data element.
 
 ---
 
