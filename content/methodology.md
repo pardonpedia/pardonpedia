@@ -3,15 +3,15 @@
 
 ## 1. Purpose
 
-Pardonpedia is a structured reference database of U.S. presidential clemency. Every data element displayed on the site is traceable to a named source, preserved against link loss from government website reorganizations, content takedowns, and administration changes, and labeled by source type so readers can assess its reliability. This document describes where data comes from, how records are linked across systems, what is known to be missing or imprecise, and how the project handles those gaps.
+Pardonpedia is a reference database of U.S. presidential clemency. Each data element displayed on the site is traceable to a named source, preserved against link loss from government website reorganizations, content takedowns, and administration changes, and labeled by source type so readers can assess its reliability. This document describes where data comes from, how records are linked across systems, what is known to be missing or imconsistent, and how the project handles these issues.
 
-The intended audience includes journalists, researchers, policy analysts, attorneys and the public. Questions and corrections are welcome — see [Section 8](#8-corrections-and-feedback).
+The intended audience includes journalists, researchers, policy analysts, attorneys and the public. 
 
 ---
 
 ## 2. Data Source Diagram
 
-The following diagram shows how data flows into the Pardonpedia database. The DOJ Office of the Pardon Attorney is the primary source that identifies clemency recipients. For blanket pardons where individuals are not named, Wikipedia is used to identify recipients. Once a pardonee is identified, dependent government sources are queried for additional record details.
+The DOJ Office of the Pardon Attorney is the primary source that identifies clemency recipients. For blanket pardons where individuals are not named, Wikipedia is used to identify recipients. Once a pardonee is identified, dependent government sources are queried for additional record details.
 
 ```mermaid
 flowchart TD
@@ -50,7 +50,7 @@ Pardonpedia distinguishes between **primary** and **contextual** sources. This d
 | 3 | Secondary — reference | Wikipedia | *Contextual — Reference* |
 | 4 | Secondary — press | News articles | *Contextual — Press* |
 
-Secondary sources are used where primary sources are silent — most often to identify individuals named in blanket pardons or commutations where the official document does not list recipients by name. In these cases, the secondary source is cited explicitly alongside the government document. In addition, secondary sources are used to provide additional context - e.g. press coverage.
+Secondary sources are used where primary sources are silent — most often to identify individuals named in blanket pardons or commutations where the official document does not list recipients by name. Also, there can be a gap between when a pardon is issued and when it appears on the Justice website. In these cases, the secondary source is cited. Secondary sources are also used to provide additional context - e.g. press coverage.
 
 ---
 
@@ -71,9 +71,9 @@ The Justice Departemnt - Office of the Pardon Attorney (OPA) - maintains the can
 
 **Known gaps and limitations:**
 
-- The Justice department only includes pardon and clemency information for President Nixon and subsequent administrations. Pardonpedia does not include information for prior administrations. 
-- Blanket pardons and group commutations (e.g., January 6 defendants, certain drug sentence commutations) are recorded as a class action in OPA records. Individual names within those groups are sourced separately — see Section 5.
-- OPA data is updated periodically, not in real time. There is typically a lag between a presidential action and its appearance in the OPA database.
+- The Justice department only includes pardon and clemency information for President Nixon and subsequent administrations. Pardonpedia does not include information about pardons prior to Nixon. 
+- Blanket pardons and group commutations (e.g., January 6 defendants, certain drug sentence commutations) are recorded as a class action on the justice, records. Individual names within those groups are sourced separately — see Section 5.
+- Justice data is updated periodically, not in real time. There is typically a lag between a presidential action and its appearance on the Justice website.
 - Pre-1980 records are less complete. Offense descriptions become more standardized in later administrations.
 - The OPA website has been reorganized or partially removed during administration transitions. Pardonpedia archives all OPA pages via the Wayback Machine at the time of data ingestion. GovInfo (Section 3.2) is used as the authoritative backup for presidential documents.
 
@@ -101,9 +101,9 @@ Data elements supplied:
 **URL:** [courtlistener.com](https://www.courtlistener.com) | [Free Law Project](https://free.law)  
 **Archive:** Self-archiving (RECAP stores documents permanently)
 
-CourtListener, operated by the nonprofit Free Law Project, is a free public mirror of PACER (Public Access to Court Electronic Records), the federal judiciary's official document system. Because presidential pardon power covers only federal offenses, CourtListener is the appropriate and comprehensive source for underlying court records. Because it is easier to use and search than PACER, it is used here, but the original source documents in PACER are always available via links within CourtListener.
+CourtListener, operated by the nonprofit Free Law Project, is a free public mirror of PACER (Public Access to Court Electronic Records), the federal judiciary's official document system. Because it is easier to use and search than PACER, it is used here, but the original source documents in PACER are always available via links within CourtListener.
 
-Pardonpedia uses CourtListener as a **document retrieval system, not a pardon discovery tool**: the project starts from known pardonees and locates their federal court records, rather than searching court records to identify pardonees.
+Pardonpedia uses CourtListener **to retrieve documents, not to discover pardons**: the project starts from pardonees found on Justice.gov and in presidential press releases, and locates their federal court records, rather than searching court records to identify pardonees.
 
 Data elements supplied:
 

@@ -15,6 +15,7 @@ Notable updates to Pardonpedia.
 - Moved About into the Data Sources menu; reorganized content pages into `pages/` and markdown sources into `content/`
 - Added Mermaid.js support for rendering diagrams in markdown pages
 - Improved table styling across all content pages
+- Added favicon
 
 ## April 14, 2026
 
