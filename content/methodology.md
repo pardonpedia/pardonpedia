@@ -3,9 +3,9 @@
 
 ## 1. Purpose
 
-Pardonpedia is a reference database of U.S. presidential clemency. Each data element displayed on the site is traceable to a named source, preserved against link loss from government website reorganizations, content takedowns, and administration changes, and labeled by source type so readers can assess its reliability. This document describes where data comes from, how records are linked across systems, what is known to be missing or imconsistent, and how the project handles these issues.
+Pardonpedia is a reference database of U.S. presidential clemency actions. Information on the site is traceable to a named source, preserved against link loss from government website reorganizations, content takedowns, and administration changes, and labeled so readers can assess its reliability. This document describes where information comes from, how pardons are matched across systems, what is known to be missing or inconsistent, and how the project handles these issues.
 
-The intended audience includes journalists, researchers, policy analysts, attorneys and the public. 
+The intended audience is journalists, researchers, policy analysts, attorneys and the public. 
 
 ---
 
@@ -21,7 +21,7 @@ flowchart TB
     end
     subgraph usGovDocs [Court and other US Government Documentation]
         direction LR
-        PACER["PACER\n(via CourtListener)"] --> CL["CourtListener / RECAP\ncourtlistener.com"] ~~~ BOP["Bureau of Prisons\nbop.gov"] ~~~ GOVINFO["GovInfo / GPO\ngovinfo.gov"]
+        PACER["PACER\n(via CourtListener)"] --> CL["CourtListener / RECAP\ncourtlistener.com"] ~~~ USAO["U.S. Attorney's Office\nPress Releases\njustice.gov/usao"] ~~~ BOP["Bureau of Prisons\nbop.gov"] ~~~ GOVINFO["GovInfo / GPO\ngovinfo.gov"]
     end
     subgraph context [Pardon Context]
         direction LR
@@ -35,6 +35,7 @@ flowchart TB
     click WIKI "https://en.wikipedia.org/wiki/List_of_people_pardoned_or_granted_clemency_by_the_president_of_the_United_States" _blank
     click PACER "https://pacer.uscourts.gov" _blank
     click CL "https://www.courtlistener.com" _blank
+    click USAO "https://www.justice.gov/usao/pressreleases" _blank
     click BOP "https://www.bop.gov/inmateloc/" _blank
     click GOVINFO "https://www.govinfo.gov" _blank
     click WIKIPEDIA "https://en.wikipedia.org" _blank
@@ -53,18 +54,18 @@ flowchart TB
 
 ---
 
-## 3. Source Hierarchy
+## 3. Source Types
 
 Pardonpedia distinguishes between **primary** and **contextual** sources. This distinction is displayed on every pardonee page.
 
 | Tier | Type | Examples | Label on site |
 |------|------|----------|---------------|
 | 1 | U.S. Government — clemency records | DOJ Office of the Pardon Attorney, GovInfo/GPO | *Primary — Government* |
-| 2 | U.S. Government — court and prison records | CourtListener/RECAP (mirrors PACER), Bureau of Prisons | *Primary — Government* |
+| 2 | U.S. Government — court, prison, and prosecutor records | CourtListener/RECAP (mirrors PACER), U.S. Attorney's Office press releases, Bureau of Prisons | *Primary — Government* |
 | 3 | Secondary — reference | Wikipedia | *Contextual — Reference* |
 | 4 | Secondary — press | News articles | *Contextual — Press* |
 
-Secondary sources are used where primary sources are silent — most often to identify individuals named in blanket pardons or commutations where the official document does not list recipients by name. Also, there can be a gap between when a pardon is issued and when it appears on the Justice website. In these cases, the secondary source is cited. Secondary sources are also used to provide additional context - e.g. press coverage.
+Secondary sources are used where primary sources are silent — most often to identify individuals affected by blanket pardons or commutations where the official document does not list recipients by name. Also, there can be a gap between when a pardon is issued and when it appears on the Justice website. In these cases, the secondary source is cited. Secondary sources are also used to provide additional context - e.g. press coverage.
 
 ---
 
@@ -73,7 +74,7 @@ Secondary sources are used where primary sources are silent — most often to id
 ### 4.1 DOJ Office of the Pardon Attorney
 
 **URL:** [justice.gov/pardon/clemency-recipients](https://www.justice.gov/pardon/clemency-recipients)  
-**Archive:** Wayback Machine (archived at ingestion)
+**Archive:** [Internet Archive](https://archive.org/) (archived at ingestion)
 
 The Justice Departemnt - Office of the Pardon Attorney (OPA) - maintains the canonical federal clemency record. For most pardons and commutations, the OPA list is the originating source for:
 
@@ -81,24 +82,25 @@ The Justice Departemnt - Office of the Pardon Attorney (OPA) - maintains the can
 - Date of clemency action
 - Offense description
 - Original sentence
+- District
 - Link to underlying warrant document (where available)
 
 **Known gaps and limitations:**
 
 - The Justice department only includes pardon and clemency information for President Nixon and subsequent administrations. Pardonpedia does not include information about pardons prior to Nixon. 
-- Blanket pardons and group commutations (e.g., January 6 defendants, certain drug sentence commutations) are recorded as a class action on the justice, records. Individual names within those groups are sourced separately — see Section 5.
-- Justice data is updated periodically, not in real time. There is typically a lag between a presidential action and its appearance on the Justice website.
+- Blanket pardons and group commutations (e.g., January 6 defendants, certain drug sentence commutations) are recorded as a class action on the justice records. Individual names within those groups are sourced separately — see Section 5.
+- The Department of Justice website is updated periodically, not in real time, so there will be a lag between a presidential action and its appearance on the Justice website.
 - Pre-1980 records are less complete. Offense descriptions become more standardized in later administrations.
-- The OPA website has been reorganized or partially removed during administration transitions. Pardonpedia archives all OPA pages via the Wayback Machine at the time of data ingestion. GovInfo (Section 3.2) is used as the authoritative backup for presidential documents.
+- The OPA website has been reorganized or partially removed during administration transitions. Pardonpedia archives all OPA pages via the [Internet Archive](https://archive.org/) at the time of data ingestion. GovInfo (Section 3.2) is used as the authoritative backup for presidential documents.
 
 ---
 
 ### 4.2 GovInfo / Government Publishing Office
 
 **URL:** [govinfo.gov](https://www.govinfo.gov)  
-**Archive:** Wayback Machine (page); DocumentCloud (PDFs)
+**Archive:** [Internet Archive](https://archive.org/) (webpages); DocumentCloud (PDFs)
 
-GovInfo is the U.S. Government Publishing Office's permanent repository for presidential documents, including clemency proclamations, executive grants, and warrant documents. Unlike whitehouse.gov — which is rebuilt with each new administration, often causing prior-administration content to disappear — GovInfo preserves documents across administrations as a matter of statutory obligation.
+GovInfo is the U.S. Government Publishing Office's permanent repository for presidential documents, including clemency proclamations, executive grants, and warrant documents. Unlike whitehouse.gov — which is rebuilt with each new administration, causing prior-administration content to innaccessible — GovInfo is required by law to preserve documents across administrations.
 
 Pardonpedia uses GovInfo as the **preferred source for presidential proclamations**, superseding whitehouse.gov links where both exist. GovInfo documents are archived to DocumentCloud at ingestion for a second layer of redundancy.
 
@@ -115,9 +117,9 @@ Data elements supplied:
 **URL:** [courtlistener.com](https://www.courtlistener.com) | [Free Law Project](https://free.law)  
 **Archive:** Self-archiving (RECAP stores documents permanently)
 
-CourtListener, operated by the nonprofit Free Law Project, is a free public mirror of PACER (Public Access to Court Electronic Records), the federal judiciary's official document system. Because it is easier to use and search than PACER, it is used here, but the original source documents in PACER are always available via links within CourtListener.
+CourtListener, operated by the nonprofit Free Law Project, is a free public mirror of PACER (Public Access to Court Electronic Records), the federal judiciary's official document system. Because it is easier to use and search than PACER, it is more widely used, and hence is used here. The original source documents in PACER are always available via links within CourtListener.
 
-Pardonpedia uses CourtListener **to retrieve documents, not to discover pardons**: the project starts from pardonees found on Justice.gov and in presidential press releases, and locates their federal court records, rather than searching court records to identify pardonees.
+Note that Pardonpedia uses CourtListener **to retrieve pardon court documents, not to discover pardons**: the search for court documents starts from pardonees found on Justice.gov, presidential press releases and wikipedia (as outlined above).
 
 Data elements supplied:
 
@@ -141,10 +143,33 @@ Data elements supplied:
 
 ---
 
-### 4.4 Bureau of Prisons (BOP)
+### 4.4 U.S. Attorney's Office Press Releases
+
+**URL:** [justice.gov/usao/pressreleases](https://www.justice.gov/usao/pressreleases)  
+**Archive:** [Internet Archive](https://archive.org/) (archived at ingestion via Save Page Now)
+
+U.S. Attorney's Office press releases provide official, government-authored summaries of federal criminal cases. They are used to supplement court records with a concise narrative of the case from the prosecuting office.
+
+Data elements supplied:
+
+- Charges and statutes
+- Plea or conviction details
+- Sentencing outcomes
+- Restitution, forfeiture, and fines ordered
+- Victim impact descriptions
+
+**Known gaps:**
+
+- Not every federal case receives a press release; coverage skews toward higher-profile prosecutions.
+- Press release content reflects the prosecution's perspective at the time of publication and is not updated to reflect later appeals, resentencings, or pardons.
+- Some older releases have been removed during USAO website reorganizations. Archived copies are retained via the Internet Archive.
+
+---
+
+### 4.5 Bureau of Prisons (BOP)
 
 **URL:** [bop.gov/inmateloc](https://www.bop.gov/inmateloc/)  
-**Archive:** Wayback Machine (snapshots taken at data retrieval)
+**Archive:** [Internet Archive](https://archive.org/) (snapshots taken at data retrieval)
 
 The Federal Bureau of Prisons inmate locator provides limited but officially sourced demographic and custody data for individuals who have been or are currently in federal custody.
 
@@ -163,7 +188,7 @@ Data elements supplied:
 
 ---
 
-### 4.5 PACER
+### 4.6 PACER
 
 **URL:** [pacer.gov](https://www.pacer.gov)  
 **Role:** Supplemental retrieval for CourtListener gaps
@@ -179,7 +204,6 @@ Secondary sources are used to fill gaps in primary government records and to pro
 ### 5.1 Wikipedia
 
 **Usage:** Research and name identification only  
-**License note:** Wikipedia content is licensed CC BY-SA 4.0. The ShareAlike clause is incompatible with Pardonpedia's CC BY 4.0 dataset license. Wikipedia is therefore used as a research source only — facts are independently verified and rewritten in original prose. No Wikipedia text is reproduced on the site.
 
 Wikipedia is used primarily to identify individuals named in blanket pardons and group commutations where the underlying government document does not list recipients by name. Where Wikipedia is used as an identification source, the specific article and revision are cited.
 
@@ -191,7 +215,7 @@ Press coverage is displayed in a dedicated **Press Coverage** section on pardone
 - Date
 - A brief annotated excerpt (written by Pardonpedia editors)
 - Link to original article
-- Link to Wayback Machine archive (created at ingestion via Save Page Now API)
+- Link to [Internet Archive](https://archive.org/) archive (created at ingestion via Save Page Now API)
 
 Press accounts are labeled *Contextual — Press* and are not used to populate structured data fields.
 
@@ -203,9 +227,10 @@ Link rot is a structural threat to reference databases. Pardonpedia mitigates it
 
 | Source type | Archiving method | Timing |
 |-------------|-----------------|--------|
-| Government webpages (DOJ, BOP, whitehouse.gov) | Wayback Machine via Save Page Now API | At ingestion |
-| GovInfo PDF documents | DocumentCloud + Wayback Machine | At ingestion |
-| Press articles | Wayback Machine via Save Page Now API | At ingestion |
+| Government webpages (DOJ, BOP, whitehouse.gov) | [Internet Archive](https://archive.org/) via Save Page Now API | At ingestion |
+| USAO press releases | [Internet Archive](https://archive.org/) via Save Page Now API | At ingestion |
+| GovInfo PDF documents | DocumentCloud + [Internet Archive](https://archive.org/) | At ingestion |
+| Press articles | [Internet Archive](https://archive.org/) via Save Page Now API | At ingestion |
 | PACER documents | RECAP upload + DocumentCloud | At retrieval |
 | CourtListener permalinks | Stable (Free Law Project guarantees permanence) | N/A |
 
