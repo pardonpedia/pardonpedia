@@ -214,6 +214,12 @@ html, body {
     border-color: #1a365d;
 }
 
+.chart-legend .legend-derived {
+    background: #e8f0fe;
+    border-color: #1a365d;
+    border-style: dashed;
+}
+
 .chart-legend .legend-secondary {
     background: #f7f7f7;
     border-color: #888;

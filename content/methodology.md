@@ -19,17 +19,22 @@ flowchart TB
         direction LR
         DOJ["DOJ Office of the\nPardon Attorney\njustice.gov/pardon"] -.-> WIKI["Wikipedia\n(Names of recipients of\n blanket pardons)"]
     end
-    subgraph usGovDocs [Court and other US Government Documentation]
+    subgraph usGovDocs [Court and other US government Documentation about conviction and clemency]
         direction LR
         PACER["PACER\n(via CourtListener)"] --> CL["CourtListener / RECAP\ncourtlistener.com"] ~~~ USAO["U.S. Attorney's Office\nPress Releases\njustice.gov/usao"] ~~~ BOP["Bureau of Prisons\nbop.gov"] ~~~ GOVINFO["GovInfo / GPO\ngovinfo.gov"]
     end
+    subgraph nonprofit [Nonprofit and Political Contributions]
+        direction LR
+        OPENSECRETS["OpenSecrets\nopensecrets.org"] ~~~ PROPUBLICA["ProPublica\nNonprofit Explorer"] ~~~ PROPUBLICA527["ProPublica\n527 Explorer"]
+    end
     subgraph context [Pardon Context]
         direction LR
-        WIKIPEDIA["Wikipedia articles\n for pardonees"] ~~~ PRESS["Press Coverage"]
+        WIKIPEDIA["Wikipedia articles\n for pardonees"] ~~~ PRESS["Press Coverage"] ~~~ SOCIAL["Social Media\n(Twitter/X, Truth Social, etc)"]
     end
 
     discovery --> usGovDocs
-    usGovDocs --> context
+    usGovDocs --> nonprofit
+    nonprofit --> context
 
     click DOJ "https://www.justice.gov/pardon/clemency-recipients" _blank
     click WIKI "https://en.wikipedia.org/wiki/List_of_people_pardoned_or_granted_clemency_by_the_president_of_the_United_States" _blank
@@ -39,9 +44,16 @@ flowchart TB
     click BOP "https://www.bop.gov/inmateloc/" _blank
     click GOVINFO "https://www.govinfo.gov" _blank
     click WIKIPEDIA "https://en.wikipedia.org" _blank
+    click SOCIAL "https://truthsocial.com" _blank
+    click OPENSECRETS "https://www.opensecrets.org" _blank
+    click PROPUBLICA "https://projects.propublica.org/nonprofits/" _blank
+    click PROPUBLICA527 "https://projects.propublica.org/527-explorer/" _blank
 
     classDef secondary fill:#f7f7f7,stroke:#888,stroke-dasharray:5 4,color:#555
-    class WIKI,WIKIPEDIA,PRESS,CL secondary
+    class WIKI,WIKIPEDIA,PRESS,SOCIAL secondary
+
+    classDef derived fill:#e8f0fe,stroke:#1a365d,stroke-dasharray:5 4,color:#1a202c
+    class CL,OPENSECRETS,PROPUBLICA,PROPUBLICA527 derived
 
     classDef tertiary fill:#e8f0fe,stroke:#1a365d,color:#1a202c,font-size:11px,font-style:italic
     class PACER tertiary
@@ -49,6 +61,7 @@ flowchart TB
 
 <div class="chart-legend">
   <span class="legend-item"><span class="legend-swatch legend-primary"></span>U.S. Government source</span>
+  <span class="legend-item"><span class="legend-swatch legend-derived"></span>Derived from U.S. Government sources</span>
   <span class="legend-item"><span class="legend-swatch legend-secondary"></span>Contextual / non-government</span>
 </div>
 
@@ -56,16 +69,16 @@ flowchart TB
 
 ## 3. Source Types
 
-Pardonpedia distinguishes between **primary** and **contextual** sources. This distinction is displayed on every pardonee page.
+Sources are organized into the four functional categories shown in the diagram above. Each source is also labeled by origin — *U.S. Government*, *Derived from U.S. Government sources*, or *Contextual / non-government* — so readers can assess reliability at a glance. The origin label is displayed alongside every citation on pardonee pages.
 
-| Tier | Type | Examples | Label on site |
-|------|------|----------|---------------|
-| 1 | U.S. Government — clemency records | DOJ Office of the Pardon Attorney, GovInfo/GPO | *Primary — Government* |
-| 2 | U.S. Government — court, prison, and prosecutor records | CourtListener/RECAP (mirrors PACER), U.S. Attorney's Office press releases, Bureau of Prisons | *Primary — Government* |
-| 3 | Secondary — reference | Wikipedia | *Contextual — Reference* |
-| 4 | Secondary — press | News articles | *Contextual — Press* |
+| # | Category | Purpose | Sources | Origin |
+|---|----------|---------|---------|--------|
+| 1 | Pardonee Identification | Establishes who received clemency | DOJ Office of the Pardon Attorney; Wikipedia (for individuals unnamed in blanket pardons) | *U.S. Government* (DOJ); *Contextual* (Wikipedia) |
+| 2 | Court and other U.S. Government documentation | Conviction, sentencing, incarceration, and clemency records | GovInfo/GPO, U.S. Attorney's Office press releases, Bureau of Prisons; CourtListener/RECAP (mirrors PACER) | *U.S. Government*; *Derived* (CourtListener) |
+| 3 | Nonprofit and political contributions | Donor networks and 501(c) affiliations, derived from FEC filings and IRS Form 990 | OpenSecrets, ProPublica Nonprofit Explorer, ProPublica 527 Explorer | *Derived from U.S. Government sources* |
+| 4 | Pardon context | Biographical and narrative context around a clemency action | Wikipedia articles, press coverage, official social media (Twitter/X, Truth Social, etc) | *Contextual / non-government* |
 
-Secondary sources are used where primary sources are silent — most often to identify individuals affected by blanket pardons or commutations where the official document does not list recipients by name. Also, there can be a gap between when a pardon is issued and when it appears on the Justice website. In these cases, the secondary source is cited. Secondary sources are also used to provide additional context - e.g. press coverage.
+**Origin labels in practice.** *U.S. Government* sources are treated as authoritative for structured data (names, dates, offenses, sentences). *Derived* sources repackage government filings — they are citable and carry the credibility of their underlying public records, but the presenting organization's own analysis is treated as contextual. *Contextual* sources are used where primary sources are silent (most often to identify individuals affected by blanket pardons), where there is a lag between a presidential action and its appearance on the DOJ site, or to provide biographical, narrative, and public-statement context. Contextual sources are never merged with primary government data without explicit sourcing.
 
 ---
 
@@ -219,6 +232,39 @@ Press coverage is displayed in a dedicated **Press Coverage** section on pardone
 
 Press accounts are labeled *Contextual — Press* and are not used to populate structured data fields.
 
+### 5.3 Social Media and Public Statements
+
+**Usage:** Citation of stated rationale and announcements  
+**Archive:** [Internet Archive](https://archive.org/) via Save Page Now at citation time; full-text excerpt stored locally in case of deletion
+
+Presidents and senior officials frequently announce, preview, or explain clemency decisions on social media platforms (e.g., Twitter/X, Truth Social, etc). These posts are citable primary-voice statements for the stated rationale of a pardon, even where the official record (DOJ, GovInfo) is silent on motivation.
+
+Social media posts are labeled *Contextual — Statement* and are displayed in a dedicated section on pardonee pages. They are never used to populate primary data fields (date of action, offense, sentence) — only to document what the issuing official publicly said about the action.
+
+**Known gaps and limitations:**
+
+- Posts can be deleted, edited, or hidden after the fact. Every cited post is archived to the Internet Archive and the relevant excerpt is preserved in Pardonpedia's own store at the time of citation.
+- Platform availability is uneven across administrations and accounts; coverage is incidental rather than systematic.
+- Attribution is limited to verified official accounts. Posts from personal or unverified accounts are not cited.
+
+### 5.4 OpenSecrets
+
+**URL:** [opensecrets.org](https://www.opensecrets.org)  
+**Usage:** Research and citation only
+
+OpenSecrets, operated by the Center for Responsive Politics, builds on FEC filings and adds donor network mapping, bundler relationships, and outside spending that raw FEC data does not surface cleanly. Pardonpedia uses OpenSecrets as a research aid to establish a pardonee's donor ecosystem and to identify politically relevant relationships referenced in editorial context.
+
+No structured financial data from OpenSecrets is ingested into Pardonpedia's database. Where OpenSecrets informs a factual statement on a pardonee page, the specific OpenSecrets page is cited inline.
+
+### 5.5 ProPublica Nonprofit Explorer
+
+**URL:** [projects.propublica.org/nonprofits](https://projects.propublica.org/nonprofits/)  
+**Usage:** Research and citation only
+
+Nonprofit Explorer surfaces IRS Form 990 filings, making it practical to research nonprofits and advocacy organizations that may have funded or publicly supported a clemency campaign, or that are linked to a pardonee. Pardonpedia uses it as a research aid for pardonees with documented nonprofit affiliations or organized advocacy campaigns supporting their clemency.
+
+No structured nonprofit data is ingested into Pardonpedia's database. Where Nonprofit Explorer informs a factual statement on a pardonee page, the specific filing or organization page is cited inline.
+
 ---
 
 ## 6. Archiving Policy
@@ -233,6 +279,8 @@ Link rot is a structural threat to reference databases. Pardonpedia mitigates it
 | Press articles | [Internet Archive](https://archive.org/) via Save Page Now API | At ingestion |
 | PACER documents | RECAP upload + DocumentCloud | At retrieval |
 | CourtListener permalinks | Stable (Free Law Project guarantees permanence) | N/A |
+| Social media posts | [Internet Archive](https://archive.org/) via Save Page Now API + local excerpt | At citation |
+| Third-party research pages (OpenSecrets, ProPublica Nonprofit Explorer) | [Internet Archive](https://archive.org/) via Save Page Now API | At citation |
 
 Every data element linked on the site carries both an original URL and an archive URL. If the original URL becomes unavailable, the archive link remains functional. GovInfo is used instead of whitehouse.gov for presidential documents because GovInfo's preservation mandate is statutory — whitehouse.gov content is routinely removed between administrations.
 
