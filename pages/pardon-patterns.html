@@ -5,16 +5,15 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width,initial-scale=1'>
 
-    <title>Data Dictionary — Pardonpedia</title>
-    <meta name="description" content="Data Dictionary — field definitions and value explanations for the Pardonpedia dataset">
-    <link rel="canonical" href="https://pardonpedia.org/pages/data-dictionary.html">
+    <title>Pardon Patterns — Pardonpedia</title>
+    <meta name="description" content="Pardon Patterns — documented patterns of timing, connection, and rationale in presidential clemency">
+    <link rel="canonical" href="https://pardonpedia.org/pages/pardon-patterns.html">
 
     <link rel='icon' type='image/x-icon' href='data:;base64,iVBORw0KGgo='>
 
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 
     <link href='../css/layout.css' rel='stylesheet' type='text/css'>
     <link href='../css/style.css' rel='stylesheet' type='text/css'>
@@ -41,8 +40,8 @@
                     <span class='header-dropdown-trigger'>About</span>
                     <div class='header-dropdown-menu'>
                         <a href='pardon-data-sources.html'>Pardon Data Sources</a>
-                        <a href='pardon-patterns.html'>Pardon Patterns</a>
-                        <a href='data-dictionary.html' class='active'>Data Dictionary</a>
+                        <a href='pardon-patterns.html' class='active'>Pardon Patterns</a>
+                        <a href='data-dictionary.html'>Data Dictionary</a>
                         <a href='release-notes.html'>Release Notes</a>
                         <a href='about.html'>About</a>
                     </div>
@@ -77,21 +76,11 @@
             return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
         };
 
-        mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: { primaryColor: '#e8f0fe', primaryBorderColor: '#1a365d', lineColor: '#718096', textColor: '#1a202c' } });
-
-        fetch('../content/data-dictionary.md')
+        fetch('../content/pardon-patterns.md')
             .then(r => r.text())
             .then(text => {
                 const el = document.getElementById('about-content');
                 el.innerHTML = marked.parse(text, { renderer });
-                el.querySelectorAll('pre code.language-mermaid').forEach(code => {
-                    const pre = code.parentElement;
-                    const div = document.createElement('pre');
-                    div.className = 'mermaid';
-                    div.textContent = code.textContent;
-                    pre.replaceWith(div);
-                });
-                mermaid.run();
             });
     </script>
 </body>

@@ -5,9 +5,9 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width,initial-scale=1'>
 
-    <title>Methodology — Pardonpedia</title>
-    <meta name="description" content="Methodology — how Pardonpedia data is collected, sourced, and verified">
-    <link rel="canonical" href="https://pardonpedia.org/pages/methodology.html">
+    <title>Pardon Data Sources — Pardonpedia</title>
+    <meta name="description" content="Pardon Data Sources — how Pardonpedia data is collected, sourced, and verified">
+    <link rel="canonical" href="https://pardonpedia.org/pages/pardon-data-sources.html">
 
     <link rel='icon' type='image/x-icon' href='data:;base64,iVBORw0KGgo='>
 
@@ -37,9 +37,10 @@
             <div class='header-side'>
                 <div id='updated-date'></div>
                 <div class='header-dropdown'>
-                    <span class='header-dropdown-trigger'>Data Sources</span>
+                    <span class='header-dropdown-trigger'>About</span>
                     <div class='header-dropdown-menu'>
-                        <a href='methodology.html' class='active'>Methodology</a>
+                        <a href='pardon-data-sources.html' class='active'>Pardon Data Sources</a>
+                        <a href='pardon-patterns.html'>Pardon Patterns</a>
                         <a href='data-dictionary.html'>Data Dictionary</a>
                         <a href='release-notes.html'>Release Notes</a>
                         <a href='about.html'>About</a>
@@ -88,7 +89,7 @@
             return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
         };
 
-        fetch('../content/methodology.md')
+        fetch('../content/pardon-data-sources.md')
             .then(r => r.text())
             .then(text => {
                 const el = document.getElementById('about-content');

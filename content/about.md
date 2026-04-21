@@ -2,7 +2,7 @@
 
 Pardonpedia is a structured reference database of U.S. presidential pardons and clemency grants, covering Nixon through the present day. The project is actively maintained — new clemency actions are added as they occur and historical records are continuously expanded.
 
-For more detail, see [Methodology](methodology.html), [Data Dictionary](data-dictionary.html), and [Release Notes](release-notes.html).
+For more detail, see [Pardon Data Sources](pardon-data-sources.html), [Pardon Patterns](pardon-patterns.html), [Data Dictionary](data-dictionary.html), and [Release Notes](release-notes.html).
 
 ---
 

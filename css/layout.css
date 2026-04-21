@@ -116,14 +116,14 @@ a:active {
 }
 
 .header-dropdown-trigger {
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
     color: var(--accent-blue);
     letter-spacing: 0.2px;
     cursor: default;
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     background: none;
     border: none;
     padding: 0;
@@ -132,7 +132,7 @@ a:active {
 
 .header-dropdown-trigger::after {
     content: '\25BE';
-    font-size: 10px;
+    font-size: 12px;
 }
 
 .header-dropdown-menu {
@@ -145,9 +145,9 @@ a:active {
     border: 1px solid var(--border-color);
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    min-width: 160px;
+    min-width: 200px;
     z-index: 1000;
-    padding: 4px 0;
+    padding: 6px 0;
 }
 
 .header-dropdown-menu::before {
@@ -165,8 +165,8 @@ a:active {
 
 .header-dropdown-menu a {
     display: block;
-    padding: 6px 14px;
-    font-size: 12px;
+    padding: 9px 18px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text-dark);
     white-space: nowrap;

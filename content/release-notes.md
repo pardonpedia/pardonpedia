@@ -7,6 +7,10 @@ Notable updates to Pardonpedia.
 - Need to confirm names for Obama/Biden drug sentence commutations are included correctly
 
 
+## April 21, 2026
+ - Added a new "Pardon Patterns" section to the about documents
+  
+
 ## April 17, 2026
 
 - Added **Data Sources** dropdown menu with links to Methodology, Data Dictionary, Release Notes, and About
