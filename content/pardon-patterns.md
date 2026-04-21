@@ -1,6 +1,6 @@
 # Pardon Patterns
 
-The official record answers *what* happened and *when*. It rarely answers *why*. For most of the post-Nixon period, the OPA's formal review process supplied a default explanation even when no rationale was stated publicly. Recent clemency actions have not included an OPA review. Pardonpedia addresses this by recording a structured set of contextual facts — drawn from independently verifiable sources — alongside the primary clemency record.
+The official record answers *what* happened and *when*. It rarely answers *why*. For most of the post-Nixon period, the OPA's formal review process supplied a default explanation even when no rationale was stated publicly. Recent clemency actions have not included an OPA review. Pardonpedia addresses this by recording contextual facts — drawn from independently verifiable sources — alongside the primary clemency record.
 
 **Pattern names describe documented facts about timing and relationships. They are not legal findings. The reader is left to draw conclusions about motivation.**
 
@@ -8,7 +8,7 @@ The official record answers *what* happened and *when*. It rarely answers *why*.
 
 ## 1. Temporal Patterns
 
-The timing of any exchange or relationship relative to the clemency grant is its most analytically significant feature. Seven patterns are recognized; they may appear alone or in combination, and a single grant may fall in more than one cell.
+When a pardonee acted — before the grant, after it, or not at all — and what motivated the grant together define which pattern applies. Patterns may appear alone or in combination; a single grant may fall in more than one cell.
 
 <table style="width:100%; border-collapse:collapse; font-size:13px; line-height:1.5;">
   <thead>
@@ -66,9 +66,9 @@ The timing of any exchange or relationship relative to the clemency grant is its
   </tbody>
 </table>
 
-**Prior exchange** — Journalists and legal analysts commonly call this the bribery pattern: something of value was provided to the president, a family member, or an affiliated fund before clemency was issued. The OPA's review process was partly designed to interpose an independent check against it. *Marc Rich's ex-wife donated to the Clinton presidential library and the DNC before his pardon; the grant was issued on Clinton's final day in office, bypassing OPA entirely.*
+**Prior exchange** — This pattern is commonly called "bribery": something of value was provided to the president, a family member, or business entity before clemency was issued. The OPA's review process was partly designed to add an independent check against it. *Marc Rich's ex-wife donated to the Clinton presidential library and the DNC before his pardon; the grant was issued on Clinton's final day in office, bypassing OPA entirely.*
 
-**Gratitude pattern** — A donation, investment, or public endorsement follows the grant. Legally harder to establish as a transaction than the prior exchange pattern, but a consistent pattern across multiple pardonees is analytically significant even without a provable prior understanding. *Dinesh D'Souza was pardoned by Trump in May 2018 after being convicted of campaign finance fraud. He subsequently became one of Trump's most prolific public advocates, producing films and social media content directly supporting Trump's political interests.*
+**Gratitude pattern** — A donation, investment, or public endorsement follows the grant. Legally harder to establish as a transaction than the prior exchange pattern, but a consistent pattern across multiple pardonees is significant even without a provable prior understanding. *Dinesh D'Souza was pardoned by Trump in May 2018 after being convicted of campaign finance fraud. He subsequently became one of Trump's most prolific public advocates, producing films and social media content directly supporting Trump's political interests.*
 
 **License pattern** — The grant functions as a signal about what conduct will be protected going forward. The direct beneficiaries are secondary; the primary effect is on future actors. *The January 6 blanket pardon (Trump, 2025) is the most recent and expansive example — a class-level grant covering individuals convicted of violent offenses at the Capitol, signaling that political violence on behalf of the president carries no federal criminal consequence. The Ford pardon of Nixon (1974) is the most debated historical instance, foreclosing accountability for a president's own conduct in office.* Prof. Lee Kovarsky describes a closely related concept — the ["patronage pardon"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5376034) — arguing that such grants also communicate a loyalty-for-protection exchange that can induce future misconduct by supporters; he cites Arpaio (2017), the Libby → Flynn/Manafort/Stone sequence, and the Jan. 6 grants as examples ([Lawfare Daily, Feb. 27, 2026](https://www.lawfaremedia.org/article/lawfare-daily--patronage-pardons--a-conversation-with-prof.-lee-kovarsky-about-a-novel-feature-of-the-trump-administration); forthcoming, *Duke Law Journal*).
 
@@ -78,7 +78,7 @@ The timing of any exchange or relationship relative to the clemency grant is its
 
 **Mercy pattern** — The pardonee served their sentence, demonstrated rehabilitation, met the OPA's published criteria, and applied through the standard process. No proximate exchange is present. This is the baseline pattern the OPA process was designed to produce and the most common pattern in routine clemency records across all administrations. *Patty Hearst received a full pardon from Clinton in January 2001, more than two decades after her conviction for bank robbery. She had served her commuted sentence, maintained a clean record, and her application went through the standard OPA process.*
 
-**Injustice correction** — Clemency is granted specifically because the underlying conviction or sentence is documented as unjust: a wrongful conviction, an excessive sentence, a sentencing disparity, or a law subsequently changed. *Obama's 1,715 drug sentence commutations (2014–17) are the dominant modern example, targeting individuals serving mandatory minimum sentences under the crack/powder cocaine disparity that Congress itself later acknowledged was racially inequitable.*
+**Injustice correction** — Clemency is granted specifically because the underlying conviction or sentence is deemed unjust: a wrongful conviction, an excessive sentence, a sentencing disparity, or a law subsequently changed. *Obama's 1,715 drug sentence commutations (2014–17) are the dominant modern example, targeting individuals serving mandatory minimum sentences under the crack/powder cocaine disparity that Congress itself later acknowledged was racially inequitable.*
 
 ---
 
