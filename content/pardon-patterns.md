@@ -28,11 +28,11 @@ When a pardonee acted — before the grant, after it, or not at all — and what
       <td style="background:#FCEBEB; border:1px solid #E24B4A; color:#501313; font-weight:500; text-align:center; padding:8px; writing-mode:vertical-rl; transform:rotate(180deg);">Concerning</td>
       <td style="background:#FCEBEB; border:1px solid #E24B4A; color:#501313; padding:10px 12px; vertical-align:top;">
         <strong>Prior exchange</strong><br>
-        <small>— Marc Rich (Clinton, 2001)</small>
+        <small>— <a href="https://pardonpedia.org/index.html?q=marc+Rich">Marc Rich (Clinton, 2001)</a></small>
       </td>
       <td style="background:#FCEBEB; border:1px solid #E24B4A; color:#501313; padding:10px 12px; vertical-align:top;">
         <strong>Gratitude pattern</strong><br>
-        <small>— Dinesh D'Souza (Trump, 2018)</small>
+        <small>— <a href="https://pardonpedia.org/?q=d%27souza">Dinesh D'Souza (Trump, 2018)</a></small>
       </td>
       <td style="background:#FCEBEB; border:1px solid #E24B4A; color:#501313; padding:10px 12px; vertical-align:top;">
         <strong>License pattern</strong><br>
@@ -42,12 +42,12 @@ When a pardonee acted — before the grant, after it, or not at all — and what
     <tr>
       <td style="background:#FAEEDA; border:1px solid #BA7517; color:#412402; font-weight:500; text-align:center; padding:8px; writing-mode:vertical-rl; transform:rotate(180deg);">Ambiguous</td>
       <td style="background:#FAEEDA; border:1px solid #BA7517; color:#412402; padding:10px 12px; vertical-align:top;">
-        <strong>Political resolution</strong><br>
-        <small>— Ford pardon of Nixon (1974)</small>
+        <strong>Political closure</strong><br>
+        <small>— Ford pardon of <a href="https://pardonpedia.org/index.html?q=nixon%2C+Richard">Nixon</a> (1974)</small>
       </td>
       <td style="background:#FAEEDA; border:1px solid #BA7517; color:#412402; padding:10px 12px; vertical-align:top;">
         <strong>Advocacy pattern</strong><br>
-        <small>— Kardashian / Johnson (Trump, 2018)</small>
+        <small>— <a href="https://pardonpedia.org/index.html?q=Alice+Marie+Johnson&pre=Donald+Trump+1">Kardashian / Johnson (Trump, 2018)</a></small>
       </td>
       <td style="border:1px solid #D3D1C7; padding:10px 12px;"></td>
     </tr>
@@ -55,7 +55,7 @@ When a pardonee acted — before the grant, after it, or not at all — and what
       <td style="background:#EAF3DE; border:1px solid #3B6D11; color:#173404; font-weight:500; text-align:center; padding:8px; writing-mode:vertical-rl; transform:rotate(180deg);">Benign</td>
       <td style="background:#EAF3DE; border:1px solid #3B6D11; color:#173404; padding:10px 12px; vertical-align:top;">
         <strong>Mercy pattern</strong><br>
-        <small>— Patty Hearst (Clinton, 2001)</small>
+        <small>— <a href="https://pardonpedia.org/index.html?q=Hearst">Patty Hearst (Clinton, 2001)</a></small>
         <hr style="border:none; border-top:1px solid #97C459; margin:8px 0;">
         <strong>Injustice correction</strong><br>
         <small>— Obama drug commutations (2014–17)</small>
@@ -72,7 +72,7 @@ When a pardonee acted — before the grant, after it, or not at all — and what
 
 **License pattern** — The grant functions as a signal about what conduct will be protected going forward. The direct beneficiaries are secondary; the primary effect is on future actors. *The January 6 blanket pardon (Trump, 2025) is the most recent and expansive example — a class-level grant covering individuals convicted of violent offenses at the Capitol, signaling that political violence on behalf of the president carries no federal criminal consequence. The Ford pardon of Nixon (1974) is the most debated historical instance, foreclosing accountability for a president's own conduct in office.* Prof. Lee Kovarsky describes a closely related concept — the ["patronage pardon"](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5376034) — arguing that such grants also communicate a loyalty-for-protection exchange that can induce future misconduct by supporters; he cites Arpaio (2017), the Libby → Flynn/Manafort/Stone sequence, and the Jan. 6 grants as examples ([Lawfare Daily, Feb. 27, 2026](https://www.lawfaremedia.org/article/lawfare-daily--patronage-pardons--a-conversation-with-prof.-lee-kovarsky-about-a-novel-feature-of-the-trump-administration); forthcoming, *Duke Law Journal*).
 
-**Political resolution** — Clemency closes a chapter of national political conflict. Any exchange is public and political rather than private and financial. Can shade toward the License pattern if prior understandings are later documented. *The Ford pardon of Nixon (1974) is the dominant example, though it remains contested whether a prior understanding existed. Carter's Vietnam draft amnesty (1977) is the clearest unambiguous case of a clean political resolution.*
+**Political closure** — Clemency closes a chapter of national political conflict. Any exchange is public and political rather than private and financial. Can shade toward the License pattern if prior understandings are later documented. *The Ford pardon of Nixon (1974) is the dominant example, though it remains contested whether a prior understanding existed. Carter's Vietnam draft amnesty (1977) is the clearest unambiguous case of a clean political resolution.*
 
 **Advocacy pattern** — A third party publicly campaigns for a pardonee's release; the president grants clemency and receives reputational credit. The exchange is transparent and non-financial. Shades toward the prior exchange pattern if the advocate has a concurrent financial relationship with the president. *Kim Kardashian West publicly advocated for Alice Marie Johnson, a first-time nonviolent drug offender serving a life sentence. Trump granted Johnson clemency in June 2018 following a personal meeting with Kardashian West at the White House.*
 
@@ -163,7 +163,7 @@ Several legislative proposals — most prominently the [Protecting Our Democracy
         <div style="display:flex; flex-direction:column; height:100%; min-height:100%;">
           <div style="padding:10px 12px; flex:1;">
             <strong>Prior exchange</strong><br>
-            <small>— Marc Rich (Clinton, 2001)</small>
+            <small>— <a href="https://pardonpedia.org/index.html?q=marc+Rich">Marc Rich (Clinton, 2001)</a></small>
           </div>
           <div style="padding:8px 12px; border-top:1px solid #E24B4A; background:rgba(163,45,45,0.06);">
             <span style="display:inline-block; padding:2px 8px; background:#A32D2D; color:#FCEBEB; font-size:11px; border-radius:3px;">Directly addressed — bribery liability &amp; donor disclosure proposed</span>
@@ -174,7 +174,7 @@ Several legislative proposals — most prominently the [Protecting Our Democracy
         <div style="display:flex; flex-direction:column; height:100%; min-height:100%;">
           <div style="padding:10px 12px; flex:1;">
             <strong>Gratitude pattern</strong><br>
-            <small>— Dinesh D'Souza (Trump, 2018)</small>
+            <small>— <a href="https://pardonpedia.org/?q=d%27souza">Dinesh D'Souza (Trump, 2018)</a></small>
           </div>
           <div style="padding:8px 12px; border-top:1px solid #E24B4A; background:rgba(136,135,128,0.08);">
             <span style="display:inline-block; padding:2px 8px; background:#888780; color:#F1EFE8; font-size:11px; border-radius:3px;">Reform gap — no current proposal addresses post-pardon exchange</span>
@@ -198,8 +198,8 @@ Several legislative proposals — most prominently the [Protecting Our Democracy
       <td style="background:#FAEEDA; border:1px solid #BA7517; color:#412402; vertical-align:top; padding:0; height:1px;">
         <div style="display:flex; flex-direction:column; height:100%; min-height:100%;">
           <div style="padding:10px 12px; flex:1;">
-            <strong>Political resolution</strong><br>
-            <small>— Ford pardon of Nixon (1974)</small>
+            <strong>Political closure</strong><br>
+            <small>— Ford pardon of <a href="https://pardonpedia.org/index.html?q=nixon%2C+Richard">Nixon</a> (1974)</small>
           </div>
           <div style="padding:8px 12px; border-top:1px solid #BA7517; background:rgba(186,117,23,0.06);">
             <span style="display:inline-block; padding:2px 8px; border:1px solid #BA7517; color:#854F0B; font-size:11px; border-radius:3px; background:#FAEEDA;">Transparency applies — written justification would document rationale</span>
@@ -225,7 +225,7 @@ Several legislative proposals — most prominently the [Protecting Our Democracy
         <div style="display:flex; flex-direction:column; height:100%; min-height:100%;">
           <div style="padding:10px 12px; flex:1;">
             <strong>Mercy pattern</strong><br>
-            <small>— Patty Hearst (Clinton, 2001)</small>
+            <small>— <a href="https://pardonpedia.org/index.html?q=Hearst">Patty Hearst (Clinton, 2001)</a></small>
             <hr style="border:none; border-top:1px solid #97C459; margin:8px 0;">
             <strong>Injustice correction</strong><br>
             <small>— Obama drug commutations (2014–17)</small>
