@@ -877,3 +877,47 @@
 .detail-court-docs-table a:hover {
     text-decoration: underline;
 }
+
+/* ========================================
+   MOBILE OVERRIDES (≤768px)
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Allow detail content to flow naturally */
+    #pardon-detail {
+        overflow-y: visible;
+        height: auto;
+    }
+
+    /* Warrant canvas: cap width so it doesn't overflow narrow screens */
+    .record-warrant-canvas,
+    .warrant-loading {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Background thumbnail: smaller on mobile */
+    .detail-background-thumb {
+        width: 80px;
+        height: 80px;
+    }
+
+    /* Record count sizing */
+    .record-count {
+        font-size: 17px;
+    }
+
+    /* Filter badges wrap nicely */
+    .filter-boxes-container {
+        gap: 4px;
+    }
+
+    /* Givebacks: ensure table panel scrolls horizontally */
+    #givebacks-table-panel {
+        overflow: visible;
+    }
+
+    .givebacks-table {
+        min-width: 560px;
+    }
+}

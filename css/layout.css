@@ -159,8 +159,14 @@ a:active {
     height: 6px;
 }
 
-.header-dropdown:hover .header-dropdown-menu {
+.header-dropdown:hover .header-dropdown-menu,
+.header-dropdown:focus-within .header-dropdown-menu {
     display: block;
+}
+
+/* Make the trigger focusable for touch (tap to open) */
+.header-dropdown-trigger {
+    outline: none;
 }
 
 .header-dropdown-menu a {
@@ -1172,4 +1178,160 @@ a:active {
 #chart-district-wrap {
     font-weight: 500;
     font-size: 13px;
+}
+
+/* ========================================
+   MOBILE LAYOUT (≤768px)
+   - Unlocks scrolling
+   - Collapses to single column
+   - Hides dc.js charts (unusable on touch)
+   - Keeps name search + results fully functional
+   ======================================== */
+
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+    }
+
+    #app-container {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 100dvh;
+        width: 100%;
+        overflow: visible;
+    }
+
+    /* ---- Header ---- */
+    #app-header {
+        padding: 6px 14px;
+        flex-wrap: wrap;
+        gap: 4px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    #title h1 {
+        font-size: 22px;
+    }
+
+    #title {
+        gap: 10px;
+    }
+
+    #nav-links {
+        padding-left: 10px;
+        margin-top: 3px;
+        height: auto;
+    }
+
+    #updated-date {
+        display: none;
+    }
+
+    .header-side {
+        padding-top: 2px;
+        gap: 0;
+    }
+
+    /* ---- Main content: single-column stack ---- */
+    #main-content {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+        padding: 8px;
+        gap: 8px;
+    }
+
+    /* Hide time chart (dc.js SVG — too wide for touch) */
+    #time-chart-row {
+        display: none;
+    }
+
+    /* Filter zone: single column, natural height */
+    #filter-zone {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+        padding: 0;
+        gap: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Hide all dc.js row charts */
+    #filter-col-left {
+        display: none;
+    }
+
+    /* Names list: full width, capped height with its own scroll */
+    #names-list-col {
+        width: 100%;
+        height: auto;
+        max-height: 45vh;
+        min-height: 160px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    #names-list {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Givebacks: hide names list col (uses .preserved-hidden already, just ensure it stays hidden) */
+    #main-content.givebacks-table-mode #filter-zone {
+        display: flex;
+    }
+
+    /* Results zone: full width, natural height */
+    #results-zone {
+        width: 100%;
+        height: auto;
+        min-height: 50vh;
+        overflow: visible;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+    }
+
+    #pardon-detail {
+        height: auto;
+        overflow-y: visible;
+        padding: 12px 14px;
+    }
+
+    /* Givebacks table panel */
+    #givebacks-table-panel {
+        height: auto;
+        min-height: 50vh;
+        overflow: visible;
+        padding: 8px;
+    }
+
+    .givebacks-table-scroll {
+        height: auto;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Detail split: already collapses to 1 col at 1100px; ensure it applies here too */
+    .detail-content-split {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .detail-column + .detail-column {
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+    }
 }
