@@ -142,9 +142,23 @@ export class Site {
         dc.renderAll();
 
         this._suppressUrlPush = true;
-        applyParamsToCharts(new URLSearchParams(window.location.search));
+        const initParams = new URLSearchParams(window.location.search);
+        applyParamsToCharts(initParams);
         dc.redrawAll();
         this._lastPushedSearch = searchStringFromFilterTypes(this.collectFilters());
+        const initQ = initParams.get('q') || '';
+        if (initQ) {
+            this._namesSearchTerm = initQ;
+            const searchInput = document.getElementById('names-search-input');
+            if (searchInput) {
+                searchInput.value = initQ;
+                const searchContainer = document.getElementById('names-search-container');
+                const searchClearBtn = searchContainer?.querySelector('.chart-search-clear');
+                const searchIconEl = searchContainer?.querySelector('.chart-search-icon');
+                if (searchClearBtn) searchClearBtn.style.display = 'block';
+                if (searchIconEl) searchIconEl.style.display = 'none';
+            }
+        }
         this.refresh();
         this._suppressUrlPush = false;
 
@@ -279,9 +293,21 @@ export class Site {
         window.addEventListener('popstate', () => {
             if (!dc.rowCharts?.length) return;
             this._suppressUrlPush = true;
-            applyParamsToCharts(new URLSearchParams(window.location.search));
+            const params = new URLSearchParams(window.location.search);
+            applyParamsToCharts(params);
             dc.redrawAll();
             this._lastPushedSearch = searchStringFromFilterTypes(this.collectFilters());
+            const q = params.get('q') || '';
+            this._namesSearchTerm = q;
+            const input = document.getElementById('names-search-input');
+            if (input) {
+                input.value = q;
+                const container = document.getElementById('names-search-container');
+                const clearBtn = container?.querySelector('.chart-search-clear');
+                const searchIcon = container?.querySelector('.chart-search-icon');
+                if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+                if (searchIcon) searchIcon.style.display = q ? 'none' : '';
+            }
             this.refresh();
             this._suppressUrlPush = false;
         });
@@ -295,6 +321,19 @@ export class Site {
         const qs = next ? `?${next}` : '';
         const hash = window.location.hash || '';
         history.pushState(null, '', `${window.location.pathname}${qs}${hash}`);
+    }
+
+    _syncUrlWithSearch() {
+        if (this._suppressUrlPush) return;
+        const p = new URLSearchParams(window.location.search);
+        if (this._namesSearchTerm) {
+            p.set('q', this._namesSearchTerm);
+        } else {
+            p.delete('q');
+        }
+        const qs = p.toString() ? `?${p.toString()}` : '';
+        history.pushState(null, '', `${window.location.pathname}${qs}${window.location.hash}`);
+        this._lastPushedSearch = p.toString();
     }
 
     collectFilters() {
@@ -398,6 +437,24 @@ export class Site {
 
         dc.redrawAll();
         this._syncUrlWithFilters();
+
+        if (this.selectedRecord && this._namesSearchTerm) {
+            const filtered = dc.facts.allFiltered();
+            if (!filtered.includes(this.selectedRecord)) {
+                this._namesSearchTerm = '';
+                this.selectedRecord = null;
+                const searchInput = document.getElementById('names-search-input');
+                if (searchInput) {
+                    searchInput.value = '';
+                    const searchContainer = document.getElementById('names-search-container');
+                    searchContainer?.querySelector('.chart-search-clear')?.style.setProperty('display', 'none');
+                    const icon = searchContainer?.querySelector('.chart-search-icon');
+                    if (icon) icon.style.display = '';
+                }
+                this._syncUrlWithSearch();
+            }
+        }
+
         scrollToTop('#names-list');
         this.buildNamesList(this._namesSearchTerm || '');
     }
@@ -418,6 +475,7 @@ export class Site {
             clearBtn.style.display = hasTerm ? 'block' : 'none';
             container.querySelector('.chart-search-icon').style.display = hasTerm ? 'none' : '';
             this.buildNamesList(this._namesSearchTerm);
+            this._syncUrlWithSearch();
         });
 
         input.addEventListener('keydown', (e) => {
@@ -452,6 +510,7 @@ export class Site {
             clearBtn.style.display = 'none';
             container.querySelector('.chart-search-icon').style.display = '';
             this.buildNamesList('');
+            this._syncUrlWithSearch();
         });
     }
 

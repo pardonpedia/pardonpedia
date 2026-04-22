@@ -8,7 +8,9 @@ Notable updates to Pardonpedia.
 
 
 ## April 22, 2026
- - Add a layout that works for mobile phones
+- Add a layout that works for mobile phones
+- Add the current status (filters or pardonee search) to  the url for bookmarking
+- Back button and forward buttons work 
 
 ## April 21, 2026
  - Added a new "Pardon Patterns" section to the about documents

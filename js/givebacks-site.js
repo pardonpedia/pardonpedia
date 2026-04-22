@@ -184,9 +184,23 @@ export class GivebacksSite {
         dc.renderAll();
 
         this._suppressUrlPush = true;
-        applyGivebacksParamsToCharts(new URLSearchParams(window.location.search));
+        const initParams = new URLSearchParams(window.location.search);
+        applyGivebacksParamsToCharts(initParams);
         dc.redrawAll();
         this._lastPushedSearch = givebacksSearchStringFromFilterTypes(this.collectFilters());
+        const initQ = initParams.get('q') || '';
+        if (initQ) {
+            this._namesSearchTerm = initQ;
+            const searchInput = document.getElementById('names-search-input');
+            if (searchInput) {
+                searchInput.value = initQ;
+                const searchContainer = document.getElementById('names-search-container');
+                const searchClearBtn = searchContainer?.querySelector('.chart-search-clear');
+                const searchIconEl = searchContainer?.querySelector('.chart-search-icon');
+                if (searchClearBtn) searchClearBtn.style.display = 'block';
+                if (searchIconEl) searchIconEl.style.display = 'none';
+            }
+        }
         this.refresh();
         this._suppressUrlPush = false;
 
@@ -266,9 +280,21 @@ export class GivebacksSite {
         window.addEventListener('popstate', () => {
             if (!dc.rowCharts?.length) return;
             this._suppressUrlPush = true;
-            applyGivebacksParamsToCharts(new URLSearchParams(window.location.search));
+            const params = new URLSearchParams(window.location.search);
+            applyGivebacksParamsToCharts(params);
             dc.redrawAll();
             this._lastPushedSearch = givebacksSearchStringFromFilterTypes(this.collectFilters());
+            const q = params.get('q') || '';
+            this._namesSearchTerm = q;
+            const input = document.getElementById('names-search-input');
+            if (input) {
+                input.value = q;
+                const container = document.getElementById('names-search-container');
+                const clearBtn = container?.querySelector('.chart-search-clear');
+                const searchIcon = container?.querySelector('.chart-search-icon');
+                if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+                if (searchIcon) searchIcon.style.display = q ? 'none' : '';
+            }
             this.refresh();
             this._suppressUrlPush = false;
         });
@@ -282,6 +308,19 @@ export class GivebacksSite {
         const qs = next ? `?${next}` : '';
         const hash = window.location.hash || '';
         history.pushState(null, '', `${window.location.pathname}${qs}${hash}`);
+    }
+
+    _syncUrlWithSearch() {
+        if (this._suppressUrlPush) return;
+        const p = new URLSearchParams(window.location.search);
+        if (this._namesSearchTerm) {
+            p.set('q', this._namesSearchTerm);
+        } else {
+            p.delete('q');
+        }
+        const qs = p.toString() ? `?${p.toString()}` : '';
+        history.pushState(null, '', `${window.location.pathname}${qs}${window.location.hash}`);
+        this._lastPushedSearch = p.toString();
     }
 
     collectFilters() {
@@ -462,6 +501,7 @@ export class GivebacksSite {
             clearBtn.style.display = hasTerm ? 'block' : 'none';
             container.querySelector('.chart-search-icon').style.display = hasTerm ? 'none' : '';
             this.buildNamesList(this._namesSearchTerm);
+            this._syncUrlWithSearch();
         });
 
         input.addEventListener('keydown', (e) => {
@@ -496,6 +536,7 @@ export class GivebacksSite {
             clearBtn.style.display = 'none';
             container.querySelector('.chart-search-icon').style.display = '';
             this.buildNamesList('');
+            this._syncUrlWithSearch();
         });
     }
 
