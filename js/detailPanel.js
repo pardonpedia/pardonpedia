@@ -166,6 +166,31 @@ export function renderPardonDetail(panel, record, ctx) {
     const wikiHasValid = parseOptionalBool(record.hasValidWikipediaInfo);
     const wikiHasRenderableContent = !!(wikiTitle || wikiSummary || wikiThumbUrl || wikiArticleUrl);
     const showWikipediaBackground = wikiHasRenderableContent && (wikiHasValid == null || wikiHasValid === true);
+
+    const matchingStories = (ctx.storiesByPardonId && ctx.storiesByPardonId.get(record.id)) || [];
+    const storiesSection = matchingStories.length > 0 ? `
+        <div class="detail-section detail-stories">
+            <div class="detail-column-heading">Media coverage</div>
+            ${matchingStories.map(s => {
+                let domain = '';
+                try { domain = new URL(s.storyUrl).hostname.replace(/^www\./, ''); } catch (e) { /* ignore */ }
+                const faviconUrl = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : '';
+                const thumbUrl = s.image || faviconUrl;
+                const isArticleImage = !!s.image;
+                const storyDateStr = s.publishDate ? s.publishDate.split(' ')[0] : '';
+                return `<a href="${s.storyUrl}" target="_blank" rel="noopener noreferrer" class="story-card">
+                    ${thumbUrl ? `<img class="story-thumb${isArticleImage ? ' story-thumb--article' : ''}" src="${thumbUrl}" alt="${domain}">` : ''}
+                    <div class="story-info">
+                        <div class="story-publisher">${domain}</div>
+                        <div class="story-title">${s.storyTitle}</div>
+                        ${s.authorList ? `<div class="story-author">${s.authorList}</div>` : ''}
+                        ${storyDateStr ? `<div class="story-date">${storyDateStr}</div>` : ''}
+                    </div>
+                </a>`;
+            }).join('')}
+        </div>
+    ` : '';
+
     const wikipediaBackgroundSection = showWikipediaBackground
         ? `<div class="detail-column detail-column-background">
                <div class="detail-column-heading">Background <span class="detail-column-heading-pill">Wikipedia</span></div>
@@ -177,6 +202,7 @@ export function renderPardonDetail(panel, record, ctx) {
                        ${wikiArticleUrl ? `<a class="detail-background-link" href="${escapeHtml(wikiArticleUrl)}" target="_blank" rel="noopener noreferrer">View Wikipedia article ↗</a>` : ''}
                    </div>
                </div>
+               ${storiesSection}
            </div>`
         : '';
 
@@ -202,30 +228,6 @@ export function renderPardonDetail(panel, record, ctx) {
                     </tbody>
                 </table>
             </div>
-        </div>
-    ` : '';
-
-    const matchingStories = (ctx.storiesByPardonId && ctx.storiesByPardonId.get(record.id)) || [];
-    const storiesSection = matchingStories.length > 0 ? `
-        <div class="detail-section detail-stories">
-            <div class="detail-column-heading">Media coverage</div>
-            ${matchingStories.map(s => {
-                let domain = '';
-                try { domain = new URL(s.storyUrl).hostname.replace(/^www\./, ''); } catch (e) { /* ignore */ }
-                const faviconUrl = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : '';
-                const thumbUrl = s.image || faviconUrl;
-                const isArticleImage = !!s.image;
-                const storyDateStr = s.publishDate ? s.publishDate.split(' ')[0] : '';
-                return `<a href="${s.storyUrl}" target="_blank" rel="noopener noreferrer" class="story-card">
-                    ${thumbUrl ? `<img class="story-thumb${isArticleImage ? ' story-thumb--article' : ''}" src="${thumbUrl}" alt="${domain}">` : ''}
-                    <div class="story-info">
-                        <div class="story-publisher">${domain}</div>
-                        <div class="story-title">${s.storyTitle}</div>
-                        ${s.authorList ? `<div class="story-author">${s.authorList}</div>` : ''}
-                        ${storyDateStr ? `<div class="story-date">${storyDateStr}</div>` : ''}
-                    </div>
-                </a>`;
-            }).join('')}
         </div>
     ` : '';
 
@@ -261,7 +263,7 @@ export function renderPardonDetail(panel, record, ctx) {
                         ${courtDocumentsSection}
                     </div>
                 </div>
-                ${storiesSection}
+                ${showWikipediaBackground ? '' : storiesSection}
             </div>
         </div>
     `;

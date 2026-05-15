@@ -4,7 +4,7 @@
 
 import { RowChart, computeFrozenFacetKeys } from './rowChart.js';
 import { TimeChart } from './timeChart.js';
-import { formatShortDate, escapeHtml, scrollToTop, parseCsvGrantDate, formatMetaUpdatedDate } from './shared.js';
+import { formatShortDate, escapeHtml, scrollToTop, parseCsvGrantDate, formatMetaUpdatedDate, slugify } from './shared.js';
 import { renderPardonDetail } from './detailPanel.js';
 import { trackPageView } from './analytics.js';
 import { applyParamsToCharts, searchStringFromFilterTypes } from './filterUrl.js';
@@ -160,6 +160,13 @@ export class Site {
             }
         }
         this.refresh();
+
+        const initPardon = initParams.get('pardon');
+        if (initPardon) {
+            const match = this.records.find(r => slugify(r.personName || '') === initPardon);
+            if (match) this.selectRecord(match, null);
+        }
+
         this._suppressUrlPush = false;
 
         overlay.classList.replace('loading-visible', 'loading-hidden');
@@ -330,6 +337,19 @@ export class Site {
             p.set('q', this._namesSearchTerm);
         } else {
             p.delete('q');
+        }
+        const qs = p.toString() ? `?${p.toString()}` : '';
+        history.pushState(null, '', `${window.location.pathname}${qs}${window.location.hash}`);
+        this._lastPushedSearch = p.toString();
+    }
+
+    _syncUrlWithPardon(slug) {
+        if (this._suppressUrlPush) return;
+        const p = new URLSearchParams(window.location.search);
+        if (slug) {
+            p.set('pardon', slug);
+        } else {
+            p.delete('pardon');
         }
         const qs = p.toString() ? `?${p.toString()}` : '';
         history.pushState(null, '', `${window.location.pathname}${qs}${window.location.hash}`);
@@ -595,6 +615,7 @@ export class Site {
             el.addEventListener('click', () => {
                 this._namesHighlightIdx = i;
                 this.selectRecord(sorted[i], el);
+                this._syncUrlWithPardon(slugify(sorted[i].personName || ''));
             });
             el.addEventListener('mouseenter', () => {
                 const r = sorted[i];

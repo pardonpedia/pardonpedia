@@ -454,6 +454,18 @@ a:active {
     margin-bottom: 2px;
 }
 
+.gb-pardon-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: #aab4c4;
+    text-underline-offset: 2px;
+}
+
+.gb-pardon-link:hover {
+    color: #1a5fa8;
+    text-decoration-color: #1a5fa8;
+}
+
 .gb-meta {
     font-size: 7px;
     color: #465265;
@@ -1094,6 +1106,11 @@ a:active {
     margin-top: 14px;
     border-top: 1px solid var(--border-color);
     padding-top: 10px;
+}
+
+.detail-column-background .detail-stories {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .story-card {

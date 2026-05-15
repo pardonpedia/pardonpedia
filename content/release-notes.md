@@ -6,6 +6,8 @@ Notable updates to Pardonpedia.
 
 - Need to confirm names for Obama/Biden drug sentence commutations are included correctly
 
+## May 15, 2026
+- Added links from giveback page back to the pardonee page
 
 ## April 22, 2026
 - Add a layout that works for mobile phones

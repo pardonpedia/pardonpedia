@@ -4,7 +4,7 @@
 
 import { RowChart, computeFrozenFacetKeysBySum } from './rowChart.js';
 import { ForgivenAmountMonthChart } from './forgivenAmountWeekChart.js';
-import { formatShortDate, escapeHtml, formatMetaUpdatedDate, parseCsvGrantDate } from './shared.js';
+import { formatShortDate, escapeHtml, formatMetaUpdatedDate, parseCsvGrantDate, slugify } from './shared.js';
 import { renderPardonDetail } from './detailPanel.js';
 import { trackPageView } from './analytics.js';
 import { applyGivebacksParamsToCharts, givebacksSearchStringFromFilterTypes } from './givebacksFilterUrl.js';
@@ -471,9 +471,14 @@ export class GivebacksSite {
                 })()}</td>`
                 : `<td class="gb-col-docs"></td>`;
 
+            const pardonSlug = r.personName ? slugify(r.personName) : null;
+            const nameHtml = pardonSlug
+                ? `<a href="index.html?pardon=${pardonSlug}" class="gb-pardon-link">${name}</a>`
+                : name;
+
             return (
                 `<tr class="gb-data-row">`
-                + `<td class="gb-col-pardonee"><div class="gb-name">${name}</div><div class="gb-meta">${metaLine || '—'}</div></td>`
+                + `<td class="gb-col-pardonee"><div class="gb-name">${nameHtml}</div><div class="gb-meta">${metaLine || '—'}</div></td>`
                 + `<td class="gb-col-offense">${offenseText}</td>`
                 + `<td class="gb-col-victim">${victimCell}</td>`
                 + `<td class="gb-col-gov">${govCell}</td>`
