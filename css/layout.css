@@ -224,7 +224,7 @@ a:active {
 
 #nav-links a {
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     letter-spacing: 0.3px;
     transition: color 0.2s ease;
@@ -352,6 +352,41 @@ a:active {
 #main-content.givebacks-table-mode #names-list-col,
 #main-content.givebacks-table-mode #chart-remedyType-wrap {
     display: none;
+}
+
+/* Reoffenders: single-column layout — results zone spans full width */
+#main-content.reoffenders-mode {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+}
+
+#main-content.reoffenders-mode #results-zone {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#reoffenders-table-panel {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 10px 12px;
+    background-color: var(--results-bg);
+}
+
+.reoffenders-table-scroll {
+    height: 100%;
+    overflow: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.reoffenders-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: 13px;
 }
 
 /* ========================================
@@ -1044,7 +1079,7 @@ a:active {
 }
 
 .results-header-source {
-    font-size: 11px;
+    font-size: 17px;
     font-weight: 400;
     white-space: nowrap;
 }
@@ -1252,6 +1287,7 @@ a:active {
     .header-side {
         padding-top: 2px;
         gap: 0;
+        margin-left: auto;
     }
 
     /* ---- Main content: single-column stack ---- */
@@ -1350,5 +1386,19 @@ a:active {
     .detail-column + .detail-column {
         border-left: none;
         border-top: 1px solid var(--border-color);
+    }
+
+    /* Reoffenders table panel */
+    #reoffenders-table-panel {
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+        padding: 8px;
+    }
+
+    .reoffenders-table-scroll {
+        height: auto;
+        overflow-x: visible;
+        overflow-y: visible;
     }
 }

@@ -884,6 +884,260 @@
 }
 
 /* ========================================
+   REOFFENDERS TABLE
+   ======================================== */
+
+.re-col-subhead {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted, #718096);
+    margin-left: 4px;
+}
+
+.reoffenders-table thead th {
+    text-align: left;
+    font-size: 15px;
+    font-weight: 700;
+    color: #2a3240;
+    background: #f5f6f4;
+    border-bottom: 2px solid var(--border-color);
+    padding: 10px 14px;
+    vertical-align: bottom;
+    position: sticky;
+    top: 0;
+    z-index: 4;
+}
+
+.reoffenders-table td {
+    border-bottom: 1px solid #e9ecef;
+    padding: 16px 14px;
+    vertical-align: top;
+    line-height: 1.45;
+}
+
+.reoffenders-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Strong separator between person groups */
+.reoffenders-table tbody tr.re-group-start td {
+    border-top: 2px solid #b0bec5;
+    background-color: #fff;
+}
+
+.reoffenders-table tbody tr.re-group-start:first-child td {
+    border-top: none;
+}
+
+/* Within-group rows (same person, multiple stories) */
+.reoffenders-table tbody tr:not(.re-group-start) td {
+    background-color: #f7f9fb;
+}
+
+/* Column widths */
+.re-col-name   { width: 160px; }
+.re-col-source { width: auto; }
+.re-col-crime  { width: 40%; }
+
+.re-cell-crime {
+    font-size: 14px;
+    color: #4a5568;
+}
+
+.re-crime-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.re-crime-block + .re-crime-block {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.re-crime-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #9aa5b4;
+}
+
+.re-crime-value {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.45;
+}
+
+.re-cell-name {
+    font-weight: 700;
+    color: #202733;
+    font-size: 17px;
+    vertical-align: top;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+}
+
+.re-name-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.re-jan6-pill {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #1a365d;
+    background: #bee3f8;
+    border-radius: 999px;
+    padding: 2px 8px;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+.re-name-text {
+    /* name link sits below the pill */
+}
+
+.re-pardon-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: #aab4c4;
+    text-underline-offset: 2px;
+}
+
+.re-pardon-link:hover {
+    color: var(--accent-blue, #0066cc);
+    text-decoration-color: var(--accent-blue, #0066cc);
+}
+
+.re-cell-charges {
+    font-size: 15px;
+    color: #333;
+}
+
+.re-source-cell-wrap {
+    position: relative;
+}
+
+.re-after-pill {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    padding: 2px 8px;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+.re-after-yes {
+    color: #fff;
+    background: #b91c1c;
+}
+
+.re-after-no {
+    color: #374151;
+    background: #e5e7eb;
+}
+
+/* Source card */
+.re-source-card {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.re-source-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+
+.re-source-thumb-wrap {
+    flex-shrink: 0;
+}
+
+.re-source-thumb {
+    display: block;
+    width: 120px;
+    height: 81px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--border-color, #cbd5e0);
+    background: #edf2f7;
+}
+
+.re-source-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent-blue, #0066cc);
+    line-height: 1.4;
+}
+
+a.re-source-title {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 2px;
+    transition: text-decoration-color 0.1s;
+}
+
+a.re-source-title:hover {
+    text-decoration-color: var(--accent-blue, #0066cc);
+}
+
+.re-source-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--text-muted, #718096);
+    line-height: 1.4;
+}
+
+.re-source-sep {
+    color: #c0c8d4;
+    font-size: 13px;
+}
+
+.re-source-publisher {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.re-source-date {
+    white-space: nowrap;
+}
+
+.re-source-excerpt {
+    margin: 6px 0 0 0;
+    padding: 6px 10px;
+    border-left: 3px solid #cbd5e0;
+    font-size: 14px;
+    color: #4a5568;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.re-placeholder {
+    color: #b0bac6;
+    font-style: italic;
+}
+
+/* ========================================
    MOBILE OVERRIDES (≤768px)
    ======================================== */
 
@@ -924,5 +1178,90 @@
 
     .givebacks-table {
         min-width: 560px;
+    }
+
+    /* ---- Results header: wrap to two lines ---- */
+    #results-header-top {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .results-header-source {
+        white-space: normal;
+    }
+
+    /* ---- Reoffenders: card layout ---- */
+
+    /* Convert table elements to block so rows stack vertically */
+    .reoffenders-table,
+    .reoffenders-table tbody,
+    .reoffenders-table tr,
+    .reoffenders-table td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Hide column headers — labels come from .re-crime-label inside cells */
+    .reoffenders-table thead {
+        display: none;
+    }
+
+    /* Reset min-width so no horizontal scroll */
+    .reoffenders-table {
+        min-width: 0;
+    }
+
+    /* Remove scroll constraint on the wrapper */
+    .reoffenders-table-scroll {
+        overflow-x: visible;
+    }
+
+    /* Base cell reset */
+    .reoffenders-table td {
+        border: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 12px 14px;
+    }
+
+    .reoffenders-table td:last-child {
+        border-bottom: none;
+    }
+
+    /* Person group separator */
+    .reoffenders-table tr.re-group-start {
+        margin-top: 12px;
+        border-top: 2px solid #b0bec5;
+        background: none;
+    }
+
+    .reoffenders-table tr.re-group-start:first-child {
+        margin-top: 0;
+        border-top: none;
+    }
+
+    /* Name cell: subtle banner background */
+    .reoffenders-table .re-cell-name {
+        background: #f0f4f8;
+        border-bottom: 1px solid #d0d8e4 !important;
+        font-size: 16px;
+    }
+
+    /* Rowspan is ignored in block mode — name cell only shows on first row,
+       subsequent rows of the same person still render without it, which is fine */
+
+    /* Show thumbnail on mobile (card layout has room for it) */
+    .re-source-thumb-wrap {
+        display: block;
+    }
+
+    .re-source-thumb {
+        width: 100px;
+        height: 67px;
+    }
+
+    /* Crime cell: tinted so it reads as a secondary section */
+    .reoffenders-table .re-cell-crime {
+        background: #f8fafc;
     }
 }

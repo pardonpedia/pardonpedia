@@ -8,6 +8,7 @@ Notable updates to Pardonpedia.
 
 ## May 15, 2026
 - Added links from giveback page back to the pardonee page
+- Added reoffenders page
 
 ## April 22, 2026
 - Add a layout that works for mobile phones
@@ -99,3 +100,4 @@ Notable updates to Pardonpedia.
 ## March 11, 2026
 
 - Initial public release of Pardonpedia and the starting dataset
+

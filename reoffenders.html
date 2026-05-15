@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+
+    <title>Reoffenders — Pardonpedia</title>
+    <meta name="description" content="Pardoned individuals subsequently charged with or convicted of new crimes">
+    <link rel="canonical" href="https://pardonpedia.org/reoffenders.html">
+    <noscript>Pardonpedia Reoffenders tracks pardoned individuals who were later charged with new crimes.</noscript>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js'></script>
+
+    <script type="module" src='js/reoffenders-site.js'></script>
+
+    <link href='css/layout.css' rel='stylesheet' type='text/css'>
+    <link href='css/style.css' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+    <div id="page-transition" class="page-transition"></div>
+    <div id="loading-overlay" class="loading-hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <div id='app-container'>
+        <header id='app-header'>
+            <div id='title'>
+                <div class='title-main'>
+                    <h1>Pardonpedia</h1>
+                </div>
+                <nav id='nav-links'>
+                    <a href='index.html'>Pardons</a>
+                    <a href='reoffenders.html' class='active'>Reoffenders</a>
+                    <a href='givebacks.html'>Givebacks</a>
+                </nav>
+            </div>
+            <div class='header-side'>
+                <div id='updated-date'></div>
+                <div class='header-dropdown'>
+                    <span class='header-dropdown-trigger' tabindex='0'>About</span>
+                    <div class='header-dropdown-menu'>
+                        <a href='pages/pardon-data-sources.html'>Pardon Data Sources</a>
+                        <a href='pages/pardon-patterns.html'>Pardon Patterns</a>
+                        <a href='pages/data-dictionary.html'>Data Dictionary</a>
+                        <a href='pages/release-notes.html'>Release Notes</a>
+                        <a href='pages/about.html'>About</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main id='main-content' class='reoffenders-mode'>
+            <div id='results-zone'>
+                <div id='results-header'>
+                    <div id='results-header-top'>
+                        <div id='menu-info'></div>
+                        <div class='results-header-actions'>
+                            <span class='results-header-source'><a href='https://www.citizensforethics.org/reports-investigations/crew-reports/at-least-33-pardoned-insurrectionists-face-other-criminal-charges-but-many-are-now-going-free/' target='_blank' rel='noopener noreferrer'>Source: CREW</a></span>
+                            <button id='download-csv' class='download-button' title='Download records as CSV'>CSV <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M12 15l-5-5M12 15l5-5M5 21h14"/></svg></button>
+                        </div>
+                    </div>
+                </div>
+                <div id='reoffenders-table-panel'>
+                    <div class='reoffenders-table-scroll'>
+                        <table id='reoffenders-table' class='reoffenders-table'>
+                            <thead>
+                                <tr>
+                                    <th class='re-col-name'>Pardonee</th>
+                                    <th class='re-col-source'>Other Crimes <span class='re-col-subhead'>(committed or alleged)</span></th>
+                                    <th class='re-col-crime'>Pardoned Crimes &amp; Sentences</th>
+                                </tr>
+                            </thead>
+                            <tbody id='reoffenders-table-body'></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const transition = document.getElementById('page-transition');
+        transition.classList.add('fade-in');
+
+        document.querySelectorAll('#nav-links a:not(.active)').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.href;
+                transition.classList.remove('fade-in');
+                transition.classList.add('fade-out');
+                setTimeout(() => { window.location.href = href; }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

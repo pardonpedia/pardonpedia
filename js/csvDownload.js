@@ -20,6 +20,13 @@ export const MONEY_EXPORT_COLUMNS = Object.freeze([
 ]);
 
 /** @type {readonly string[]} */
+export const REOFFENDERS_EXPORT_COLUMNS = Object.freeze([
+    'pardonId', 'pardonName', 'clemencyType', 'grantDate', 'presidentName',
+    'offense', 'sentenced', 'district', 'afterPardon',
+    'url', 'title', 'publishDate', 'sentence', 'publisher', 'authorList',
+]);
+
+/** @type {readonly string[]} */
 export const GIVEBACKS_EXPORT_COLUMNS = Object.freeze([
     'pardonId', 'name', 'grantDate', 'clemencyType', 'offenseType',
     'fineAmount', 'forfeitureAmount', 'restitutionAmount', 'presidentTerm', 'wikipediaUrl',
