@@ -103,7 +103,7 @@ function renderRows(records) {
         }
     });
 
-    function renderSourceRow(r, nameCell, isGroupStart = false) {
+    function renderSourceRow(r, nameCell, crimeCell, isGroupStart = false) {
         const title = (r.title || '').trim();
         const url = (r.url || '').trim();
         const publisher = (r.publisher || '').trim();
@@ -162,28 +162,15 @@ function renderRows(records) {
                         <div class="re-source-meta">
                             ${[publisherHtml, authorsHtml, dateHtml].filter(Boolean).join('<span class="re-source-sep">·</span>')}
                         </div>
-                        ${excerptHtml}
                     </div>
+                    ${excerptHtml}
                 </div>
             </div>`;
-
-        const offense = (r.offense || '').trim();
-        const sentenced = (r.sentenced || '').trim();
-
-        const crimeHtml = `
-            <div class="re-crime-block">
-                <span class="re-crime-label">Offense</span>
-                <span class="re-crime-value">${offense ? escapeHtml(offense) : '<span class="re-placeholder">—</span>'}</span>
-            </div>
-            ${sentenced ? `<div class="re-crime-block">
-                <span class="re-crime-label">Sentence</span>
-                <span class="re-crime-value">${escapeHtml(sentenced)}</span>
-            </div>` : ''}`;
 
         return `<tr${isGroupStart ? ' class="re-group-start"' : ''}>
             ${nameCell}
             <td class="re-cell-source">${sourceCardHtml}</td>
-            <td class="re-cell-crime">${crimeHtml}</td>
+            ${crimeCell}
         </tr>`;
     }
 
@@ -193,12 +180,28 @@ function renderRows(records) {
         const nameLink = pardonSlug
             ? `<a href="index.html?pardon=${escapeHtml(pardonSlug)}" class="re-pardon-link">${escapeHtml(pardonName)}</a>`
             : escapeHtml(pardonName) || '<span class="re-placeholder">—</span>';
-        const nameInner = `<div class="re-name-wrap"><span class="re-jan6-pill">January 6th</span><div class="re-name-text">${nameLink}</div></div>`;
+        const nameInner = `<div class="re-name-wrap"><div class="re-name-text">${nameLink}</div></div>`;
 
         const rowspan = group.rows.length > 1 ? ` rowspan="${group.rows.length}"` : '';
         const nameCell = `<td class="re-cell-name"${rowspan}>${nameInner}</td>`;
 
-        return group.rows.map((r, i) => renderSourceRow(r, i === 0 ? nameCell : '', i === 0)).join('');
+        const offense = (group.rows[0].offense || '').trim();
+        const sentenced = (group.rows[0].sentenced || '').trim();
+        const crimeHtml = `
+            <div class="re-crime-jan6-header">
+                <span class="re-jan6-pill">January 6th</span>
+            </div>
+            <div class="re-crime-block">
+                <span class="re-crime-label">Offense</span>
+                <span class="re-crime-value">${offense ? escapeHtml(offense) : '<span class="re-placeholder">—</span>'}</span>
+            </div>
+            ${sentenced ? `<div class="re-crime-block">
+                <span class="re-crime-label">Sentence</span>
+                <span class="re-crime-value">${escapeHtml(sentenced)}</span>
+            </div>` : ''}`;
+        const crimeCell = `<td class="re-cell-crime"${rowspan}>${crimeHtml}</td>`;
+
+        return group.rows.map((r, i) => renderSourceRow(r, i === 0 ? nameCell : '', i === 0 ? crimeCell : '', i === 0)).join('');
     }).join('');
 
     tbody.innerHTML = html;

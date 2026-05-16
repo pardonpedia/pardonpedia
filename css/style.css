@@ -888,7 +888,7 @@
    ======================================== */
 
 .re-col-subhead {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 400;
     color: var(--text-muted, #718096);
     margin-left: 4px;
@@ -896,7 +896,7 @@
 
 .reoffenders-table thead th {
     text-align: left;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     color: #2a3240;
     background: #f5f6f4;
@@ -940,7 +940,7 @@
 .re-col-crime  { width: 40%; }
 
 .re-cell-crime {
-    font-size: 14px;
+    font-size: 13px;
     color: #4a5568;
 }
 
@@ -957,7 +957,7 @@
 }
 
 .re-crime-label {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -965,7 +965,7 @@
 }
 
 .re-crime-value {
-    font-size: 14px;
+    font-size: 13px;
     color: #374151;
     line-height: 1.45;
 }
@@ -973,7 +973,7 @@
 .re-cell-name {
     font-weight: 700;
     color: #202733;
-    font-size: 17px;
+    font-size: 16px;
     vertical-align: top;
     border-bottom: 1px solid #e5e7eb;
     position: relative;
@@ -988,7 +988,7 @@
 .re-jan6-pill {
     display: inline-block;
     align-self: flex-start;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -998,6 +998,12 @@
     padding: 2px 8px;
     line-height: 1.6;
     white-space: nowrap;
+}
+
+.re-crime-jan6-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
 }
 
 .re-name-text {
@@ -1017,7 +1023,7 @@
 }
 
 .re-cell-charges {
-    font-size: 15px;
+    font-size: 14px;
     color: #333;
 }
 
@@ -1030,7 +1036,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -1053,9 +1059,32 @@
 /* Source card */
 .re-source-card {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 10px;
-    align-items: flex-start;
+}
+
+.re-source-card--has-thumb {
+    display: grid;
+    grid-template-columns: 144px 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px;
+    align-items: start;
+}
+
+.re-source-card--has-thumb .re-source-thumb-wrap {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.re-source-card--has-thumb .re-source-card-body {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.re-source-card--has-thumb .re-source-excerpt {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-top: 0;
 }
 
 .re-source-card-body {
@@ -1072,8 +1101,8 @@
 
 .re-source-thumb {
     display: block;
-    width: 120px;
-    height: 81px;
+    width: 144px;
+    height: 97px;
     object-fit: cover;
     border-radius: 4px;
     border: 1px solid var(--border-color, #cbd5e0);
@@ -1081,7 +1110,7 @@
 }
 
 .re-source-title {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--accent-blue, #0066cc);
     line-height: 1.4;
@@ -1103,14 +1132,14 @@ a.re-source-title:hover {
     flex-wrap: wrap;
     align-items: center;
     gap: 4px;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-muted, #718096);
     line-height: 1.4;
 }
 
 .re-source-sep {
     color: #c0c8d4;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .re-source-publisher {
@@ -1123,10 +1152,10 @@ a.re-source-title:hover {
 }
 
 .re-source-excerpt {
-    margin: 6px 0 0 0;
+    margin: 0;
     padding: 6px 10px;
     border-left: 3px solid #cbd5e0;
-    font-size: 14px;
+    font-size: 13px;
     color: #4a5568;
     line-height: 1.5;
     font-style: italic;
@@ -1244,7 +1273,7 @@ a.re-source-title:hover {
     .reoffenders-table .re-cell-name {
         background: #f0f4f8;
         border-bottom: 1px solid #d0d8e4 !important;
-        font-size: 16px;
+        font-size: 15px;
     }
 
     /* Rowspan is ignored in block mode — name cell only shows on first row,
@@ -1256,8 +1285,12 @@ a.re-source-title:hover {
     }
 
     .re-source-thumb {
-        width: 100px;
-        height: 67px;
+        width: 120px;
+        height: 80px;
+    }
+
+    .re-source-card--has-thumb {
+        grid-template-columns: 120px 1fr;
     }
 
     /* Crime cell: tinted so it reads as a secondary section */
