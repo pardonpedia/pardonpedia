@@ -833,6 +833,10 @@
     font-weight: 600;
 }
 
+.page-givebacks .record-count {
+    font-size: 18px;
+}
+
 .record-filters {
     font-size: 18px;
     font-weight: 500;
@@ -1031,8 +1035,12 @@
     position: relative;
 }
 
+.re-source-cell-wrap--has-pill {
+    padding-top: 24px;
+}
+
 .re-after-pill {
-    display: none;
+    display: inline-block;
     position: absolute;
     top: 0;
     right: 0;
@@ -1047,8 +1055,8 @@
 }
 
 .re-after-yes {
-    color: #fff;
-    background: #b91c1c;
+    color: #1a365d;
+    background: #bee3f8;
 }
 
 .re-after-no {

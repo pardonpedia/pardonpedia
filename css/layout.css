@@ -470,7 +470,7 @@ a:active {
 
 #gb-total-victim,
 #gb-total-gov {
-    font-size: 17px;
+    font-size: 12px;
     line-height: 1.05;
     text-align: right;
 }
@@ -508,7 +508,7 @@ a:active {
 }
 
 .gb-amount {
-    font-size: 14px;
+    font-size: 11px;
     line-height: 1;
     font-weight: 700;
     color: #ad3e4f;
@@ -516,7 +516,7 @@ a:active {
 }
 
 .gb-subtext {
-    font-size: 7px;
+    font-size: 9px;
     color: #3f4b5d;
 }
 
@@ -1079,7 +1079,7 @@ a:active {
 }
 
 .results-header-source {
-    font-size: 17px;
+    font-size: 12px;
     font-weight: 400;
     white-space: nowrap;
 }

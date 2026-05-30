@@ -447,8 +447,16 @@ export class GivebacksSite {
             const victimCell = victimNum > 0
                 ? `<div class="gb-amount">${moneyFmt.format(victimNum)}</div><div class="gb-subtext">Restitution erased</div>`
                 : `<div class="gb-none">---</div>`;
+            const govSubtext = (() => {
+                const hasFine = fineNum > 0;
+                const hasForfeiture = forfeitureNum > 0;
+                if (hasFine && hasForfeiture) return `Fines ${moneyFmt.format(fineNum)} + forfeitures ${moneyFmt.format(forfeitureNum)}`;
+                if (hasFine) return `Fine`;
+                if (hasForfeiture) return `Forfeiture`;
+                return '';
+            })();
             const govCell = govNum > 0
-                ? `<div class="gb-amount">${moneyFmt.format(govNum)}</div><div class="gb-subtext">Fines ${moneyFmt.format(fineNum)} + forfeitures ${moneyFmt.format(forfeitureNum)}</div>`
+                ? `<div class="gb-amount">${moneyFmt.format(govNum)}</div>${govSubtext ? `<div class="gb-subtext">${govSubtext}</div>` : ''}`
                 : `<div class="gb-none">---</div>`;
             const courtDocs = Array.isArray(r.courtDocuments) ? r.courtDocuments : [];
             const docsCell = courtDocs.length > 0

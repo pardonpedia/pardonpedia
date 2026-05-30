@@ -153,7 +153,7 @@ function renderRows(records) {
                 : '';
 
         const sourceCardHtml = `
-            <div class="re-source-cell-wrap">
+            <div class="re-source-cell-wrap${afterPardonPill ? ' re-source-cell-wrap--has-pill' : ''}">
                 ${afterPardonPill}
                 <div class="re-source-card${image ? ' re-source-card--has-thumb' : ''}">
                     ${thumbHtml}
@@ -225,8 +225,11 @@ async function init() {
         const text = pako.inflate(new Uint8Array(buf), { to: 'string' });
         const records = parseCsv(text);
 
-        // Sort alphabetically by name, then by storyPardonId within each person
+        // Sort: after-pardon groups first, then alphabetically by name, then by storyPardonId
         records.sort((a, b) => {
+            const aAfter = (a.afterPardon || '').trim().toLowerCase() === 'true' ? 0 : 1;
+            const bAfter = (b.afterPardon || '').trim().toLowerCase() === 'true' ? 0 : 1;
+            if (aAfter !== bAfter) return aAfter - bAfter;
             const byName = (a.pardonName || '').localeCompare(b.pardonName || '', undefined, { sensitivity: 'base' });
             if (byName !== 0) return byName;
             return (+a.storyPardonId || 0) - (+b.storyPardonId || 0);
